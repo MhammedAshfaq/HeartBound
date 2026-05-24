@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "RelationshipCareAppExpo",
-    "slug": "RelationshipCareAppExpo",
+    "name": "Relationship Care",
+    "slug": "RelationshipCareApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.relationshipcare.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +22,18 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.relationshipcare.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "env": "development"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-notifications"
+    ]
   }
 }
