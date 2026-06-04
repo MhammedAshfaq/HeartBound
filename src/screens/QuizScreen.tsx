@@ -10,11 +10,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { Button } from '@components/common/Button';
 import { useQuiz } from '@hooks/useQuiz';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
+import { AppTheme } from '@utils/theme';
 import { QUIZ_QUESTIONS } from '@utils/constants';
 import { QuizAnswers } from '../types';
 
 export const QuizScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const { isComplete, saveAnswers, finishQuiz } = useQuiz();
   const [step, setStep] = useState(0);
@@ -64,7 +68,7 @@ export const QuizScreen: React.FC = () => {
   const selected = answers[current?.id] || null;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={screenLayout.safe}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.progressContainer}>
           <View style={styles.progressTrack}>
@@ -123,15 +127,13 @@ export const QuizScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
   content: {
     flexGrow: 1,
-    padding: theme.spacing.lg,
     justifyContent: 'center',
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -205,10 +207,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   footer: {
-    padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xl,
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+    backgroundColor: theme.colors.background,
   },
   nextButton: {
     height: 52,
   },
-});
+  });

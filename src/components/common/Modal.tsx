@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Modal, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { AppTheme } from '@utils/theme';
 
 interface CustomModalProps {
   visible: boolean;
@@ -17,6 +18,8 @@ export const CustomModal: React.FC<CustomModalProps> = ({
   children,
   showCloseButton = true,
 }) => {
+  const styles = useThemedStyles(createStyles);
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <TouchableOpacity style={styles.overlay} onPress={onClose} activeOpacity={1}>
@@ -38,40 +41,41 @@ export const CustomModal: React.FC<CustomModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: theme.colors.overlay,
-    justifyContent: 'flex-end',
-  },
-  modalContainer: {
-    backgroundColor: theme.colors.surface,
-    borderTopLeftRadius: theme.borderRadius.xl,
-    borderTopRightRadius: theme.borderRadius.xl,
-    maxHeight: '80%',
-    paddingBottom: theme.spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-  closeButton: {
-    padding: theme.spacing.xs,
-  },
-  closeText: {
-    fontSize: 24,
-    color: theme.colors.textSecondary,
-  },
-  content: {
-    padding: theme.spacing.lg,
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: theme.colors.overlay,
+      justifyContent: 'flex-end',
+    },
+    modalContainer: {
+      backgroundColor: theme.colors.surface,
+      borderTopLeftRadius: theme.borderRadius.xl,
+      borderTopRightRadius: theme.borderRadius.xl,
+      maxHeight: '80%',
+      paddingBottom: theme.spacing.xl,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: theme.spacing.lg,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    closeButton: {
+      padding: theme.spacing.xs,
+    },
+    closeText: {
+      fontSize: 24,
+      color: theme.colors.textSecondary,
+    },
+    content: {
+      padding: theme.spacing.lg,
+    },
+  });

@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@components/common/Card';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
+import { AppTheme } from '@utils/theme';
 import { AnalyticsMetrics } from '../types';
 
 const MOCK_METRICS: AnalyticsMetrics = {
@@ -16,6 +18,8 @@ const MOCK_METRICS: AnalyticsMetrics = {
 type Period = 'week' | 'month' | 'year';
 
 export const AnalyticsScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
   const [period, setPeriod] = useState<Period>('week');
   const metrics = MOCK_METRICS;
 
@@ -38,10 +42,11 @@ export const AnalyticsScreen: React.FC = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-    <ScrollView contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Analytics</Text>
+    <SafeAreaView style={screenLayout.safe} edges={['top']}>
+      <ScrollView
+        contentContainerStyle={screenLayout.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.periodSelector}>
           {(['week', 'month', 'year'] as Period[]).map((p) => (
             <TouchableOpacity
@@ -57,7 +62,6 @@ export const AnalyticsScreen: React.FC = () => {
             </TouchableOpacity>
           ))}
         </View>
-      </View>
 
       <View style={styles.scoreContainer}>
         <View style={styles.scoreCircle}>
@@ -123,25 +127,10 @@ export const AnalyticsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  content: {
-    padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl,
-  },
-  header: {
-    marginBottom: theme.spacing.lg,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.md,
-  },
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
   periodSelector: {
+    marginBottom: theme.spacing.md,
     flexDirection: 'row',
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
@@ -162,7 +151,7 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
   },
   periodTextActive: {
-    color: '#FFFFFF',
+    color: theme.colors.onPrimary,
   },
   scoreContainer: {
     alignItems: 'center',
@@ -180,7 +169,7 @@ const styles = StyleSheet.create({
   scoreValue: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: theme.colors.onPrimary,
   },
   scoreLabel: {
     fontSize: 16,
@@ -267,4 +256,4 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     textAlign: 'right',
   },
-});
+  });

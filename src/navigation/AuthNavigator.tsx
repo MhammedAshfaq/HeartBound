@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen } from '@screens/LoginScreen';
 import { OTPVerificationScreen } from '@screens/OTPVerificationScreen';
 import { OnboardingScreen } from '@screens/OnboardingScreen';
-import { theme } from '@utils/theme';
+import { useTheme } from '@context/ThemeContext';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -13,18 +13,24 @@ export type AuthStackParamList = {
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
-const headerOptions = {
-  headerStyle: { backgroundColor: theme.colors.surface },
-  headerTintColor: theme.colors.text,
-  headerTitleStyle: { fontWeight: '600' as const },
-  headerShadowVisible: false,
-};
-
 export const AuthNavigator: React.FC = () => {
+  const { theme } = useTheme();
+
+  const headerOptions = useMemo(
+    () => ({
+      headerStyle: { backgroundColor: theme.colors.surface },
+      headerTintColor: theme.colors.text,
+      headerTitleStyle: { fontWeight: '600' as const, color: theme.colors.text },
+      headerShadowVisible: false,
+    }),
+    [theme]
+  );
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        contentStyle: { backgroundColor: theme.colors.background },
       }}
     >
       <Stack.Screen name="Login" component={LoginScreen} />

@@ -6,7 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { AppTheme } from '@utils/theme';
 import { OTP_LENGTH, OTP_RESEND_TIMEOUT } from '@utils/constants';
 
 interface OTPInputProps {
@@ -15,7 +16,8 @@ interface OTPInputProps {
   loading?: boolean;
 }
 
-export const OTPInput: React.FC<OTPInputProps> = ({ onSubmit, onResend, loading = false }) => {
+export const OTPInput: React.FC<OTPInputProps> = ({ onSubmit, onResend }) => {
+  const styles = useThemedStyles(createStyles);
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(OTP_RESEND_TIMEOUT);
   const [canResend, setCanResend] = useState(false);
@@ -55,7 +57,7 @@ export const OTPInput: React.FC<OTPInputProps> = ({ onSubmit, onResend, loading 
     }
   };
 
-  const handleKeyPress = (e: any, index: number) => {
+  const handleKeyPress = (e: { nativeEvent: { key: string } }, index: number) => {
     if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
       inputs.current[index - 1]?.focus();
     }
@@ -76,7 +78,9 @@ export const OTPInput: React.FC<OTPInputProps> = ({ onSubmit, onResend, loading 
         {otp.map((digit, index) => (
           <TextInput
             key={index}
-            ref={(el) => { inputs.current[index] = el; }}
+            ref={(el) => {
+              inputs.current[index] = el;
+            }}
             style={[styles.input, styles.inputText]}
             value={digit}
             onChangeText={(text) => handleChange(text, index)}
@@ -101,46 +105,47 @@ export const OTPInput: React.FC<OTPInputProps> = ({ onSubmit, onResend, loading 
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: theme.spacing.lg,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.lg,
-    textAlign: 'center',
-  },
-  inputsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: theme.spacing.sm,
-    marginBottom: theme.spacing.xl,
-  },
-  input: {
-    width: 50,
-    height: 60,
-    borderWidth: 2,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-  },
-  inputText: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  resendContainer: {
-    alignItems: 'center',
-  },
-  resendText: {
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  timerText: {
-    color: theme.colors.textSecondary,
-    fontSize: 14,
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      marginVertical: theme.spacing.lg,
+    },
+    label: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.lg,
+      textAlign: 'center',
+    },
+    inputsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: theme.spacing.sm,
+      marginBottom: theme.spacing.xl,
+    },
+    input: {
+      width: 50,
+      height: 60,
+      borderWidth: 2,
+      borderColor: theme.colors.border,
+      borderRadius: theme.borderRadius.md,
+      backgroundColor: theme.colors.surface,
+      color: theme.colors.text,
+    },
+    inputText: {
+      fontSize: 24,
+      fontWeight: '600',
+    },
+    resendContainer: {
+      alignItems: 'center',
+    },
+    resendText: {
+      color: theme.colors.primary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    timerText: {
+      color: theme.colors.textSecondary,
+      fontSize: 14,
+    },
+  });

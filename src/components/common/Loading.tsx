@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Modal } from 'react-native';
-import { theme } from '@utils/theme';
+import { useTheme } from '@context/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { AppTheme } from '@utils/theme';
 
 interface LoadingProps {
   visible: boolean;
@@ -8,6 +10,9 @@ interface LoadingProps {
 }
 
 export const Loading: React.FC<LoadingProps> = ({ visible, message = 'Loading...' }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   if (!visible) return null;
 
   return (
@@ -22,23 +27,24 @@ export const Loading: React.FC<LoadingProps> = ({ visible, message = 'Loading...
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: theme.colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    backgroundColor: theme.colors.surface,
-    padding: theme.spacing.lg,
-    borderRadius: theme.borderRadius.lg,
-    alignItems: 'center',
-    minWidth: 150,
-  },
-  message: {
-    marginTop: theme.spacing.md,
-    fontSize: 14,
-    color: theme.colors.text,
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: theme.colors.overlay,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    container: {
+      backgroundColor: theme.colors.surface,
+      padding: theme.spacing.lg,
+      borderRadius: theme.borderRadius.lg,
+      alignItems: 'center',
+      minWidth: 150,
+    },
+    message: {
+      marginTop: theme.spacing.md,
+      fontSize: 14,
+      color: theme.colors.text,
+    },
+  });

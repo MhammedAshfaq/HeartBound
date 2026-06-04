@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '@components/common/Card';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
+import { AppTheme } from '@utils/theme';
 import { formatRelativeTime } from '@utils/helpers';
 import { Notification, NotificationTrigger } from '../types';
 
@@ -42,6 +43,8 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 ];
 
 export const NotificationsScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
 
   const markAsRead = (id: string) => {
@@ -75,21 +78,20 @@ export const NotificationsScreen: React.FC = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Notifications</Text>
-        {unreadCount > 0 && (
-          <TouchableOpacity onPress={markAllAsRead}>
-            <Text style={styles.markAllRead}>Mark all as read</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
+    <SafeAreaView style={screenLayout.safe} edges={['top']}>
       <FlatList
         data={notifications}
         keyExtractor={(item) => item.id}
         renderItem={renderNotification}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={screenLayout.listContent}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          unreadCount > 0 ? (
+            <TouchableOpacity style={styles.listHeader} onPress={markAllAsRead}>
+              <Text style={styles.markAllRead}>Mark all as read</Text>
+            </TouchableOpacity>
+          ) : null
+        }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>🔔</Text>
@@ -101,86 +103,70 @@ export const NotificationsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: theme.spacing.lg,
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-  },
-  markAllRead: {
-    fontSize: 14,
-    color: theme.colors.primary,
-    fontWeight: '600',
-  },
-  list: {
-    padding: theme.spacing.md,
-  },
-  notificationItem: {
-    flexDirection: 'row',
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.sm,
-  },
-  unread: {
-    borderLeftWidth: 3,
-    borderLeftColor: theme.colors.primary,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: theme.spacing.md,
-  },
-  icon: {
-    fontSize: 20,
-  },
-  content: {
-    flex: 1,
-  },
-  notificationTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
-  },
-  message: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.xs,
-    lineHeight: 20,
-  },
-  time: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    paddingVertical: theme.spacing.xxl,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: theme.spacing.md,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    listHeader: {
+      alignItems: 'flex-end',
+      marginBottom: theme.spacing.sm,
+    },
+    markAllRead: {
+      fontSize: 13,
+      color: theme.colors.primary,
+      fontWeight: '600',
+    },
+    notificationItem: {
+      flexDirection: 'row',
+      padding: theme.spacing.md,
+      backgroundColor: theme.colors.surface,
+      borderRadius: theme.borderRadius.lg,
+      marginBottom: theme.spacing.sm,
+      ...theme.shadows.sm,
+    },
+    unread: {
+      borderLeftWidth: 3,
+      borderLeftColor: theme.colors.primary,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primaryLight,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: theme.spacing.md,
+    },
+    icon: {
+      fontSize: 20,
+    },
+    content: {
+      flex: 1,
+    },
+    notificationTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
+    message: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginBottom: theme.spacing.xs,
+      lineHeight: 20,
+    },
+    time: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      paddingVertical: theme.spacing.xl,
+    },
+    emptyIcon: {
+      fontSize: 48,
+      marginBottom: theme.spacing.sm,
+    },
+    emptyText: {
+      fontSize: 16,
+      color: theme.colors.textSecondary,
+    },
+  });

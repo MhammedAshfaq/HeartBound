@@ -8,11 +8,12 @@ import { Loading } from '@components/common/Loading';
 import { useAuth } from '@hooks/useAuth';
 import { useAppDispatch } from '@store/hooks';
 import { setCredentials, setOnboardingComplete } from '@store/slices/authSlice';
-import { theme } from '@utils/theme';
+import { useScreenLayout } from '@hooks/useScreenLayout';
 import { AuthStackParamList } from '@navigation/AuthNavigator';
 import { Gender } from '../types';
 
 export const LoginScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
   const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const dispatch = useAppDispatch();
   const { sendOTP, loading } = useAuth();
@@ -52,7 +53,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={screenLayout.safe}>
       <View style={styles.container}>
         <LoginForm
           onSendOTP={handleSendOTP}
@@ -66,10 +67,6 @@ export const LoginScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
   container: {
     flex: 1,
   },

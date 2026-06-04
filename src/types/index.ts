@@ -165,3 +165,35 @@ export interface QuizState {
   answers: QuizAnswers | null;
   isComplete: boolean;
 }
+
+export enum TodoPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
+export enum TodoCategory {
+  Connection = 'connection',
+  Date = 'date',
+  Gift = 'gift',
+  Communication = 'communication',
+  Other = 'other',
+}
+
+export interface TodoItem {
+  id: string;
+  title: string;
+  description?: string;
+  completed: boolean;
+  priority: TodoPriority;
+  category: TodoCategory;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export type TodoFilter = 'all' | 'active' | 'completed';
+
+export interface TodoState {
+  items: TodoItem[];
+  filter: TodoFilter;
+}

@@ -3,10 +3,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useAppSelector } from '@store/hooks';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { AppTheme } from '@utils/theme';
 
 export const SplashScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const styles = useThemedStyles(createStyles);
   const { isAuthenticated, onboardingComplete } = useAppSelector((state) => state.auth);
   const { isComplete: quizComplete } = useAppSelector((state) => state.quiz);
 
@@ -56,28 +58,29 @@ export const SplashScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  logo: {
-    fontSize: 80,
-    marginBottom: theme.spacing.md,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: theme.spacing.xs,
-  },
-  tagline: {
-    fontSize: 16,
-    color: theme.colors.primaryLight,
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    logoContainer: {
+      alignItems: 'center',
+    },
+    logo: {
+      fontSize: 80,
+      marginBottom: theme.spacing.md,
+    },
+    appName: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: theme.colors.onPrimary,
+      marginBottom: theme.spacing.xs,
+    },
+    tagline: {
+      fontSize: 16,
+      color: theme.colors.primaryLight,
+    },
+  });

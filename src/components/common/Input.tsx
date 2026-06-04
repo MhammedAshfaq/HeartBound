@@ -7,7 +7,9 @@ import {
   TextInputProps,
   TouchableOpacity,
 } from 'react-native';
-import { theme } from '@utils/theme';
+import { useTheme } from '@context/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { AppTheme } from '@utils/theme';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -25,6 +27,9 @@ export const Input: React.FC<InputProps> = ({
   containerStyle,
   ...props
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
+
   return (
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
@@ -44,46 +49,47 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: theme.spacing.md,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
-    backgroundColor: theme.colors.surface,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
-    fontSize: 16,
-    color: theme.colors.text,
-  },
-  inputWithIcon: {
-    paddingLeft: theme.spacing.sm,
-  },
-  inputError: {
-    borderColor: theme.colors.error,
-  },
-  icon: {
-    paddingLeft: theme.spacing.md,
-  },
-  rightIcon: {
-    paddingRight: theme.spacing.md,
-  },
-  errorText: {
-    fontSize: 12,
-    color: theme.colors.error,
-    marginTop: theme.spacing.xs,
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    container: {
+      marginBottom: theme.spacing.md,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: theme.borderRadius.md,
+      backgroundColor: theme.colors.surface,
+    },
+    input: {
+      flex: 1,
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.md,
+      fontSize: 16,
+      color: theme.colors.text,
+    },
+    inputWithIcon: {
+      paddingLeft: theme.spacing.sm,
+    },
+    inputError: {
+      borderColor: theme.colors.error,
+    },
+    icon: {
+      paddingLeft: theme.spacing.md,
+    },
+    rightIcon: {
+      paddingRight: theme.spacing.md,
+    },
+    errorText: {
+      fontSize: 12,
+      color: theme.colors.error,
+      marginTop: theme.spacing.xs,
+    },
+  });

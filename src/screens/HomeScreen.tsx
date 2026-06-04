@@ -11,11 +11,15 @@ import { Card } from '@components/common/Card';
 import { Button } from '@components/common/Button';
 import { useSuggestions } from '@hooks/useSuggestions';
 import { useMood } from '@hooks/useMood';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
+import { AppTheme } from '@utils/theme';
 import { getMoodEmoji, daysUntilAnniversary } from '@utils/helpers';
 import { MoodType, DayType, SuggestionType } from '../types';
 
 export const HomeScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
   const { current, acceptSuggestion, completeSuggestion, skipSuggestion, fetchDailySuggestion } =
     useSuggestions();
   const { current: currentMood, logMood, fetchMoodHistory } = useMood();
@@ -39,7 +43,7 @@ export const HomeScreen: React.FC = () => {
   const daysUntil = daysUntilAnniversary(new Date('2025-06-15'));
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={screenLayout.safe} edges={['top']}>
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <View>
@@ -128,24 +132,21 @@ export const HomeScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
   content: {
-    padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl,
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
   greeting: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '700',
     color: theme.colors.text,
   },
   subtitle: {
@@ -268,4 +269,4 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     marginTop: theme.spacing.xs,
   },
-});
+  });

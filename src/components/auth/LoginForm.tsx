@@ -17,7 +17,10 @@ import { Input } from '@components/common/Input';
 import { Button } from '@components/common/Button';
 import { phoneSchema } from '@utils/validation';
 import { countries, Country } from '@utils/countries';
-import { theme } from '@utils/theme';
+import { useTheme } from '@context/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { AppTheme } from '@utils/theme';
+import { screenPadding } from '@hooks/useScreenLayout';
 
 interface LoginFormProps {
   onSendOTP: (phone: string) => void;
@@ -58,6 +61,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   onSocialLogin,
   loading = false,
 }) => {
+  const { theme } = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [selectedCountry, setSelectedCountry] = useState<Country>(
     countries.find((c) => c.code === 'IN') || countries[0]
   );
@@ -147,7 +152,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               style={styles.socialIconButton}
               onPress={() => onSocialLogin(btn.provider)}
             >
-              <Ionicons name={btn.icon} size={24} color={btn.color} />
+              <Ionicons
+                name={btn.icon}
+                size={24}
+                color={btn.provider === 'apple' ? theme.colors.text : btn.color}
+              />
             </TouchableOpacity>
           ))}
         </View>
@@ -198,14 +207,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
   flex: {
     flex: 1,
     backgroundColor: theme.colors.background,
   },
   container: {
     flexGrow: 1,
-    padding: theme.spacing.lg,
+    padding: screenPadding,
     justifyContent: 'center',
   },
   header: {
@@ -329,7 +339,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing.lg,
+    padding: screenPadding,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
@@ -345,7 +355,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: screenPadding,
     gap: 12,
   },
   countryItemSelected: {
@@ -364,4 +374,4 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     fontWeight: '500',
   },
-});
+  });

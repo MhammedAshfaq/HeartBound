@@ -6,12 +6,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { OTPInput } from '@components/auth/OTPInput';
 import { Loading } from '@components/common/Loading';
 import { useAuth } from '@hooks/useAuth';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
 import { AuthStackParamList } from '@navigation/AuthNavigator';
-import { theme } from '@utils/theme';
+import { AppTheme } from '@utils/theme';
 
 type OTPRouteProp = RouteProp<AuthStackParamList, 'OTPVerification'>;
 
 export const OTPVerificationScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
   const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const route = useRoute<OTPRouteProp>();
   const { loginWithOTP, sendOTP, loading } = useAuth();
@@ -44,8 +48,8 @@ export const OTPVerificationScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+    <SafeAreaView style={screenLayout.safe} edges={['bottom']}>
+      <View style={[screenLayout.staticContent, styles.content]}>
         <View style={styles.header}>
           <View style={styles.iconContainer}>
             <Text style={styles.icon}>✉️</Text>
@@ -70,53 +74,48 @@ export const OTPVerificationScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: theme.spacing.lg,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: theme.spacing.xl,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: theme.colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  icon: {
-    fontSize: 36,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  phoneText: {
-    fontWeight: '700',
-    color: theme.colors.primary,
-  },
-  seedHint: {
-    fontSize: 13,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    marginTop: theme.spacing.sm,
-    fontStyle: 'italic',
-  },
-});
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
+    content: {
+      justifyContent: 'center',
+    },
+    header: {
+      alignItems: 'center',
+      marginBottom: theme.spacing.xl,
+    },
+    iconContainer: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: theme.colors.primaryLight,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: theme.spacing.md,
+    },
+    icon: {
+      fontSize: 36,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
+    subtitle: {
+      fontSize: 15,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+    phoneText: {
+      fontWeight: '700',
+      color: theme.colors.primary,
+    },
+    seedHint: {
+      fontSize: 13,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginTop: theme.spacing.sm,
+      fontStyle: 'italic',
+    },
+  });

@@ -17,12 +17,14 @@ import suggestionReducer from './slices/suggestionSlice';
 import moodReducer from './slices/moodSlice';
 import partnerReducer from './slices/partnerSlice';
 import quizReducer from './slices/quizSlice';
+import settingsReducer from './slices/settingsSlice';
+import todoReducer from './slices/todoSlice';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  whitelist: ['auth', 'user', 'mood', 'quiz'],
+  whitelist: ['auth', 'user', 'mood', 'quiz', 'settings', 'todo'],
 };
 
 const rootReducer = combineReducers({
@@ -32,6 +34,8 @@ const rootReducer = combineReducers({
   mood: moodReducer,
   partner: partnerReducer,
   quiz: quizReducer,
+  settings: settingsReducer,
+  todo: todoReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

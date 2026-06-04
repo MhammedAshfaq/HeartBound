@@ -12,6 +12,17 @@ This application is designed to help users improve their relationships through s
 
 ---
 
+## 📱 Screen documentation
+
+All implemented screens are documented under **[docs/screens/](./screens/README.md)**:
+
+- Auth flow: [Splash](./screens/splash.md), [Login](./screens/login.md), [OTP](./screens/otp-verification.md), [Setup Profile](./screens/onboarding.md), [Quiz](./screens/quiz.md)
+- Main tabs: [Home](./screens/home.md), [To-Do](./screens/todo.md), [Notifications](./screens/notifications.md), [Gifts](./screens/gifts.md), [Analytics](./screens/analytics.md), [Profile](./screens/profile.md)
+
+Includes navigation flow diagram, shared layout tokens, and per-screen UI / state / actions.
+
+---
+
 ## 🛠️ Prerequisites
 
 - Node.js >= 18

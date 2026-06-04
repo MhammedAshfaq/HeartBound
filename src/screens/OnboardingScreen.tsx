@@ -16,7 +16,9 @@ import { Button } from '@components/common/Button';
 import { Loading } from '@components/common/Loading';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@hooks/useAuth';
-import { theme } from '@utils/theme';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
+import { AppTheme } from '@utils/theme';
 import { GENDER_OPTIONS, RELATIONSHIP_TYPES } from '@utils/constants';
 import { Gender, RelationshipType } from '../types';
 
@@ -34,6 +36,8 @@ interface RelationshipDetailsForm {
 }
 
 export const OnboardingScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
   const navigation = useNavigation<any>();
   const { updateProfile, completeOnboarding } = useAuth();
   const [step, setStep] = useState<Step>(1);
@@ -308,8 +312,8 @@ export const OnboardingScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={screenLayout.safeSurface} edges={['bottom']}>
+      <ScrollView contentContainerStyle={screenLayout.scrollContent}>
         {renderStepIndicator()}
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
@@ -320,12 +324,8 @@ export const OnboardingScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: theme.spacing.lg,
-    backgroundColor: '#FFFFFF',
-  },
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
   stepIndicator: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -478,4 +478,4 @@ const styles = StyleSheet.create({
     color: theme.colors.error,
     marginTop: theme.spacing.xs,
   },
-});
+  });

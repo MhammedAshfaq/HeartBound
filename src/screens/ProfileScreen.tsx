@@ -14,7 +14,11 @@ import { Card } from '@components/common/Card';
 import { Button } from '@components/common/Button';
 import { useAuth } from '@hooks/useAuth';
 import { useAppSelector } from '@store/hooks';
-import { theme } from '@utils/theme';
+import { useTheme } from '@context/ThemeContext';
+import { useThemedStyles } from '@hooks/useThemedStyles';
+import { useScreenLayout } from '@hooks/useScreenLayout';
+import { ColorMode } from '@store/slices/settingsSlice';
+import { AppTheme } from '@utils/theme';
 import { formatDate } from '@utils/helpers';
 import { differenceInMonths } from 'date-fns';
 
@@ -44,7 +48,16 @@ const getDuration = (anniversary: Date): string => {
   return result.trim();
 };
 
+const COLOR_MODE_OPTIONS: { mode: ColorMode; label: string }[] = [
+  { mode: 'light', label: 'Light' },
+  { mode: 'dark', label: 'Dark' },
+  { mode: 'system', label: 'System' },
+];
+
 export const ProfileScreen: React.FC = () => {
+  const screenLayout = useScreenLayout();
+  const styles = useThemedStyles(createStyles);
+  const { theme, colorMode, setColorMode } = useTheme();
   const navigation = useNavigation<any>();
   const { user, logout } = useAuth();
   const { partner } = useAppSelector((state) => state.partner);
@@ -82,7 +95,7 @@ export const ProfileScreen: React.FC = () => {
   }, [relationshipDetails]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={screenLayout.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <View style={styles.avatar}>
@@ -189,6 +202,30 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </Card>
 
+        <Card title="🎨 Appearance">
+          <View style={styles.themeOptions}>
+            {COLOR_MODE_OPTIONS.map(({ mode, label }) => (
+              <TouchableOpacity
+                key={mode}
+                style={[
+                  styles.themeOption,
+                  colorMode === mode && styles.themeOptionActive,
+                ]}
+                onPress={() => setColorMode(mode)}
+              >
+                <Text
+                  style={[
+                    styles.themeOptionText,
+                    colorMode === mode && styles.themeOptionTextActive,
+                  ]}
+                >
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Card>
+
         <Card title="🧠 Preferences">
           <TouchableOpacity
             style={styles.row}
@@ -233,7 +270,9 @@ export const ProfileScreen: React.FC = () => {
                 true: theme.colors.primaryLight,
               }}
               thumbColor={
-                notificationsEnabled ? theme.colors.primary : '#f4f3f4'
+                notificationsEnabled
+                  ? theme.colors.primary
+                  : theme.colors.switchThumbOff
               }
             />
           </View>
@@ -310,14 +349,35 @@ export const ProfileScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
+const createStyles = (theme: AppTheme) =>
+  StyleSheet.create({
   content: {
-    padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl,
+    padding: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+  },
+  themeOptions: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+  },
+  themeOption: {
+    flex: 1,
+    paddingVertical: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.md,
+    alignItems: 'center',
+  },
+  themeOptionActive: {
+    backgroundColor: theme.colors.primaryLight,
+    borderColor: theme.colors.primary,
+  },
+  themeOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textSecondary,
+  },
+  themeOptionTextActive: {
+    color: theme.colors.primary,
   },
   header: {
     flexDirection: 'row',
@@ -337,7 +397,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: theme.colors.onPrimary,
   },
   headerInfo: {
     flex: 1,
@@ -474,4 +534,4 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     paddingVertical: theme.spacing.lg,
   },
-});
+  });
