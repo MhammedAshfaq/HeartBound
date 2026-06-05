@@ -1,272 +1,185 @@
-import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card } from '@components/common/Card';
-import { Button } from '@components/common/Button';
-import { useSuggestions } from '@hooks/useSuggestions';
-import { useMood } from '@hooks/useMood';
 import { useThemedStyles } from '@hooks/useThemedStyles';
 import { useScreenLayout } from '@hooks/useScreenLayout';
+import { useTheme } from '@context/ThemeContext';
 import { AppTheme } from '@utils/theme';
-import { getMoodEmoji, daysUntilAnniversary } from '@utils/helpers';
-import { MoodType, DayType, SuggestionType } from '../types';
+import { getMoodEmoji } from '@utils/helpers';
+import { StatCard } from '@components/home/StatCard';
+import { SuggestionCard } from '@components/home/SuggestionCard';
+import { QuickActions } from '@components/home/QuickActions';
+import { MoodSelector } from '@components/home/MoodSelector';
+import { UpcomingList } from '@components/home/UpcomingList';
+import { MoodType } from '../types';
+
+const MESSAGES = [
+  "Small actions build strong relationships 💛",
+  "You're doing great — keep going 👏",
+  "Love is in the little things 🌸",
+  "Every moment counts — make it special ✨",
+  "Your effort makes a difference 💪",
+];
+
+const MOCK_SUGGESTIONS = [
+  "Send a thoughtful message to your partner ❤️",
+  "Plan a surprise date night this weekend 🌙",
+  "Write down three things you appreciate about them 📝",
+  "Cook their favorite meal together 🍳",
+  "Give them a genuine compliment today 💛",
+  "Watch a movie they've been wanting to see 🎬",
+  "Take a walk together and talk about your dreams 🌅",
+  "Send a voice note saying 'I love you' 🎵",
+  "Do one of their chores without being asked ✨",
+  "Plan a future trip together, even just in conversation ✈️",
+];
 
 export const HomeScreen: React.FC = () => {
   const screenLayout = useScreenLayout();
   const styles = useThemedStyles(createStyles);
-  const { current, acceptSuggestion, completeSuggestion, skipSuggestion, fetchDailySuggestion } =
-    useSuggestions();
-  const { current: currentMood, logMood, fetchMoodHistory } = useMood();
+  const { theme } = useTheme();
+
+  const [greetingIndex, setGreetingIndex] = useState(0);
+  const [currentSuggestion, setCurrentSuggestion] = useState(
+    () => MOCK_SUGGESTIONS[Math.floor(Math.random() * MOCK_SUGGESTIONS.length)]
+  );
+  const [streak, setStreak] = useState(5);
+  const [selectedMood, setSelectedMood] = useState<MoodType | null>(null);
+  const [completedToday, setCompletedToday] = useState(false);
+
+  const messageOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    fetchDailySuggestion(currentMood || MoodType.Neutral, DayType.Weekday);
-    fetchMoodHistory(7);
+    const interval = setInterval(() => {
+      Animated.sequence([
+        Animated.timing(messageOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(messageOpacity, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      setGreetingIndex((prev) => (prev + 1) % MESSAGES.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [messageOpacity]);
+
+  const handleMarkDone = useCallback(() => {
+    if (!completedToday) {
+      setStreak((s) => s + 1);
+      setCompletedToday(true);
+    }
+  }, [completedToday]);
+
+  const handleTryAnother = useCallback(() => {
+    const remaining = MOCK_SUGGESTIONS.filter((s) => s !== currentSuggestion);
+    const next = remaining[Math.floor(Math.random() * remaining.length)];
+    setCurrentSuggestion(next);
+  }, [currentSuggestion]);
+
+  const handleMoodSelect = useCallback((mood: MoodType) => {
+    setSelectedMood(mood);
   }, []);
-
-  const moods: MoodType[] = [
-    MoodType.Happy,
-    MoodType.Excited,
-    MoodType.Neutral,
-    MoodType.Stressed,
-    MoodType.Sad,
-    MoodType.Angry,
-  ];
-
-  const relationshipScore = 75;
-  const streakDays = 5;
-  const daysUntil = daysUntilAnniversary(new Date('2025-06-15'));
 
   return (
     <SafeAreaView style={screenLayout.safe} edges={['top']}>
-    <ScrollView contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Good Morning!</Text>
-          <Text style={styles.subtitle}>Let's strengthen your bond today</Text>
-        </View>
-        <TouchableOpacity style={styles.moodButton}>
-          <Text style={styles.moodEmoji}>
-            {currentMood ? getMoodEmoji(currentMood) : '😊'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.statsRow}>
-        <Card style={styles.statCard}>
-          <Text style={styles.statValue}>{relationshipScore}%</Text>
-          <Text style={styles.statLabel}>Relationship Score</Text>
-        </Card>
-        <Card style={styles.statCard}>
-          <Text style={styles.statValue}>{streakDays}</Text>
-          <Text style={styles.statLabel}>Day Streak</Text>
-        </Card>
-      </View>
-
-      <Card title="Today's Suggestion" style={styles.suggestionCard}>
-        {current ? (
-          <>
-            <Text style={styles.suggestionTitle}>{current.title}</Text>
-            <Text style={styles.suggestionDescription}>{current.description}</Text>
-            <View style={styles.suggestionActions}>
-              <Button
-                title="Accept"
-                onPress={() => acceptSuggestion(current.id)}
-                style={styles.suggestionButton}
-              />
-              <Button
-                title="Done"
-                onPress={() => completeSuggestion(current.id)}
-                variant="secondary"
-                style={styles.suggestionButton}
-              />
-              <Button
-                title="Skip"
-                onPress={() => skipSuggestion(current.id)}
-                variant="text"
-                style={styles.suggestionButton}
-              />
-            </View>
-          </>
-        ) : (
-          <Text style={styles.noSuggestion}>Loading suggestion...</Text>
-        )}
-      </Card>
-
-      <Card title="How are you feeling?" style={styles.moodCard}>
-        <View style={styles.moodSelector}>
-          {moods.map((mood) => (
-            <TouchableOpacity
-              key={mood}
-              style={[
-                styles.moodOption,
-                currentMood === mood && styles.moodOptionSelected,
-              ]}
-              onPress={() => logMood(mood)}
-            >
-              <Text style={styles.moodOptionEmoji}>{getMoodEmoji(mood)}</Text>
-              <Text style={styles.moodOptionLabel}>{mood}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </Card>
-
-      <Card title="Upcoming" style={styles.upcomingCard}>
-        <View style={styles.upcomingItem}>
-          <Text style={styles.upcomingIcon}>🎉</Text>
-          <View style={styles.upcomingText}>
-            <Text style={styles.upcomingTitle}>Anniversary</Text>
-            <Text style={styles.upcomingSubtitle}>
-              {daysUntil} days away
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.greeting}>Good Morning!</Text>
+            <Animated.Text style={[styles.dynamicMessage, { opacity: messageOpacity }]}>
+              {MESSAGES[greetingIndex]}
+            </Animated.Text>
+          </View>
+          <View style={[styles.moodCircle, { backgroundColor: theme.colors.primary + '20' }]}>
+            <Text style={styles.moodEmoji}>
+              {selectedMood ? getMoodEmoji(selectedMood) : '😊'}
             </Text>
           </View>
         </View>
-      </Card>
-    </ScrollView>
+
+        <View style={styles.statsRow}>
+          <StatCard
+            value="75%"
+            label="Relationship Score"
+            subtitle="Strong connection 💛"
+            accentColor={theme.colors.primary}
+          />
+          <StatCard
+            value={streak}
+            label="Day Streak"
+            subtitle={completedToday ? 'Completed today ✅' : 'Keep it going!'}
+            accentColor={theme.colors.secondary}
+          />
+        </View>
+
+        <SuggestionCard
+          suggestion={currentSuggestion}
+          completedToday={completedToday}
+          onMarkDone={handleMarkDone}
+          onTryAnother={handleTryAnother}
+        />
+
+        <QuickActions />
+
+        <MoodSelector
+          selectedMood={selectedMood}
+          onMoodSelect={handleMoodSelect}
+        />
+
+        <UpcomingList />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const createStyles = (theme: AppTheme) =>
   StyleSheet.create({
-  content: {
-    padding: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  greeting: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: theme.colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
-  },
-  moodButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: theme.colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  moodEmoji: {
-    fontSize: 28,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: theme.spacing.lg,
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-    marginBottom: theme.spacing.xs,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-  },
-  suggestionCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  suggestionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.sm,
-  },
-  suggestionDescription: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.md,
-    lineHeight: 20,
-  },
-  suggestionActions: {
-    flexDirection: 'row',
-    gap: theme.spacing.sm,
-  },
-  suggestionButton: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-  },
-  noSuggestion: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    paddingVertical: theme.spacing.lg,
-  },
-  moodCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  moodSelector: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.sm,
-  },
-  moodOption: {
-    alignItems: 'center',
-    padding: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
-    minWidth: 70,
-  },
-  moodOptionSelected: {
-    backgroundColor: theme.colors.primaryLight,
-    borderColor: theme.colors.primary,
-  },
-  moodOptionEmoji: {
-    fontSize: 28,
-    marginBottom: theme.spacing.xs,
-  },
-  moodOptionLabel: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-    textTransform: 'capitalize',
-  },
-  upcomingCard: {
-    marginBottom: theme.spacing.lg,
-  },
-  upcomingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: theme.spacing.sm,
-  },
-  upcomingIcon: {
-    fontSize: 24,
-    marginRight: theme.spacing.md,
-  },
-  upcomingText: {
-    flex: 1,
-  },
-  upcomingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-  upcomingSubtitle: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
-  },
+    content: {
+      padding: theme.spacing.md,
+      paddingBottom: theme.spacing.xxl,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: theme.spacing.lg,
+    },
+    headerLeft: {
+      flex: 1,
+      marginRight: theme.spacing.md,
+    },
+    greeting: {
+      fontSize: 26,
+      fontWeight: '700',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xs,
+    },
+    dynamicMessage: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      lineHeight: 20,
+    },
+    moodCircle: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    moodEmoji: {
+      fontSize: 26,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      gap: theme.spacing.md,
+      marginBottom: theme.spacing.lg,
+    },
   });
