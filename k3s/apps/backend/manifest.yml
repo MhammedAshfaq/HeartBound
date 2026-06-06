@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-prod
+  namespace: default
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: backend-prod
+  template:
+    metadata:
+      labels:
+        app: backend-prod
+    spec:
+      containers:
+        - name: backend
+          image: healthy-relationship/backend:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: backend-configmap
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-prod
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: backend-prod

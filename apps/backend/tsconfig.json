@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2020",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@common/*": ["common/*"],
+      "@config/*": ["config/*"],
+      "@db/*": ["db/*"],
+      "@redis/*": ["redis/*"],
+      "@logger/*": ["logger/*"],
+      "@otel/*": ["otel/*"],
+      "@interceptors/*": ["interceptors/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@bg/*": ["background/*"],
+      "@health/*": ["api/health/*"],
+      "@auth/*": ["api/auth/*"],
+      "@admin/*": ["api/admin/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

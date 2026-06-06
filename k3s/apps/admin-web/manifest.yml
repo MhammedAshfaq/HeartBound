@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-web-prod
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-web-prod
+  template:
+    metadata:
+      labels:
+        app: admin-web-prod
+    spec:
+      containers:
+        - name: admin-web
+          image: healthy-relationship/admin-web:latest
+          ports:
+            - containerPort: 3003
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-web-prod
+  namespace: default
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3003
+      targetPort: 3003
+  selector:
+    app: admin-web-prod

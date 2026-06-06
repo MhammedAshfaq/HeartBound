@@ -31,7 +31,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
 }
 expoAutolinking.useExpoModules()
 
-rootProject.name = 'Relationship Care'
+rootProject.name = 'healthy-relationship'
 
 expoAutolinking.useExpoVersionCatalog()
 
