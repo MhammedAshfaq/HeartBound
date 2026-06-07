@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Image,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
@@ -20,6 +21,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/useToast';
 import { colors, spacing, borderRadius } from '@/lib/theme';
+import { Images } from '@/constants/Images';
 import { countries, type Country } from '@/constants/Countries';
 
 export default function LoginScreen() {
@@ -95,8 +97,12 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <View style={[styles.logoContainer, { backgroundColor: c.primary + '20' }]}>
-              <Ionicons name="heart" size={48} color={c.primary} />
+            <View style={styles.logoContainer}>
+              <Image
+                source={Images.logo}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
             <Text style={[styles.title, { color: c.primary }]}>{t('auth.appTitle')}</Text>
             <Text style={[styles.subtitle, { color: c.muted }]}>{t('auth.appSubtitle')}</Text>
@@ -250,12 +256,17 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   logoContainer: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: 90,
+    height: 90,
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.md,
+  },
+  logoImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 50,
   },
   title: {
     fontSize: 28,

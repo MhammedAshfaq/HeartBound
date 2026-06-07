@@ -9,7 +9,7 @@ export function AchievementsGrid() {
   const c = colors(isDark);
 
   return (
-    <View className="px-6 mt-6">
+    <View className="px-4 mt-6">
       <Text style={{ color: c.text }} className="text-lg font-bold mb-3">Achievements</Text>
       <View className="flex-row flex-wrap">
         {ACHIEVEMENTS.map((achievement) => (

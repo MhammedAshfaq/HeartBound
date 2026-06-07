@@ -1,11 +1,12 @@
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { colors } from '@/lib/theme';
+import { colors, shadows } from '@/lib/theme';
 
 export function AppearanceSelector() {
   const { isDark, setMode } = useTheme();
   const c = colors(isDark);
+  const s = shadows(isDark);
   const activeColor = isDark ? '#60a5fa' : '#3b82f6';
 
   const options = [
@@ -14,7 +15,7 @@ export function AppearanceSelector() {
   ];
 
   return (
-    <View className="px-6 mt-6">
+    <View className="px-4 mt-6">
       <Text style={{ color: c.text }} className="text-lg font-bold mb-3">Appearance</Text>
       <View className="flex-row gap-3">
         {options.map((option) => {
@@ -24,7 +25,7 @@ export function AppearanceSelector() {
               key={option.mode}
               onPress={() => setMode(option.mode)}
               className="flex-1 flex-row items-center gap-2 rounded-2xl px-4 py-3.5"
-              style={{ backgroundColor: c.card }}
+              style={{ backgroundColor: c.card, ...s.sm }}
             >
               <Ionicons
                 name={option.icon}

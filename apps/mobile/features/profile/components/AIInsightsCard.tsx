@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
+import { shadows } from '@/lib/theme';
 
 interface AIInsightsCardProps {
   streak: number;
@@ -9,6 +10,7 @@ interface AIInsightsCardProps {
 
 export function AIInsightsCard({ streak, total }: AIInsightsCardProps) {
   const { isDark } = useTheme();
+  const s = shadows(isDark);
   const tintBg = isDark ? '#2d1b4e' : '#F3E5F5';
   const tintText = isDark ? '#d4bfff' : '#6a1b9a';
 
@@ -22,8 +24,8 @@ export function AIInsightsCard({ streak, total }: AIInsightsCardProps) {
   }
 
   return (
-    <View className="px-6 mt-6">
-      <View className="rounded-2xl p-4" style={{ backgroundColor: tintBg }}>
+    <View className="px-4 mt-6">
+      <View className="rounded-2xl p-4" style={{ backgroundColor: tintBg, ...s.sm }}>
         <View className="flex-row items-center gap-2 mb-2">
           <Ionicons name="sparkles" size={18} color={tintText} />
           <Text style={{ color: tintText }} className="font-bold text-sm">Personalized for you</Text>

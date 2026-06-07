@@ -10,6 +10,7 @@ import {
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
 import 'react-native-reanimated';
 import {
   PlusJakartaSans_200ExtraLight,
@@ -29,13 +30,23 @@ import { SessionProvider } from '@/contexts/SessionContext';
 import QueryClientWithToken from '@/components/QueryClientWithToken';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ApiProvider } from '@/contexts/ApiContext';
-import { ThemeProvider as AppThemeProvider } from '@/contexts/ThemeContext';
+import { ThemeProvider as AppThemeProvider, useThemeMode } from '@/contexts/ThemeContext';
 import { MemoriesProvider } from '@/features/memories/context/MemoriesContext';
 
 export { ErrorBoundary } from 'expo-router';
 export const unstable_settings = {
   initialRouteName: '(auth)',
 };
+
+function ThemeAwareStatusBar() {
+  const { isDark } = useThemeMode();
+  return (
+    <StatusBar
+      barStyle={isDark ? 'light-content' : 'dark-content'}
+      backgroundColor={isDark ? '#0c0a09' : '#f5f5f4'}
+    />
+  );
+}
 
 export default function RootLayout() {
   const [appReady, setAppReady] = useState(false);
@@ -62,6 +73,7 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider mode="system">
       <AppThemeProvider>
+        <ThemeAwareStatusBar />
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <LocalizationProvider>
             <SessionProvider>

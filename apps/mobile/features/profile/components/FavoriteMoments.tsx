@@ -1,16 +1,17 @@
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { colors } from '@/lib/theme';
+import { colors, shadows } from '@/lib/theme';
 import { MOCK_MEMORIES } from '@/features/profile/types/profile.types';
 
 export function FavoriteMoments() {
   const { isDark } = useTheme();
   const c = colors(isDark);
+  const s = shadows(isDark);
   const favorites = MOCK_MEMORIES.filter((m) => m.isFavorite);
 
   return (
-    <View className="px-6 mt-6">
+    <View className="px-4 mt-6">
       <View className="flex-row items-center justify-between mb-3">
         <Text style={{ color: c.text }} className="text-lg font-bold">Favorite Moments</Text>
         <Pressable onPress={() => Alert.alert('Coming Soon')}>
@@ -19,7 +20,7 @@ export function FavoriteMoments() {
       </View>
 
       {favorites.length === 0 ? (
-        <View className="rounded-2xl py-8 items-center" style={{ backgroundColor: c.card }}>
+        <View className="rounded-2xl py-8 items-center" style={{ backgroundColor: c.card, ...s.sm }}>
           <Ionicons name="images-outline" size={32} color={c.muted} />
           <Text style={{ color: c.muted }} className="text-sm mt-2">No favorite moments yet</Text>
         </View>
@@ -29,7 +30,7 @@ export function FavoriteMoments() {
             <View
               key={memory.id}
               className="w-36 h-40 rounded-2xl mr-3 p-3 justify-between"
-              style={{ backgroundColor: c.card }}
+              style={{ backgroundColor: c.card, ...s.sm }}
             >
               <View className="flex-1 items-center justify-center">
                 <Ionicons name="heart" size={28} color="#e11d48" />

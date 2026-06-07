@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { colors } from '@/lib/theme';
+import { colors, shadows } from '@/lib/theme';
 
 const SETTINGS_ROWS = [
   { icon: 'person-outline' as const, label: 'Account' },
@@ -13,11 +13,12 @@ const SETTINGS_ROWS = [
 export function SettingsCard() {
   const { isDark } = useTheme();
   const c = colors(isDark);
+  const s = shadows(isDark);
 
   return (
-    <View className="px-6 mt-6">
+    <View className="px-4 mt-6">
       <Text style={{ color: c.text }} className="text-lg font-bold mb-3">Settings</Text>
-      <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: c.card }}>
+      <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: c.card, ...s.sm }}>
         {SETTINGS_ROWS.map((row) => (
           <Pressable
             key={row.label}

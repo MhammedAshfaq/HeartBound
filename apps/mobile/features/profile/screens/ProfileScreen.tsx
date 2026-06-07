@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { ScrollView, View, Text, Animated } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '@/hooks/useAuth';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { View, ScrollView, Text, Animated, Alert } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
 import { colors } from '@/lib/theme';
+import { DUMMY_PROFILE } from '@/features/profile/types/profile.types';
+import type { ProfileBasicInfo } from '@/features/profile/types/profile.types';
 import { ProfileHeader } from '@/features/profile/components/ProfileHeader';
-import { RelationshipSnapshot } from '@/features/profile/components/RelationshipSnapshot';
 import { FavoriteMoments } from '@/features/profile/components/FavoriteMoments';
 import { ActivityInsights } from '@/features/profile/components/ActivityInsights';
 import { AIInsightsCard } from '@/features/profile/components/AIInsightsCard';
@@ -17,66 +17,99 @@ import { LogoutButton } from '@/features/profile/components/LogoutButton';
 
 const STATS = { completed: 42, total: 60, streak: 5 };
 
-export default function ProfileScreen() {
-  const { isDark } = useTheme();
-  const c = colors(isDark);
-  const { user } = useAuth();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+function AnimatedSection({ children, delay }: { children: React.ReactNode; delay: number }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 600,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 400,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 400,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [opacity, translateY, delay]);
 
   return (
-    <SafeAreaView style={{ backgroundColor: c.background }} className="flex-1">
-      <Animated.View style={{ opacity: fadeAnim }} className="flex-1">
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ paddingBottom: 48 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <ProfileHeader
-            name={user?.name ?? 'User'}
-            partnerName={user?.partnerName}
-            anniversaryDate={user?.anniversaryDate}
-            streak={STATS.streak}
-            completedActionsCount={5}
-            statsCompleted={STATS.completed}
-          />
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      {children}
+    </Animated.View>
+  );
+}
 
-          <View className="h-6" />
+export default function ProfileScreen() {
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const c = colors(isDark);
+  const [profile, setProfile] = useState<ProfileBasicInfo>(DUMMY_PROFILE);
 
-          <RelationshipSnapshot completed={STATS.completed} total={STATS.total} />
+  const handleAvatarChange = useCallback((uri: string) => {
+    setProfile((prev) => ({ ...prev, avatar: uri }));
+  }, []);
 
+  const handleEditProfile = useCallback(() => {
+    Alert.alert(t('profile.edit'), t('profile.editProfileHint'));
+  }, [t]);
+
+  return (
+    <View style={{ backgroundColor: c.background }} className="flex-1">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 4 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <ProfileHeader profile={profile} onAvatarChange={handleAvatarChange} onEditProfile={handleEditProfile} />
+
+        <View className="h-1" />
+
+        <AnimatedSection delay={100}>
           <FavoriteMoments />
+        </AnimatedSection>
 
+        <AnimatedSection delay={200}>
           <ActivityInsights
             completed={STATS.completed}
             total={STATS.total}
             streak={STATS.streak}
           />
+        </AnimatedSection>
 
+        <AnimatedSection delay={300}>
           <AIInsightsCard streak={STATS.streak} total={STATS.total} />
+        </AnimatedSection>
 
+        <AnimatedSection delay={400}>
           <AchievementsGrid />
+        </AnimatedSection>
 
+        <AnimatedSection delay={500}>
           <SettingsCard />
+        </AnimatedSection>
 
+        <AnimatedSection delay={600}>
           <AppearanceSelector />
+        </AnimatedSection>
 
+        <AnimatedSection delay={700}>
           <NotificationToggle />
+        </AnimatedSection>
 
+        <AnimatedSection delay={800}>
           <LogoutButton />
+        </AnimatedSection>
 
-          <View className="items-center pt-6 pb-4">
-            <Text style={{ color: c.muted }} className="text-xs">Relationship Care v1.0.0</Text>
-          </View>
-        </ScrollView>
-      </Animated.View>
-    </SafeAreaView>
+        <Text style={{ color: c.muted }} className="text-xs text-center pb-1">
+          {t('profile.appVersion')}
+        </Text>
+      </ScrollView>
+    </View>
   );
 }

@@ -1,11 +1,14 @@
-import React, { useEffect, useRef } from 'react';
-import { Text, Animated, StyleSheet } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Text, Animated, Image } from 'react-native';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Images } from '@/constants/Images';
 
 interface AnimatedSplashProps {
   onAnimationFinish: (cancelled: boolean) => void;
 }
 
 export function AnimatedSplash({ onAnimationFinish }: AnimatedSplashProps) {
+  const { t } = useTranslation();
   const opacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -20,28 +23,17 @@ export function AnimatedSplash({ onAnimationFinish }: AnimatedSplashProps) {
   }, [opacity, onAnimationFinish]);
 
   return (
-    <Animated.View style={[styles.container, { opacity }]}>
-      <Text style={styles.title}>HeartBond</Text>
-      <Text style={styles.subtitle}>Grow closer, every single day</Text>
+    <Animated.View
+      className="flex-1 items-center justify-center"
+      style={{ opacity, backgroundColor: '#e11d48' }}
+    >
+      <Image
+        source={Images.logo}
+        className="h-24 w-24 mb-4"
+        resizeMode="contain"
+      />
+      <Text className="text-white text-3xl font-bold">{t('auth.appTitle')}</Text>
+      <Text className="text-white/80 text-base mt-2">{t('auth.appSubtitle')}</Text>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#e11d48',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#fff',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 8,
-  },
-});

@@ -1,6 +1,7 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import { Platform } from 'react-native';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
 import Colors from '@/constants/Colors';
@@ -23,8 +24,16 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: Colors[isDark ? 'dark' : 'light'].background,
             borderTopColor: Colors[isDark ? 'dark' : 'light'].border,
+            paddingBottom: 0,
+            height: Platform.OS === 'ios' ? 54 : 60,
           },
-
+          tabBarItemStyle: {
+            paddingVertical: 0,
+          },
+          tabBarLabelStyle: {
+            paddingBottom: 0,
+            marginBottom: 0,
+          },
         }}
       >
       <Tabs.Screen

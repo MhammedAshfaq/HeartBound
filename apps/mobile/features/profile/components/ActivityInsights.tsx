@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
-import { colors } from '@/lib/theme';
+import { colors, shadows } from '@/lib/theme';
 import {
   ActionCategory,
   ACTION_CATEGORY_META,
@@ -29,12 +29,13 @@ function getMostActiveCategory(): { emoji: string; label: string } {
 export function ActivityInsights({ completed, total, streak }: ActivityInsightsProps) {
   const { isDark } = useTheme();
   const c = colors(isDark);
+  const s = shadows(isDark);
   const topCategory = getMostActiveCategory();
 
   return (
-    <View className="px-6 mt-6">
+    <View className="px-4 mt-6">
       <Text style={{ color: c.text }} className="text-lg font-bold mb-3">Activity Insights</Text>
-      <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: c.card }}>
+      <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: c.card, ...s.sm }}>
         <InsightRow
           icon="checkmark-circle"
           iconColor="#16a34a"

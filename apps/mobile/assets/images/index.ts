@@ -4,4 +4,5 @@ export const Images = {
   adaptiveIcon: require('./adaptive-icon.png'),
   favicon: require('./favicon.png'),
   avatarPlaceholder: require('./avatar-placeholder.png'),
+  logo: require('./logo.jpeg'),
 } as const;
