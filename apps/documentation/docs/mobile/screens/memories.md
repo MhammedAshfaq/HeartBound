@@ -5,31 +5,52 @@
 
 ## Overview
 
-The Memories screen lets users capture and store special moments with media, metadata, and privacy controls. Memories are stored locally in `SecureStore` under the `memories` key.
+The Memories screen uses a **gallery-style layout** — memories are grouped by day with 4 square thumbnails per row. Each row shows a date header, up to 4 thumbnails, and a "+N More" overlay when a day has more than 4 entries. Tapping any thumbnail opens the detail modal. Tapping "+N More" pushes a day-detail screen showing all memories for that date.
+
+All data is stored locally in `SecureStore` under the `memories` key. If no data exists, 20 seed memories are provided as a fallback.
 
 ## Architecture
 
 ```
 features/memories/
-├── context/MemoriesContext.tsx    ← State management (memories, add/update/delete)
+├── data/seed.ts                    ← 20 seed memories for fresh installs
+├── context/MemoriesContext.tsx     ← State management + seed fallback
 ├── hooks/useMemories.ts           ← Public hook wrapping context
 ├── types/memory.types.ts          ← Memory interface & payload types
 ├── utils/
 │   ├── memoryUtils.ts             ← Date validation, formatting helpers
 │   └── memoryService.ts           ← SecureStore persistence layer
 ├── components/
-│   ├── MemoryCard.tsx             ← Memoized grid card with thumbnail + metadata
-│   ├── MemoryGrid.tsx             ← 2-column FlatList wrapper
-│   ├── MemoryList.tsx             ← Single-column FlatList variant
-│   ├── MoodBadge.tsx              ← Feeling icon chip
-│   ├── PrivacyBadge.tsx           ← Lock overlay icon
+│   ├── MemoryGalleryRow.tsx        ← Day header + 4-thumbnail row with "+N" overlay
+│   ├── MemoryCard.tsx              ← Memoized card (kept for AddMemoryScreen)
+│   ├── PrivacyBadge.tsx            ← Lock overlay icon
 │   ├── MoodSelector.tsx           ← Reusable feeling picker (chips)
 │   ├── PrivacySelector.tsx        ← Reusable privacy radio group
 │   └── MediaPicker.tsx            ← Gallery/Camera image picker
 └── screens/
-    ├── MemoriesListScreen.tsx      ← Grid list with empty state
-    ├── AddMemoryScreen.tsx         ← 3-step wizard modal
-    └── MemoryDetailScreen.tsx      ← Read-only detail view
+    ├── MemoriesListScreen.tsx      ← Groups by date, renders gallery rows
+    ├── AddMemoryScreen.tsx         ← 3-step wizard modal (unchanged)
+    ├── DayMemoriesScreen.tsx       ← Pushed screen: all images for one day
+    └── MemoryDetailScreen.tsx      ← Modal: full image + metadata overlay + pinch zoom
+```
+
+## Navigation Flow
+
+```
+Memories Tab (MemoriesListScreen)
+  │
+  ├── Groups by date (descending)
+  │
+  ├── Per day: MemoryGalleryRow
+  │     ├── [date header]  [count]
+  │     └── [thumb] [thumb] [thumb] [thumb/+N]
+  │
+  ├── Tap any thumbnail
+  │     └── Modal: MemoryDetailScreen (full image + metadata overlay + pinch zoom)
+  │
+  └── Tap "+N More"
+        └── Pushed: DayMemoriesScreen (4-column grid of all images for that date)
+              └── Tap any thumbnail → MemoryDetailScreen modal
 ```
 
 ## Data Model
@@ -37,14 +58,14 @@ features/memories/
 ```ts
 interface Memory {
   id: string;
-  mediaUri: string;       // local file URI
+  mediaUri: string;       // local file URI or remote URL
   mediaType: 'image' | 'video';
   title: string;
   description: string;
-  date: string;           // YYYY-MM-DD, past dates only
-  location: string;       // free-text tags e.g. "Paris"
+  date: string;           // YYYY-MM-DD
+  location: string;
   feeling: MemoryFeeling | null;
-  isPrivate: boolean;     // true = only me, false = shared with partner
+  isPrivate: boolean;
   createdAt: string;      // ISO 8601
 }
 ```
@@ -55,76 +76,62 @@ interface Memory {
 |---------|------|-------------|
 | Title | Text | "Memories" header |
 | Add button | Pressable (circular, `+` icon) | Opens Add Memory modal |
-| Memory cards | FlatList (2-column grid) | Each card shows image thumbnail, title, date, location, and lock icon if private |
-| Empty state | View | Icon + "No memories yet" message when list is empty |
+| Gallery rows | `MemoryGalleryRow` components in ScrollView | Grouped by date, 4 thumbs per row |
+| +N More | Overlay on 4th thumbnail | Semi-transparent dark bg, white "+N More" |
+| Empty state | View | Icon + "No memories yet" message |
 
 ### States
 
 | State | Behavior |
 |-------|----------|
-| **Loading** | Reads from SecureStore via `MemoriesContext` on mount and screen focus |
-| **Empty** | Shows icon + message, add button in header |
-| **Has data** | 2-column grid with memory cards |
-| **Private card** | Lock icon overlay on thumbnail |
-| **Error** | Silent failure (data just won't load) |
+| **Loading** | Reads from SecureStore; falls back to seed data if empty |
+| **Empty (no seed)** | Shows icon + message, add button in header |
+| **Has data** | ScrollView of gallery rows grouped by date |
+| **≤4 per day** | All thumbnails shown, no overlay |
+| **>4 per day** | 4th slot shows "+N More" overlay |
+| **Private** | Lock icon on thumbnail (via PrivacyBadge) |
 
----
+## Seed Data
 
-## Add Memory Modal
+20 mock memories across 5 dates (Jun 8, Jun 5, Jun 2, May 28, May 20) with images from picsum.photos. Loaded automatically when SecureStore is empty — replaced by real data as soon as the user adds their first memory.
 
-**Route:** `/add-memory` (presented as modal)
-**Status:** ✅ Done
+## Day Memories Screen (Pushed)
 
-3-step wizard inside a modal. Step indicator dots at top. Close button (X) dismisses modal.
-
-### Layer 1 — Select Media
+**Route:** `/(modals)/day-memories?date=YYYY-MM-DD`
 
 | Element | Type | Description |
 |---------|------|-------------|
-| Title | Text | "Select Media" |
-| Subtitle | Text | "Choose a photo or video from this moment" |
-| MediaPicker | Component | Gallery + Camera buttons / preview + re-pick |
+| Header | Back button + date title | Pushed within navigation stack |
+| Grid | 4-column, gap-2 | All memories for the selected date |
+| Thumbnails | Pressable → opens detail modal | Same size and style as main gallery |
 
-**States:**
+## Memory Detail Screen (Modal)
 
-| State | Behavior |
-|-------|----------|
-| **Default** | Two buttons: Gallery + Camera |
-| **Media selected** | Shows image preview, re-pick button, Next enabled |
-| **Permission denied** | Toast error: "Camera permission required" |
+**Route:** `/(modals)/memory-detail?id=`
 
-### Layer 2 — Metadata
+Full-screen modal with:
 
-| Field | Required | Type | Validation |
-|-------|----------|------|------------|
-| Title | Yes | TextInput (single-line) | Cannot be empty |
-| Description | No | TextInput (multiline) | Free text |
-| Date | No (defaults to today) | TextInput (number-pad, YYYY-MM-DD) | Past dates only |
-| Location | No | TextInput (single-line) | Free text tags |
+| Element | Description |
+|---------|-------------|
+| Image | Full-width, 60% height, pinch-to-zoom + two-finger pan (Gesture.Pinch + Gesture.Pan) |
+| Close | X button top-right (semi-transparent circle) |
+| Metadata overlay | Bottom sheet with glass effect (92% opacity): title, description, date, location, feeling, privacy |
+| Image zoom | Pinch gesture (1×–4×) + double-finger pan with spring animations |
 
-### Layer 3 — Feeling & Privacy
+## Add Memory Modal
 
-| Element | Type | Options |
-|---------|------|---------|
-| MoodSelector | Chip selector | Happy 😊 / Romantic 💕 / Fun ▶️ / Emotional 💧 (single select) |
-| PrivacySelector | Radio group (2 options) | **Private** (lock) — only I can see / **Shared** (people) — partner can see |
+**Route:** `/add-memory` (unchanged from previous design)
 
----
-
-## Memory Detail Screen
-
-**Status:** 🏗 Placeholder (component exists, no route yet)
-
-Read-only detail view showing memory media, metadata, feeling badge, and privacy badge.
-
----
+3-step wizard inside a modal. See previous documentation for full spec.
 
 ## Translations
 
-All string keys under `memories.*` in both `en.ts` and `ar.ts`. See localization files for full list.
+All string keys under `memories.*` in both `en.ts` and `ar.ts`.
 
 ## Dependencies
 
-- `expo-image-picker` (already in project)
-- `expo-secure-store` (via `lib/utils/secureStorage.ts`)
-- `@expo/vector-icons` (Ionicons, already in project)
+- `react-native-gesture-handler` — pinch-to-zoom + pan gestures
+- `react-native-reanimated` — animated zoom transforms
+- `expo-image-picker` — media selection
+- `expo-secure-store` — local persistence
+- `@expo/vector-icons` (Ionicons)
