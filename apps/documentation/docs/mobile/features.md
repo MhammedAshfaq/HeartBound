@@ -14,7 +14,7 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 | OTP Verification (6-digit) | [screens/otp-verification.md](/mobile/screens/otp-verification) | ✅ |
 | Setup Profile (name, DOB, gender, nickname, email, relationship status, partner details, profile picture) | [screens/setup-profile.md](/mobile/screens/setup-profile) | ✅ |
 | Home Dashboard | [screens/home.md](/mobile/screens/home) | 🏗 |
-| Memories (grid + 3-step add wizard + detail) | [screens/memories.md](/mobile/screens/memories) | ✅ |
+| Memories (gallery day-grouped, 4-column grid, +N more, detail modal with pinch zoom) | [screens/memories.md](/mobile/screens/memories) | ✅ |
 | Notification | [screens/notification.md](/mobile/screens/notification) | ✅ |
 | Profile (rich: header, snapshot, moments, insights, achievements, settings, appearance, notifications) | [screens/profile.md](/mobile/screens/profile) | ✅ |
 | Games | [screens/games.md](/mobile/screens/games) | 🏗 |
@@ -64,6 +64,6 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 
 | Status | Count | Items |
 |--------|-------|-------|
-| ✅ Done | 13 | Login, OTP, Setup Profile, Profile (rich), Memories (grid + 3-step add + detail), Notification, Session, API, Auth, Theme, i18n, React Query, Toast |
+| ✅ Done | 13 | Login, OTP, Setup Profile, Profile (rich), Memories (gallery day-grouped + 3-step add + day detail + image modal), Notification, Session, API, Auth, Theme, i18n, React Query, Toast |
 | 🏗 Placeholder | 4 | Home mood check-in, Action, Games, Analytics |
 | 📋 Planned | 3 | Settings, Invite Partner, Charts |
