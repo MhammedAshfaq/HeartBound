@@ -39,9 +39,10 @@ All mobile documentation lives in `apps/documentation/docs/mobile/`:
 ### Provider Hierarchy (outermost → innermost)
 
 ```
-GluestackUIProvider → AppThemeProvider → ThemeProvider (@react-navigation)
-  → LocalizationProvider → SessionProvider → QueryClientWithToken
-    → ApiProvider → AuthProvider → <Slot />
+GestureHandlerRootView → GluestackUIProvider → AppThemeProvider
+  → ThemeProvider (@react-navigation) → LocalizationProvider
+    → SessionProvider → QueryClientWithToken → ApiProvider
+      → AuthProvider → MemoriesProvider → <Slot />
 ```
 
 **DO NOT** reorder or add providers to this chain unless explicitly asked.
