@@ -46,16 +46,17 @@ Purpose: Understand how data moves through the app without reading code.
 Wrapping order (outermost → innermost):
 
 ```
-GluestackUIProvider          # Theming context for gluestack-ui
-  ├── AppThemeProvider        # Light/dark/system mode state
-  │   └── ThemeProvider       # Navigation theme (@react-navigation)
-  │       └── LocalizationProvider   # i18n state (en/ar)
-  │           └── SessionProvider     # Encrypted session store
-  │               └── QueryClientWithToken   # @tanstack/react-query cache
-  │                   └── ApiProvider        # Axios client with auto-auth
-  │                       └── AuthProvider   # Auth business logic
-  │                           └── MemoriesProvider  # Memory CRUD + SecureStore
-  │                               └── <Slot />   # Active route screen
+GestureHandlerRootView        # Gesture handling (pinch, pan, swipe)
+  └── GluestackUIProvider      # Theming context for gluestack-ui
+      └── AppThemeProvider     # Light/dark/system mode state
+          └── ThemeProvider    # Navigation theme (@react-navigation)
+              └── LocalizationProvider   # i18n state (en/ar)
+                  └── SessionProvider     # Encrypted session store
+                      └── QueryClientWithToken   # @tanstack/react-query cache
+                          └── ApiProvider        # Axios client with auto-auth
+                              └── AuthProvider   # Auth business logic
+                                  └── MemoriesProvider  # Memory CRUD + SecureStore
+                                      └── <Slot />   # Active route screen
 ```
 
 **Data Flow Direction:**
