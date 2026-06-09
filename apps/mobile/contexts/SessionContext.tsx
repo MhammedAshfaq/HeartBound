@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import * as SecureStore from 'expo-secure-store';
 
+export interface InsightItem {
+  icon: string;
+  title: string;
+  description: string;
+  color: string;
+}
+
 export interface Session {
   accessToken: string;
   refreshToken: string;
@@ -17,7 +24,9 @@ export interface Session {
     partnerName?: string;
     anniversaryDate?: string;
     partnerDob?: string;
+    partnerEmail?: string;
     partnerCode?: string;
+    insights?: InsightItem[];
   } | null;
 }
 

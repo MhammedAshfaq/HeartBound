@@ -232,8 +232,8 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
             style={[
               styles.saveButtonSurface,
               {
-                backgroundColor: selectedMoodConfig ? '#2563EB' : '#3134B0',
-                borderColor: selectedMoodConfig ? '#1D4ED8' : '#00026B',
+                backgroundColor: selectedMoodConfig ? c.primary : c.border,
+                borderColor: selectedMoodConfig ? c.primary : c.border,
               },
             ]}
           >

@@ -16,11 +16,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { format } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/useToast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { colors } from '@/lib/theme';
+import { DatePickerModal } from '@/features/profile/components/DatePickerModal';
 
 type GenderValue = 'male' | 'female' | 'nonBinary' | 'preferNotToSay';
 type RelationshipValue = 'single' | 'inRelationship' | 'married' | 'engaged';
@@ -28,13 +30,6 @@ type RelationshipValue = 'single' | 'inRelationship' | 'married' | 'engaged';
 interface ChipOption<T> {
   value: T;
   label: string;
-}
-
-function formatDobInput(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 8);
-  if (digits.length <= 4) return digits;
-  if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
-  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
 }
 
 function isValidDob(value: string) {
@@ -76,7 +71,6 @@ export default function SetupProfileScreen() {
   const [emailId, setEmailId] = useState(user?.email ?? '');
   const [gender, setGender] = useState<GenderValue | ''>((user?.gender as GenderValue) ?? '');
   const [relationshipStatus, setRelationshipStatus] = useState<RelationshipValue | ''>((user?.relationshipStatus as RelationshipValue) ?? '');
-  const [partnerId, setPartnerId] = useState(user?.partnerId ?? '');
   const [partnerName, setPartnerName] = useState(user?.partnerName ?? '');
   const [anniversaryDate, setAnniversaryDate] = useState(user?.anniversaryDate ?? '');
   const [partnerDob, setPartnerDob] = useState(user?.partnerDob ?? '');
@@ -87,6 +81,7 @@ export default function SetupProfileScreen() {
   const [genderError, setGenderError] = useState('');
   const [relationshipError, setRelationshipError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activePicker, setActivePicker] = useState<'dob' | 'anniversary' | 'partnerDob' | null>(null);
 
   const showPartnerFields = relationshipStatus !== '' && relationshipStatus !== 'single';
 
@@ -146,19 +141,21 @@ export default function SetupProfileScreen() {
     if (nameError) validateName(value);
   }, [nameError, validateName]);
 
-  const handleDobChange = useCallback((value: string) => {
-    const formatted = formatDobInput(value);
-    setDob(formatted);
-    if (dobError) validateDob(formatted);
-  }, [dobError, validateDob]);
+  const formattedDob = dob ? format(new Date(dob), 'MMM dd, yyyy') : '';
+  const formattedAnniversary = anniversaryDate ? format(new Date(anniversaryDate), 'MMM dd, yyyy') : '';
+  const formattedPartnerDob = partnerDob ? format(new Date(partnerDob), 'MMM dd, yyyy') : '';
 
-  const handleAnniversaryChange = useCallback((value: string) => {
-    setAnniversaryDate(formatDobInput(value));
-  }, []);
-
-  const handlePartnerDobChange = useCallback((value: string) => {
-    setPartnerDob(formatDobInput(value));
-  }, []);
+  const handleDateSelect = useCallback((date: string) => {
+    if (activePicker === 'dob') {
+      setDob(date);
+      if (dobError) validateDob(date);
+    } else if (activePicker === 'anniversary') {
+      setAnniversaryDate(date);
+    } else if (activePicker === 'partnerDob') {
+      setPartnerDob(date);
+    }
+    setActivePicker(null);
+  }, [activePicker, dobError, validateDob]);
 
   const handleSave = useCallback(async () => {
     const validName = validateName(name);
@@ -178,7 +175,6 @@ export default function SetupProfileScreen() {
         dateOfBirth: dob,
         gender,
         relationshipStatus,
-        partnerId: partnerId.trim() || undefined,
         partnerName: partnerName.trim() || undefined,
         anniversaryDate: anniversaryDate || undefined,
         partnerDob: partnerDob || undefined,
@@ -189,7 +185,7 @@ export default function SetupProfileScreen() {
     router.replace('/(auth)/relationship-questions');
   }, [
     name, dob, gender, relationshipStatus,
-    partnerId, partnerName, anniversaryDate, partnerDob, avatar,
+    partnerName, anniversaryDate, partnerDob, avatar,
     router, updateProfile, validateDob, validateName,
   ]);
 
@@ -403,15 +399,31 @@ export default function SetupProfileScreen() {
               })}
 
               {/* Date of Birth */}
-              {renderField({
-                label: t('auth.dateOfBirth'),
-                value: dob,
-                onChangeText: handleDobChange,
-                placeholder: t('auth.dateOfBirthPlaceholder'),
-                error: dobError,
-                keyboardType: 'number-pad',
-                hint: t('auth.dateOfBirthHint'),
-              })}
+              <View className="mb-5">
+                <View className="mb-1.5 flex-row items-center justify-between">
+                  <Text style={{ color: c.text }} className="text-sm font-bold">
+                    {t('auth.dateOfBirth')}
+                    <Text style={{ color: c.error }}> *</Text>
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setActivePicker('dob')}
+                  style={{
+                    backgroundColor: c.surface,
+                    borderColor: dobError ? c.error : c.border,
+                  }}
+                  className="rounded-lg border px-4 py-3.5"
+                >
+                  <Text style={{ color: dob ? c.text : c.muted, fontSize: 16 }}>
+                    {formattedDob || t('auth.dateOfBirthPlaceholder')}
+                  </Text>
+                </Pressable>
+                {dobError ? (
+                  <Text style={{ color: c.error }} className="mt-1 text-xs font-semibold">
+                    {dobError}
+                  </Text>
+                ) : null}
+              </View>
 
               {/* Email ID */}
               {renderField({
@@ -457,17 +469,6 @@ export default function SetupProfileScreen() {
                   {t('profile.partnerConnection')}
                 </Text>
 
-                {/* Partner ID */}
-                {renderField({
-                  label: t('auth.partnerId'),
-                  value: partnerId,
-                  onChangeText: setPartnerId,
-                  placeholder: t('auth.partnerIdPlaceholder'),
-                  optional: true,
-                  autoCapitalize: 'none',
-                  hint: t('auth.partnerIdHint'),
-                })}
-
                 {/* Partner Name */}
                 {renderField({
                   label: t('auth.partnerName'),
@@ -479,24 +480,46 @@ export default function SetupProfileScreen() {
                 })}
 
                 {/* Anniversary Date */}
-                {renderField({
-                  label: t('auth.anniversaryDate'),
-                  value: anniversaryDate,
-                  onChangeText: handleAnniversaryChange,
-                  placeholder: t('auth.anniversaryPlaceholder'),
-                  optional: true,
-                  keyboardType: 'number-pad',
-                })}
+                <View className="mb-5">
+                  <View className="mb-1.5 flex-row items-center justify-between">
+                    <Text style={{ color: c.text }} className="text-sm font-bold">
+                      {t('auth.anniversaryDate')}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setActivePicker('anniversary')}
+                    style={{
+                      backgroundColor: c.surface,
+                      borderColor: c.border,
+                    }}
+                    className="rounded-lg border px-4 py-3.5"
+                  >
+                    <Text style={{ color: anniversaryDate ? c.text : c.muted, fontSize: 16 }}>
+                      {formattedAnniversary || t('auth.anniversaryPlaceholder')}
+                    </Text>
+                  </Pressable>
+                </View>
 
                 {/* Partner DOB */}
-                {renderField({
-                  label: t('auth.partnerDob'),
-                  value: partnerDob,
-                  onChangeText: handlePartnerDobChange,
-                  placeholder: t('auth.partnerDobPlaceholder'),
-                  optional: true,
-                  keyboardType: 'number-pad',
-                })}
+                <View className="mb-0">
+                  <View className="mb-1.5 flex-row items-center justify-between">
+                    <Text style={{ color: c.text }} className="text-sm font-bold">
+                      {t('auth.partnerDob')}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setActivePicker('partnerDob')}
+                    style={{
+                      backgroundColor: c.surface,
+                      borderColor: c.border,
+                    }}
+                    className="rounded-lg border px-4 py-3.5"
+                  >
+                    <Text style={{ color: partnerDob ? c.text : c.muted, fontSize: 16 }}>
+                      {formattedPartnerDob || t('auth.partnerDobPlaceholder')}
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
             ) : null}
 
@@ -522,6 +545,28 @@ export default function SetupProfileScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <DatePickerModal
+        visible={activePicker === 'dob'}
+        onClose={() => setActivePicker(null)}
+        onSelect={handleDateSelect}
+        initialDate={dob || undefined}
+        title={t('auth.dateOfBirth')}
+      />
+      <DatePickerModal
+        visible={activePicker === 'anniversary'}
+        onClose={() => setActivePicker(null)}
+        onSelect={handleDateSelect}
+        initialDate={anniversaryDate || undefined}
+        title={t('auth.anniversaryDate')}
+      />
+      <DatePickerModal
+        visible={activePicker === 'partnerDob'}
+        onClose={() => setActivePicker(null)}
+        onSelect={handleDateSelect}
+        initialDate={partnerDob || undefined}
+        title={t('auth.partnerDob')}
+      />
     </SafeAreaView>
   );
 }

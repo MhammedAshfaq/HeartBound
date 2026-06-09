@@ -2,6 +2,7 @@ import { createContext, useCallback, useEffect, useState, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { Memory, NewMemoryPayload } from '@/features/memories/types/memory.types';
 import * as memoryService from '@/features/memories/utils/memoryService';
+import { SEED_MEMORIES } from '@/features/memories/data/seed';
 
 interface MemoriesContextValue {
   memories: Memory[];
@@ -30,7 +31,7 @@ export function MemoriesProvider({ children }: { children: ReactNode }) {
     try {
       const data = await memoryService.loadMemories();
       if (mountedRef.current) {
-        setMemories(data);
+        setMemories(data.length > 0 ? data : SEED_MEMORIES);
       }
     } finally {
       if (mountedRef.current) {

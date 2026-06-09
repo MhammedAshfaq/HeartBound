@@ -4,6 +4,11 @@ export default function ModalLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="add-memory" />
+      <Stack.Screen name="edit-profile" />
+      <Stack.Screen name="ai-insights" />
+      <Stack.Screen name="email-verification" />
+      <Stack.Screen name="memory-detail" />
+      <Stack.Screen name="day-memories" />
     </Stack>
   );
 }

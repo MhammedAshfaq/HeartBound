@@ -12,30 +12,44 @@ export function NotificationToggle() {
   const activeColor = isDark ? '#60a5fa' : '#3b82f6';
 
   return (
-    <View className="px-4 mt-6">
-      <View className="rounded-2xl flex-row items-center px-4 py-3.5" style={{ backgroundColor: c.card, ...s.sm }}>
-        <Ionicons name="notifications-outline" size={20} color={c.text} />
-        <Text style={{ color: c.text }} className="flex-1 text-sm ml-3">Push Notifications</Text>
-        <Pressable
-          onPress={() => setEnabled((prev) => !prev)}
-          className="rounded-full px-0.5"
-          style={{
-            width: 48,
-            height: 28,
-            backgroundColor: enabled ? activeColor : c.border,
-            justifyContent: 'center',
-          }}
-        >
-          <View
+    <View className="mb-5">
+      <Text className="text-base font-bold mb-3 px-1 ml-2" style={{ color: c.text }}>
+        Push Notifications
+      </Text>
+
+      <View
+        className="rounded-xl"
+        style={{
+          backgroundColor: c.card,
+          borderWidth: 1,
+          borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+          ...s.sm,
+        }}
+      >
+        <View className="flex-row items-center px-4" style={{ paddingVertical: 14 }}>
+          <Ionicons name="notifications-outline" size={20} color={c.text} />
+          <Text style={{ color: c.text }} className="flex-1 text-sm ml-3">Enable Notifications</Text>
+          <Pressable
+            onPress={() => setEnabled((prev) => !prev)}
+            className="rounded-full px-0.5"
             style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              backgroundColor: '#fff',
-              alignSelf: enabled ? 'flex-end' : 'flex-start',
+              width: 48,
+              height: 28,
+              backgroundColor: enabled ? activeColor : c.border,
+              justifyContent: 'center',
             }}
-          />
-        </Pressable>
+          >
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                backgroundColor: '#fff',
+                alignSelf: enabled ? 'flex-end' : 'flex-start',
+              }}
+            />
+          </Pressable>
+        </View>
       </View>
     </View>
   );

@@ -1,6 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import 'react-native-get-random-values';
 import '@/global.css';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import {
   DarkTheme,
@@ -71,41 +72,43 @@ export default function RootLayout() {
   }, [loaded, error]);
 
   return (
-    <GluestackUIProvider mode="system">
-      <AppThemeProvider>
-        <ThemeAwareStatusBar />
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <LocalizationProvider>
-            <SessionProvider>
-              <QueryClientWithToken>
-                <ApiProvider>
-                  <AuthProvider>
-                    <MemoriesProvider>
-                    {!appReady || !splashAnimationFinished ? (
-                      <AnimatedSplash
-                        onAnimationFinish={(isCancelled) => {
-                          if (!isCancelled) {
-                            setSplashAnimationFinished(true);
-                          }
-                        }}
-                      />
-                    ) : (
-                      <Animated.View style={{ flex: 1 }} entering={FadeIn.duration(500)}>
-                        <Stack screenOptions={{ headerShown: false }}>
-                          <Stack.Screen name="(auth)" />
-                          <Stack.Screen name="(tabs)" />
-                          <Stack.Screen name="(modals)" options={{ presentation: 'modal' }} />
-                        </Stack>
-                      </Animated.View>
-                    )}
-                    </MemoriesProvider>
-                  </AuthProvider>
-                </ApiProvider>
-              </QueryClientWithToken>
-            </SessionProvider>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </AppThemeProvider>
-    </GluestackUIProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <GluestackUIProvider mode="system">
+        <AppThemeProvider>
+          <ThemeAwareStatusBar />
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <LocalizationProvider>
+              <SessionProvider>
+                <QueryClientWithToken>
+                  <ApiProvider>
+                    <AuthProvider>
+                      <MemoriesProvider>
+                      {!appReady || !splashAnimationFinished ? (
+                        <AnimatedSplash
+                          onAnimationFinish={(isCancelled) => {
+                            if (!isCancelled) {
+                              setSplashAnimationFinished(true);
+                            }
+                          }}
+                        />
+                      ) : (
+                        <Animated.View style={{ flex: 1 }} entering={FadeIn.duration(500)}>
+                          <Stack screenOptions={{ headerShown: false }}>
+                            <Stack.Screen name="(auth)" />
+                            <Stack.Screen name="(tabs)" />
+                            <Stack.Screen name="(modals)" options={{ presentation: 'modal' }} />
+                          </Stack>
+                        </Animated.View>
+                      )}
+                      </MemoriesProvider>
+                    </AuthProvider>
+                  </ApiProvider>
+                </QueryClientWithToken>
+              </SessionProvider>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </AppThemeProvider>
+      </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }

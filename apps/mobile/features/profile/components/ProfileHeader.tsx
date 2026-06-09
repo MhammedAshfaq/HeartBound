@@ -1,257 +1,269 @@
 import { useCallback } from 'react';
-import { View, Text, Image, Pressable, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  Share,
+  Dimensions,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
+import Svg, { Defs, LinearGradient as SvgLinearGradient, Rect, Stop } from 'react-native-svg';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useToast } from '@/hooks/useToast';
 import { colors, shadows } from '@/lib/theme';
+import { Badge } from '@/components/ui/Badge';
 import type { ProfileBasicInfo } from '@/features/profile/types/profile.types';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const COVER_HEIGHT = Math.round(SCREEN_HEIGHT * 0.34);
+const COVER_GRADIENT_HEIGHT = Math.round(COVER_HEIGHT * 0.55);
+const CARD_OVERLAP = 56;
+const AVATAR_SIZE = 56;
+const VERIFIED_BADGE_SIZE = 16;
+const PROFILE_CARD_RADIUS = 10;
 
 interface Props {
   profile: ProfileBasicInfo;
-  onAvatarChange?: (uri: string) => void;
+  streak: number;
+  score: string;
+  daysTogether: number;
   onEditProfile?: () => void;
+  onAIInsights?: () => void;
 }
 
-type ThemeColors = ReturnType<typeof colors>;
-type ThemeShadows = ReturnType<typeof shadows>;
-
-/* ------------------ Shared UI ------------------ */
-
-function ValueRow({
-  icon,
-  label,
-  value,
-  color,
-}: {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  value: string;
-  color: ThemeColors;
-}) {
-  return (
-    <View className="flex-row items-center px-4 py-3.5">
-      <View
-        className="h-7 w-7 items-center justify-center rounded-lg mr-3"
-        style={{ backgroundColor: color.primary + '14' }}
-      >
-        <Ionicons name={icon} size={14} color={color.primary} />
-      </View>
-      <View className="flex-1">
-        <Text className="text-[10px]" style={{ color: color.muted }}>
-          {label}
-        </Text>
-        <Text className="text-sm" style={{ color: color.text }}>
-          {value}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-function SectionCard({
-  title,
-  children,
-  color,
-  shadow,
-  icon,
-}: {
-  title: string;
-  children: React.ReactNode;
-  color: ThemeColors;
-  shadow: ThemeShadows;
-  icon?: React.ReactNode;
-}) {
-  return (
-    <View
-      className="rounded-2xl overflow-hidden mb-4"
-      style={{ backgroundColor: color.card, ...shadow.sm }}
-    >
-      <View className="flex-row items-center gap-2 px-4 pt-4 pb-1">
-        {icon}
-        <Text className="text-base font-bold" style={{ color: color.text }}>
-          {title}
-        </Text>
-      </View>
-      {children}
-    </View>
-  );
-}
-
-function QuickStat({
+function StatColumn({
   value,
   label,
   icon,
-  accent,
+  iconBg,
 }: {
   value: string;
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
-  accent: string;
+  iconBg: string;
 }) {
   const { isDark } = useTheme();
   const c = colors(isDark);
-  const s = shadows(isDark);
 
   return (
-    <View
-      className="flex-1 rounded-2xl border overflow-hidden"
-      style={{
-        backgroundColor: c.card,
-        borderColor: c.border,
-        ...s.sm,
-      }}
-    >
-      <View className="items-center py-3.5 px-2">
-        <View
-          className="h-9 w-9 items-center justify-center rounded-full mb-2"
-          style={{ backgroundColor: accent + '18' }}
-        >
-          <Ionicons name={icon} size={16} color={accent} />
-        </View>
-        <Text className="text-xl font-extrabold" style={{ color: c.text }}>
-          {value}
-        </Text>
-        <Text className="text-[11px] font-medium mt-0.5 text-center" style={{ color: c.muted }}>
-          {label}
-        </Text>
+    <View className="flex-1 items-center py-3">
+      <Text className="text-base font-bold" style={{ color: c.text }}>
+        {value}
+      </Text>
+      <Text className="text-xs mt-0.5" style={{ color: c.muted }}>
+        {label}
+      </Text>
+      <View
+        className="items-center justify-center mt-2"
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 14,
+          backgroundColor: iconBg + '18',
+        }}
+      >
+        <Ionicons name={icon} size={14} color={iconBg} />
       </View>
     </View>
   );
 }
 
-/* ------------------ Main Component ------------------ */
+function VerifiedBadge({ color }: { color: string }) {
+  return (
+    <View
+      className="items-center justify-center rounded-full ml-2"
+      style={{
+        width: VERIFIED_BADGE_SIZE,
+        height: VERIFIED_BADGE_SIZE,
+        backgroundColor: color,
+      }}
+    >
+      <Ionicons name="checkmark" size={12} color="#fff" />
+    </View>
+  );
+}
 
-export function ProfileHeader({ profile, onAvatarChange, onEditProfile }: Props) {
+export function ProfileHeader({
+  profile,
+  streak,
+  score,
+  daysTogether,
+  onEditProfile,
+  onAIInsights,
+}: Props) {
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const c = colors(isDark);
   const s = shadows(isDark);
-  const toast = useToast();
 
-  const pickImage = useCallback(async (kind: 'gallery' | 'camera') => {
-    const options: ImagePicker.ImagePickerOptions = {
-      mediaTypes: ['images'],
-      quality: 0.8,
-      allowsEditing: true,
-      aspect: [1, 1] as [number, number],
-    };
-
-    let result: ImagePicker.ImagePickerResult;
-
-    if (kind === 'gallery') {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
-        toast.error({ title: 'Permission required', message: 'Gallery access is needed to choose a photo' });
-        return;
-      }
-      result = await ImagePicker.launchImageLibraryAsync(options);
-    } else {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permission.granted) {
-        toast.error({ title: 'Permission required', message: 'Camera access is needed to take a photo' });
-        return;
-      }
-      result = await ImagePicker.launchCameraAsync(options);
+  const handleShareProfile = useCallback(async () => {
+    try {
+      await Share.share({
+        message: `${t('profile.shareProfileMessage')} — ${profile.name}`,
+      });
+    } catch {
+      // User dismissed share sheet
     }
+  }, [t, profile.name]);
 
-    if (!result.canceled && result.assets[0]) {
-      onAvatarChange?.(result.assets[0].uri);
-    }
-  }, [onAvatarChange, toast]);
+  const handleAIInsights = useCallback(() => {
+    onAIInsights?.();
+  }, [onAIInsights]);
 
-  const handleCameraPress = useCallback(() => {
-    Alert.alert(
-      t('profile.changePhoto'),
-      '',
-      [
-        { text: t('profile.gallery'), onPress: () => pickImage('gallery') },
-        { text: t('profile.camera'), onPress: () => pickImage('camera') },
-        { text: t('common.cancel'), style: 'cancel' },
-      ],
-    );
-  }, [t, pickImage]);
+  // Keep cover and avatar consistent (matches reference design)
+  const coverUri = profile.avatar;
+  const statusText = profile.relationshipStatus?.trim() || t('profile.notSet');
 
   return (
-    <View className="px-4 pt-1">
-      {/* ─── Avatar + Name ─── */}
-      <View className="items-center mb-3">
-        <View className="relative mb-2" style={{ width: 112, height: 112 }}>
-          <Image
-            source={{ uri: profile.avatar }}
-            style={{ width: 112, height: 112, borderRadius: 56, backgroundColor: c.border }}
-            resizeMode="cover"
+    <View>
+      {/* Cover background */}
+      <View style={{ height: COVER_HEIGHT, width: SCREEN_WIDTH }}>
+        <Image
+          source={{ uri: coverUri }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+        />
+        <View
+          className="absolute inset-0"
+          style={{ backgroundColor: 'rgba(0,0,0,0.12)' }}
+        />
+        <Svg
+          pointerEvents="none"
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: COVER_GRADIENT_HEIGHT,
+          }}
+          width={SCREEN_WIDTH}
+          height={COVER_GRADIENT_HEIGHT}
+        >
+          <Defs>
+            <SvgLinearGradient id="profileCoverGradient" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor="#000000" stopOpacity="0" />
+              <Stop offset="0.5" stopColor="#000000" stopOpacity="0.28" />
+              <Stop offset="1" stopColor={c.background} stopOpacity="1" />
+            </SvgLinearGradient>
+          </Defs>
+          <Rect
+            x="0"
+            y="0"
+            width={SCREEN_WIDTH}
+            height={COVER_GRADIENT_HEIGHT}
+            fill="url(#profileCoverGradient)"
           />
-          <Pressable
-            onPress={handleCameraPress}
-            className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-full border-2"
+        </Svg>
+      </View>
+
+      {/* Floating profile card */}
+      <View className="px-4" style={{ marginTop: -CARD_OVERLAP }}>
+        <View
+          style={{
+            backgroundColor: c.card,
+            borderRadius: PROFILE_CARD_RADIUS,
+            ...s.md,
+          }}
+        >
+          <View
             style={{
-              backgroundColor: c.primary,
-              borderColor: c.background,
+              borderRadius: PROFILE_CARD_RADIUS,
+              overflow: 'hidden',
+              paddingHorizontal: 20,
+              paddingTop: 20,
+              paddingBottom: 20,
             }}
           >
-            <Ionicons name="camera" size={16} color="#fff" />
-          </Pressable>
+          {/* Avatar + name row */}
+          <View className="flex-row items-center">
+            <View className="relative">
+              <Image
+                source={{ uri: profile.avatar }}
+                style={{
+                  width: AVATAR_SIZE,
+                  height: AVATAR_SIZE,
+                  borderRadius: AVATAR_SIZE / 2,
+                  backgroundColor: c.border,
+                  borderWidth: 2,
+                  borderColor: c.primary,
+                }}
+                resizeMode="cover"
+              />
+              <View
+                className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2"
+                style={{
+                  backgroundColor: c.success,
+                  borderColor: c.card,
+                }}
+              />
+            </View>
+
+            <View className="flex-1 ml-5 justify-center">
+              <View className="flex-row items-center ml-2">
+                <Text
+                  className="text-lg font-bold mr-1.5"
+                  style={{ color: c.text }}
+                  numberOfLines={1}
+                >
+                  {profile.name}
+                </Text>
+                {(profile.isVerified ?? true) && <VerifiedBadge color={c.primary} />}
+              </View>
+              <Badge color={c.primary} className="mt-2 ml-2">
+                {statusText}
+              </Badge>
+            </View>
+          </View>
+
+          {/* Stats row */}
+          <View className="flex-row mt-4 mb-4">
+            <StatColumn
+              value={String(streak)}
+              label={t('profile.streak')}
+              icon="flame"
+              iconBg="#f97316"
+            />
+            <StatColumn
+              value={score}
+              label={t('profile.score')}
+              icon="trophy"
+              iconBg="#2563eb"
+            />
+            <StatColumn
+              value={String(daysTogether)}
+              label={t('profile.daysTogether')}
+              icon="calendar"
+              iconBg="#7c3aed"
+            />
+          </View>
+
+          {/* Action buttons */}
+          <View className="flex-row gap-3 mt-5">
+            <Pressable
+              onPress={onEditProfile}
+              className="flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl border"
+              style={{ borderColor: c.primary, backgroundColor: c.card }}
+            >
+              <Ionicons name="create-outline" size={16} color={c.primary} />
+              <Text className="text-sm font-semibold ml-2" style={{ color: c.primary }}>
+                {t('profile.editProfile')}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={handleAIInsights}
+              className="flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-xl"
+              style={{ backgroundColor: c.primary }}
+            >
+              <Ionicons name="sparkles-outline" size={16} color="#fff" />
+              <Text className="text-sm font-semibold text-white ml-2">
+                {t('profile.aiInsights')}
+              </Text>
+            </Pressable>
+          </View>
+          </View>
         </View>
-        <Text className="text-2xl font-extrabold" style={{ color: c.text }}>
-          {profile.name}
-        </Text>
-        <Pressable
-          onPress={onEditProfile}
-          className="flex-row items-center justify-center gap-1.5 mt-3 px-6 py-2.5 rounded-xl"
-          style={{ backgroundColor: c.primary }}
-        >
-          <Text className="text-sm font-semibold" style={{ color: '#fff' }}>
-            {t('profile.editProfile')}
-          </Text>
-        </Pressable>
       </View>
-
-      {/* ─── 3 Stat Cards ─── */}
-      <View className="flex-row gap-2.5 mb-4">
-        <QuickStat
-          value="5"
-          label={t('profile.streak')}
-          icon="flame"
-          accent="#e65100"
-        />
-        <QuickStat
-          value="70%"
-          label={t('profile.score')}
-          icon="trophy"
-          accent="#2e7d32"
-        />
-        <QuickStat
-          value="120"
-          label={t('profile.daysTogether')}
-          icon="calendar"
-          accent="#7b1fa2"
-        />
-      </View>
-
-      {/* ─── User Info Card ─── */}
-      <SectionCard title={t('profile.account')} color={c} shadow={s}>
-        <ValueRow icon="mail-outline" label={t('profile.email')} value={profile.email} color={c} />
-        <ValueRow icon="call-outline" label={t('profile.phone')} value={profile.phone} color={c} />
-        <ValueRow icon="calendar-outline" label={t('profile.dateOfBirth')} value={profile.dateOfBirth} color={c} />
-        <ValueRow icon="heart-outline" label={t('profile.status')} value={profile.relationshipStatus} color={c} />
-      </SectionCard>
-
-      {/* ─── Partner Info Card ─── */}
-      {profile.partner && (
-        <SectionCard
-          title={t('profile.partnerDetails')}
-          color={c}
-          shadow={s}
-          icon={<Ionicons name="heart-circle" size={18} color="#e11d48" />}
-        >
-          <ValueRow icon="person-outline" label={t('auth.fullName')} value={profile.partner.name} color={c} />
-          <ValueRow icon="calendar-outline" label={t('profile.dateOfBirth')} value={profile.partner.dateOfBirth} color={c} />
-          <ValueRow icon="mail-outline" label={t('profile.email')} value={profile.partner.email} color={c} />
-          <ValueRow icon="heart-circle" label={t('profile.anniversary')} value={profile.partner.anniversary} color={c} />
-        </SectionCard>
-      )}
     </View>
   );
 }

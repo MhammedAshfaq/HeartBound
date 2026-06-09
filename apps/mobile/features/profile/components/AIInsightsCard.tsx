@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { shadows } from '@/lib/theme';
@@ -6,9 +6,10 @@ import { shadows } from '@/lib/theme';
 interface AIInsightsCardProps {
   streak: number;
   total: number;
+  onPress: () => void;
 }
 
-export function AIInsightsCard({ streak, total }: AIInsightsCardProps) {
+export function AIInsightsCard({ streak, total, onPress }: AIInsightsCardProps) {
   const { isDark } = useTheme();
   const s = shadows(isDark);
   const tintBg = isDark ? '#2d1b4e' : '#F3E5F5';
@@ -24,14 +25,16 @@ export function AIInsightsCard({ streak, total }: AIInsightsCardProps) {
   }
 
   return (
-    <View className="px-4 mt-6">
+    <Pressable onPress={onPress} className="px-4 mt-6">
       <View className="rounded-2xl p-4" style={{ backgroundColor: tintBg, ...s.sm }}>
         <View className="flex-row items-center gap-2 mb-2">
           <Ionicons name="sparkles" size={18} color={tintText} />
-          <Text style={{ color: tintText }} className="font-bold text-sm">Personalized for you</Text>
+          <Text style={{ color: tintText }} className="font-bold text-sm">AI Insights</Text>
+          <View className="flex-1" />
+          <Ionicons name="chevron-forward" size={16} color={tintText} />
         </View>
         <Text style={{ color: tintText }} className="text-sm leading-5">{content}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }

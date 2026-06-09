@@ -17,22 +17,25 @@ export interface PartnerBasic {
 export interface ProfileBasicInfo {
   name: string;
   avatar: string;
+  coverImage: string;
   phone: string;
   email: string;
   country: string;
   dateOfBirth: string;
   relationshipStatus: string;
+  isVerified?: boolean;
   partner: PartnerBasic | null;
 }
 
 export const DUMMY_PROFILE: ProfileBasicInfo = {
   name: 'John Doe',
   avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
+  coverImage: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
   phone: '+1 (555) 123-4567',
   email: 'john.doe@example.com',
   country: 'United States',
   dateOfBirth: '1990-01-15',
-  relationshipStatus: 'Married',
+  relationshipStatus: 'Dating',
   partner: {
     name: 'Jane Doe',
     dateOfBirth: '1992-05-20',

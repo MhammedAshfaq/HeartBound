@@ -58,13 +58,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="games"
-        options={{
-          title: t('tabs.games'),
-          tabBarIcon: ({ color }) => <TabBarIcon name="gamepad" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="notification"
         options={{
           title: t('tabs.notification'),

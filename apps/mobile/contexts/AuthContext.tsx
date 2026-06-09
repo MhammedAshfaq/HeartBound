@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useCallback } from 'react';
 import { useSession, type Session } from './SessionContext';
+import { SEED_INSIGHTS } from '@/features/profile/data/insights';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -18,8 +19,10 @@ interface AuthContextType {
     partnerName?: string;
     anniversaryDate?: string;
     partnerDob?: string;
+    partnerEmail?: string;
     partnerCode?: string;
     avatar?: string;
+    email?: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -38,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await setSession({
       accessToken: 'mock-access-token',
       refreshToken: 'mock-refresh-token',
-      user: { id: '1', email: _email, name: 'User', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D' },
+      user: { id: '1', email: _email, name: 'User', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D', insights: SEED_INSIGHTS },
     });
   }, [setSession]);
 
@@ -47,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await setSession({
       accessToken: 'mock-access-token',
       refreshToken: 'mock-refresh-token',
-      user: { id: '1', email: `${provider}@example.com`, name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`, avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D' },
+      user: { id: '1', email: `${provider}@example.com`, name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`, avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D', insights: SEED_INSIGHTS },
     });
   }, [setSession]);
 
@@ -56,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await setSession({
       accessToken: 'mock-access-token',
       refreshToken: 'mock-refresh-token',
-      user: { id: '1', email: `${_phone}@example.com`, name: 'User', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D' },
+      user: { id: '1', email: `${_phone}@example.com`, name: 'User', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D', insights: SEED_INSIGHTS },
     });
   }, [setSession]);
 
@@ -70,8 +73,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     partnerName?: string;
     anniversaryDate?: string;
     partnerDob?: string;
+    partnerEmail?: string;
     partnerCode?: string;
     avatar?: string;
+    email?: string;
   }) => {
     if (!session?.user) {
       throw new Error('No active session');
@@ -81,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...session,
       user: {
         ...session.user,
+        email: profile.email ?? session.user.email,
         name: profile.name,
         dateOfBirth: profile.dateOfBirth,
         gender: profile.gender,
@@ -90,6 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         partnerName: profile.partnerName,
         anniversaryDate: profile.anniversaryDate,
         partnerDob: profile.partnerDob,
+        partnerEmail: profile.partnerEmail,
         partnerCode: profile.partnerCode,
         avatar: profile.avatar ?? session.user.avatar,
       },

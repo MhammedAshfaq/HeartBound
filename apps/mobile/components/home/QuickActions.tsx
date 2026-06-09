@@ -84,7 +84,6 @@ export default function QuickActions() {
     switch (label) {
       case 'Action': router.navigate('/(tabs)/action'); break;
       case 'Memory': router.navigate('/(tabs)/memories'); break;
-      case 'Games': router.navigate('/(tabs)/games'); break;
       case 'Analysis': router.navigate('/(tabs)/notification'); break;
     }
   }, [router]);
