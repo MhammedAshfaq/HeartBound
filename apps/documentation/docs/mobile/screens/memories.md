@@ -109,14 +109,42 @@ interface Memory {
 
 **Route:** `/(modals)/memory-detail?id=`
 
-Full-screen modal with:
+Scrollable modal with two separate cards:
+
+```
+[ Close button header ]
+
+┌─────────────────────────────────┐
+│         [Image Card]            │
+│  ┌───────────────────────────┐  │
+│  │                           │  │
+│  │       (image, 35% h)      │  │
+│  │    pinch-to-zoom + pan    │  │
+│  │                           │  │
+│  └───────────────────────────┘  │
+└── rounded-xl, shadow.sm, mx-4 ──┘
+
+┌─────────────────────────────────┐
+│      [Metadata Card]            │
+│                                 │
+│  [Title]          [📅 Jun 10]  │  ← flex-row, date right-aligned
+│  [Description]                  │
+│                                 │
+│  [📍 NYC]  [😊 Happy]          │  ← location + feeling chips
+│                                 │
+└── rounded-xl, shadow.sm, mx-4 ──┘
+```
 
 | Element | Description |
 |---------|-------------|
-| Image | Full-width, 60% height, pinch-to-zoom + two-finger pan (Gesture.Pinch + Gesture.Pan) |
-| Close | X button top-right (semi-transparent circle) |
-| Metadata overlay | Bottom sheet with glass effect (92% opacity): title, description, date, location, feeling, privacy |
-| Image zoom | Pinch gesture (1×–4×) + double-finger pan with spring animations |
+| Image Card | `rounded-xl`, `shadow.sm`, `mx-4`, height 35% of screen, pinch-to-zoom + two-finger pan |
+| Close | X button top-left, clean no background |
+| Metadata Card | Separate card below image, `rounded-xl`, `shadow.sm`, `mx-4` |
+| Title + Date | Title left (flex-1), date chip right in same row |
+| Description | Below title with muted color |
+| Location chip | `rounded-full`, primary tint `14` bg |
+| Feeling chip | `rounded-full`, primary tint `14` bg, icon from `MOOD_ICONS` |
+| Image zoom | Pinch gesture (1×–4×) + two-finger pan with spring animations |
 
 ## Add Memory Modal
 

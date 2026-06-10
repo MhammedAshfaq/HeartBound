@@ -1,16 +1,17 @@
 import { useMemo } from 'react';
-import { View, Text, Image, Pressable, Dimensions } from 'react-native';
+import { View, Text, Image, Pressable, Dimensions, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
-import { colors } from '@/lib/theme';
+import { colors, shadows } from '@/lib/theme';
 import { useMemories } from '@/features/memories/hooks/useMemories';
 import { MemoryFeeling } from '@/constants/Enums';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const CARD_WIDTH = SCREEN_WIDTH - 48; // mx-6 on card = 24px each side
 
 const MOOD_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   [MemoryFeeling.Happy]: 'happy-outline',
@@ -29,6 +30,7 @@ export default function MemoryDetailScreen() {
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const c = colors(isDark);
+  const s = shadows(isDark);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { memories } = useMemories();
@@ -88,83 +90,80 @@ export default function MemoryDetailScreen() {
   }
 
   return (
-    <View style={{ backgroundColor: '#000' }} className="flex-1">
-      <GestureDetector gesture={composed}>
-        <Animated.View className="flex-1 items-center justify-center" style={animatedStyle}>
-          <Image
-            source={{ uri: memory.mediaUri }}
-            style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.6 }}
-            resizeMode="contain"
-          />
-        </Animated.View>
-      </GestureDetector>
+    <ScrollView style={{ backgroundColor: c.background }} className="flex-1">
+      {/* ─── Header ─── */}
+      <View className="ml-2 mt-2 items-start">
+        <Pressable onPress={() => router.back()}>
+          <Ionicons name="close" size={24} color={c.text} />
+        </Pressable>
+      </View>
 
-      <Pressable
-        onPress={() => router.back()}
-        className="absolute top-12 right-4 w-9 h-9 rounded-full items-center justify-center"
-        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-      >
-        <Ionicons name="close" size={22} color="#fff" />
-      </Pressable>
+      {/* ─── Image Card ─── */}
+      <View className="rounded-xl overflow-hidden mt-2" style={{ backgroundColor: c.card, ...s.sm, marginHorizontal: 10}}>
+        <View style={{ height: SCREEN_HEIGHT * 0.35, backgroundColor: c.card }}>
+          <GestureDetector gesture={composed}>
+            <Animated.View style={[animatedStyle, { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]}>
+              <Image
+                source={{ uri: memory.mediaUri }}
+                style={{ width: CARD_WIDTH, height: SCREEN_HEIGHT * 0.35 }}
+                resizeMode="contain"
+              />
+            </Animated.View>
+          </GestureDetector>
+        </View>
+      </View>
 
-      <View
-        className="absolute bottom-0 left-0 right-0 px-5 pt-5 pb-8"
-        style={{ backgroundColor: isDark ? 'rgba(30,30,30,0.92)' : 'rgba(255,255,255,0.92)' }}
-      >
-        <Text
-          style={{ color: c.text }}
-          className="text-xl font-bold mb-3"
-          numberOfLines={2}
-        >
-          {memory.title}
-        </Text>
-
-        {memory.description ? (
-          <Text
-            style={{ color: c.muted }}
-            className="text-sm leading-5 mb-3"
-            numberOfLines={2}
-          >
-            {memory.description}
-          </Text>
-        ) : null}
-
-        <View className="flex-row flex-wrap gap-y-2">
-          <View className="flex-row items-center mr-4">
-            <Ionicons name="calendar-outline" size={15} color={c.muted} />
-            <Text style={{ color: c.muted }} className="text-xs ml-1.5">
-              {formatDate(memory.date)}
+      {/* ─── Metadata Card ─── */}
+      <View className="mt-4 rounded-xl" style={{ backgroundColor: c.card, ...s.sm , marginHorizontal: 10}}>
+        <View className="p-5">
+          <View className="flex-row justify-between items-start">
+            <Text
+              style={{ color: c.text }}
+              className="text-xl font-bold flex-1 mr-3"
+              numberOfLines={2}
+            >
+              {memory.title}
             </Text>
+            <View className="flex-row items-center rounded-full">
+              <Text className="text-xs font-semibold ml-1.5">
+                {formatDate(memory.date)}
+              </Text>
+            </View>
           </View>
 
-          {memory.location ? (
-            <View className="flex-row items-center mr-4">
-              <Ionicons name="location-outline" size={15} color={c.muted} />
-              <Text style={{ color: c.muted }} className="text-xs ml-1.5" numberOfLines={1}>
-                {memory.location}
-              </Text>
-            </View>
+          {memory.description ? (
+            <Text
+              style={{ color: c.muted }}
+              className="text-sm leading-5 mt-3"
+            >
+              {memory.description}
+            </Text>
           ) : null}
 
-          {memory.feeling ? (
-            <View className="flex-row items-center mr-4">
-              <Ionicons name={MOOD_ICONS[memory.feeling] || 'ellipse-outline'} size={15} color={c.muted} />
-              <Text style={{ color: c.muted }} className="text-xs ml-1.5 capitalize">
-                {memory.feeling}
-              </Text>
-            </View>
-          ) : null}
-
-          {memory.isPrivate ? (
-            <View className="flex-row items-center">
-              <Ionicons name="lock-closed" size={14} color={c.muted} />
-              <Text style={{ color: c.muted }} className="text-xs ml-1.5">
-                {t('memories.private')}
-              </Text>
+          {(memory.location || memory.feeling) ? (
+            <View className="flex-row flex-wrap gap-2 mt-4">
+              {memory.location ? (
+                <View className="flex-row items-center rounded-lg" style={{ backgroundColor: c.primary + '14', paddingVertical: 8, paddingHorizontal: 10 }}>
+                  <Ionicons name="location-outline" size={13} color={c.primary} style={{marginRight:2}}/>
+                  <Text style={{ color: c.primary }} className="text-xs font-semibold ml-1.5">
+                    {memory.location}
+                  </Text>
+                </View>
+              ) : null}
+              {memory.feeling ? (
+                <View className="flex-row items-center rounded-lg" style={{ backgroundColor: c.primary + '14',paddingVertical: 8, paddingHorizontal: 10 }}>
+                  <Ionicons name={MOOD_ICONS[memory.feeling] || 'ellipse-outline'} size={13} color={c.primary} style={{marginRight:2}} />
+                  <Text style={{ color: c.primary }} className="text-xs font-semibold ml-1.5 capitalize">
+                    {memory.feeling}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           ) : null}
         </View>
       </View>
-    </View>
+
+      <View className="h-8" />
+    </ScrollView>
   );
 }
