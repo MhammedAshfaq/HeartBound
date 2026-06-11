@@ -16,8 +16,8 @@ interface ActionItem {
 const actions: ActionItem[] = [
   { icon: 'checkbox', label: 'Action', color: '#9C27B0', bgLight: '#F3E5F5', bgDark: '#3A1545' },
   { icon: 'heart', label: 'Memory', color: '#E91E63', bgLight: '#FCE4EC', bgDark: '#4A1528' },
-  { icon: 'play', label: 'Games', color: '#FF9800', bgLight: '#FFF3E0', bgDark: '#4A2E00' },
   { icon: 'notifications', label: 'Notification', color: '#4CAF50', bgLight: '#E8F5E9', bgDark: '#1B3A1B' },
+  { icon: 'person', label: 'Profile', color: '#FF9800', bgLight: '#FFF3E0', bgDark: '#4A2E00' },
 ];
 
 interface QuickActionButtonProps {
@@ -84,7 +84,8 @@ export default function QuickActions() {
     switch (label) {
       case 'Action': router.navigate('/(tabs)/action'); break;
       case 'Memory': router.navigate('/(tabs)/memories'); break;
-      case 'Analysis': router.navigate('/(tabs)/notification'); break;
+      case 'Notification': router.navigate('/(tabs)/notification'); break;
+      case 'Profile': router.navigate('/(tabs)/profile'); break;
     }
   }, [router]);
 

@@ -18,7 +18,7 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 | Notification | [screens/notification.md](/mobile/screens/notification) | ✅ |
 | Profile (rich: header, snapshot, moments, insights, achievements, settings, appearance, notifications) | [screens/profile.md](/mobile/screens/profile) | ✅ |
 | Games | [screens/games.md](/mobile/screens/games) | 🏗 |
-| Action | [screens/action.md](/mobile/screens/action) | 🏗 |
+| Action | [screens/action.md](/mobile/screens/action) | ✅ (Docs) |
 
 ---
 
@@ -64,6 +64,6 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 
 | Status | Count | Items |
 |--------|-------|-------|
-| ✅ Done | 13 | Login, OTP, Setup Profile, Profile (rich), Memories (gallery day-grouped + 3-step add + day detail + image modal), Notification, Session, API, Auth, Theme, i18n, React Query, Toast |
+| ✅ Done | 13 | Login, OTP, Setup Profile, Profile (rich), Memories (gallery day-grouped + single-screen add + day detail + image modal), Notification, Session, API, Auth, Theme, i18n, React Query, Toast |
 | 🏗 Placeholder | 4 | Home mood check-in, Action, Games, Analytics |
 | 📋 Planned | 3 | Settings, Invite Partner, Charts |

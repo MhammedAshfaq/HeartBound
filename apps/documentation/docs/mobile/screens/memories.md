@@ -29,7 +29,7 @@ features/memories/
 │   └── MediaPicker.tsx            ← Gallery/Camera image picker
 └── screens/
     ├── MemoriesListScreen.tsx      ← Groups by date, renders gallery rows
-    ├── AddMemoryScreen.tsx         ← 3-step wizard modal (unchanged)
+    ├── AddMemoryScreen.tsx         ← Single-screen form modal
     ├── DayMemoriesScreen.tsx       ← Pushed screen: all images for one day
     └── MemoryDetailScreen.tsx      ← Modal: full image + metadata overlay + pinch zoom
 ```
@@ -148,9 +148,16 @@ Scrollable modal with two separate cards:
 
 ## Add Memory Modal
 
-**Route:** `/add-memory` (unchanged from previous design)
+**Route:** `/add-memory`
 
-3-step wizard inside a modal. See previous documentation for full spec.
+A single, scrollable form screen wrapped in a modal. It allows creating a new memory by providing all parameters in a cohesive flow:
+
+1. **Media Picker:** Displays a compact upload widget. If no media is selected, side-by-side cards for Gallery and Camera are shown. Once selected, a 16:9 aspect ratio preview card is displayed with a top-right edit/change overlay button.
+2. **Details Form:** Focuses on title (required, with inline validation error if empty), description (optional, multiline), date (defaulted to today, with inline YYYY-MM-DD validation), and location (optional).
+3. **Feelings Selector:** A list of mood chips using the `MoodSelector` component.
+4. **Privacy Settings:** A radio selection group for Private vs Shared using the `PrivacySelector` component.
+
+The "Save Memory" button is fixed at the bottom. It validates the title, date, and media presence before committing changes to local storage.
 
 ## Translations
 

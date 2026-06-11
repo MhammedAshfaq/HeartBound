@@ -34,60 +34,64 @@ export function MediaPicker({ mediaUri, onMediaPicked, accentColor }: MediaPicke
 
     let result: ImagePicker.ImagePickerResult;
 
-    if (kind === 'gallery') {
-      result = await ImagePicker.launchImageLibraryAsync(options);
-    } else {
-      const granted = await requestCameraPermission();
-      if (!granted) {
-        toast.error({ title: t('common.error'), message: 'Camera permission required' });
-        return;
+    try {
+      if (kind === 'gallery') {
+        result = await ImagePicker.launchImageLibraryAsync(options);
+      } else {
+        const granted = await requestCameraPermission();
+        if (!granted) {
+          toast.error({ title: t('common.error'), message: 'Camera permission required' });
+          return;
+        }
+        result = await ImagePicker.launchCameraAsync(options);
       }
-      result = await ImagePicker.launchCameraAsync(options);
-    }
 
-    if (!result.canceled && result.assets[0]) {
-      const asset = result.assets[0];
-      onMediaPicked(asset.uri, asset.type === 'video' ? 'video' : 'image');
+      if (!result.canceled && result.assets[0]) {
+        const asset = result.assets[0];
+        onMediaPicked(asset.uri, asset.type === 'video' ? 'video' : 'image');
+      }
+    } catch (err: any) {
+      toast.error({
+        title: t('common.error'),
+        message: err?.message || 'Media picking failed',
+      });
     }
   }, [onMediaPicked, t, toast]);
 
   if (mediaUri) {
     return (
-      <View className="flex-1">
-        <View className="flex-1 rounded-2xl overflow-hidden mb-4" style={{ backgroundColor: c.card }}>
-          <Image source={{ uri: mediaUri }} className="w-full h-full" resizeMode="contain" />
-        </View>
+      <View className="w-full h-full rounded-2xl overflow-hidden relative" style={{ backgroundColor: c.card }}>
+        <Image source={{ uri: mediaUri }} className="w-full h-full" resizeMode="cover" />
         <Pressable
           onPress={() => pickMedia('gallery')}
-          className="py-3 px-4 rounded-xl flex-row items-center justify-center gap-2 mb-3"
-          style={{ backgroundColor: activeColor }}
+          className="absolute right-3 top-3 w-10 h-10 rounded-full items-center justify-center shadow-md active:opacity-85"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
         >
-          <Ionicons name="images-outline" size={20} color="#fff" />
-          <Text className="text-white font-semibold text-base">{t('memories.gallery')}</Text>
+          <Ionicons name="camera-reverse" size={20} color="#fff" />
         </Pressable>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 justify-center gap-4">
+    <View className="flex-row gap-4 w-full h-full">
       <Pressable
         onPress={() => pickMedia('gallery')}
-        className="py-5 px-6 rounded-xl flex-row items-center justify-center gap-3"
-        style={{ backgroundColor: c.card }}
+        className="flex-1 rounded-2xl items-center justify-center border-2 border-dashed active:opacity-85"
+        style={{ backgroundColor: c.card, borderColor: c.border }}
       >
         <Ionicons name="images-outline" size={28} color={activeColor} />
-        <Text style={{ color: c.text }} className="text-base font-semibold">
+        <Text style={{ color: c.text }} className="text-sm font-semibold mt-2 text-center">
           {t('memories.gallery')}
         </Text>
       </Pressable>
       <Pressable
         onPress={() => pickMedia('camera')}
-        className="py-5 px-6 rounded-xl flex-row items-center justify-center gap-3"
-        style={{ backgroundColor: c.card }}
+        className="flex-1 rounded-2xl items-center justify-center border-2 border-dashed active:opacity-85"
+        style={{ backgroundColor: c.card, borderColor: c.border }}
       >
         <Ionicons name="camera-outline" size={28} color={activeColor} />
-        <Text style={{ color: c.text }} className="text-base font-semibold">
+        <Text style={{ color: c.text }} className="text-sm font-semibold mt-2 text-center">
           {t('memories.camera')}
         </Text>
       </Pressable>

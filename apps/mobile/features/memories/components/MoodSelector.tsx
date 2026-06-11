@@ -26,24 +26,24 @@ export function MoodSelector({ value, onChange, accentColor }: MoodSelectorProps
   const activeColor = accentColor ?? (isDark ? '#60a5fa' : '#3b82f6');
 
   return (
-    <View className="flex-row flex-wrap gap-3">
+    <View className="flex-row justify-between px-1">
       {FEELINGS.map((feeling) => {
         const selected = value === feeling.value;
         return (
           <Pressable
             key={feeling.value}
             onPress={() => onChange(feeling.value)}
-            className="flex-row items-center gap-2 py-3 px-5 rounded-xl"
-            style={{ backgroundColor: selected ? activeColor : c.card }}
+            className="flex-col items-center gap-1.5 rounded-lg"
+            style={{ backgroundColor: selected ? activeColor : c.card, paddingHorizontal: 15, paddingVertical: 5}}
           >
             <Ionicons
               name={feeling.icon}
-              size={20}
+              size={15}
               color={selected ? '#fff' : c.text}
             />
             <Text
               style={{ color: selected ? '#fff' : c.text }}
-              className="font-semibold text-base"
+              className="font-semibold text-xs"
             >
               {t(feeling.labelKey)}
             </Text>

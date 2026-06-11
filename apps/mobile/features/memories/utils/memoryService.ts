@@ -1,11 +1,17 @@
-import { getSecureItem, setSecureItem } from '@/lib/utils/secureStorage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logError } from '@/lib/utils/logError';
 import { Memory, NewMemoryPayload } from '@/features/memories/types/memory.types';
 
 const STORAGE_KEY = 'memories';
 
 export async function loadMemories(): Promise<Memory[]> {
-  const data = await getSecureItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    logError(error, 'memoryService.load');
+    return [];
+  }
 }
 
 export async function saveMemory(payload: NewMemoryPayload): Promise<Memory[]> {
@@ -16,7 +22,11 @@ export async function saveMemory(payload: NewMemoryPayload): Promise<Memory[]> {
     createdAt: new Date().toISOString(),
   };
   const updated = [memory, ...existing];
-  await setSecureItem(STORAGE_KEY, JSON.stringify(updated));
+  try {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    logError(error, 'memoryService.save');
+  }
   return updated;
 }
 
@@ -25,14 +35,22 @@ export async function updateMemory(id: string, updates: Partial<NewMemoryPayload
   const updated = existing.map((m) =>
     m.id === id ? { ...m, ...updates } : m
   );
-  await setSecureItem(STORAGE_KEY, JSON.stringify(updated));
+  try {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    logError(error, 'memoryService.update');
+  }
   return updated;
 }
 
 export async function deleteMemory(id: string): Promise<Memory[]> {
   const existing = await loadMemories();
   const updated = existing.filter((m) => m.id !== id);
-  await setSecureItem(STORAGE_KEY, JSON.stringify(updated));
+  try {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    logError(error, 'memoryService.delete');
+  }
   return updated;
 }
 
