@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Image, Pressable, Dimensions, ScrollView, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -9,6 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { colors, shadows } from '@/lib/theme';
 import { useMemories } from '@/features/memories/hooks/useMemories';
 import { MemoryFeeling } from '@/constants/Enums';
+import { Button } from '@/components/common/Button';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 48; // mx-6 on card = 24px each side
@@ -33,7 +35,7 @@ export default function MemoryDetailScreen() {
   const s = shadows(isDark);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { memories } = useMemories();
+  const { memories, deleteMemory } = useMemories();
 
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
@@ -90,13 +92,14 @@ export default function MemoryDetailScreen() {
   }
 
   return (
-    <ScrollView style={{ backgroundColor: c.background }} className="flex-1">
-      {/* ─── Header ─── */}
-      <View className="ml-2 mt-2 items-start">
-        <Pressable onPress={() => router.back()}>
-          <Ionicons name="close" size={24} color={c.text} />
-        </Pressable>
-      </View>
+    <SafeAreaView style={{ backgroundColor: c.background }} className="flex-1">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* ─── Header ─── */}
+        <View className="flex-row items-center justify-between px-4 py-2 mt-2">
+          <Pressable onPress={() => router.back()} className="p-2 -ml-2">
+            <Ionicons name="close" size={26} color={c.text} />
+          </Pressable>
+        </View>
 
       {/* ─── Image Card ─── */}
       <View className="rounded-xl overflow-hidden mt-2" style={{ backgroundColor: c.card, ...s.sm, marginHorizontal: 10}}>
@@ -125,7 +128,7 @@ export default function MemoryDetailScreen() {
               {memory.title}
             </Text>
             <View className="flex-row items-center rounded-full">
-              <Text className="text-xs font-semibold ml-1.5">
+              <Text className="text-xs font-semibold ml-1.5" style={{ color: c.text }}>
                 {formatDate(memory.date)}
               </Text>
             </View>
@@ -163,7 +166,40 @@ export default function MemoryDetailScreen() {
         </View>
       </View>
 
+      <View className="flex-row gap-3 px-3 mt-6 mb-2">
+        <View className="flex-1">
+          <Button 
+            title={t('common.edit') || 'Edit'} 
+            onPress={() => router.push({ pathname: '/(modals)/edit-memory', params: { id } })}
+            variant="outline"
+          />
+        </View>
+        <View className="flex-1">
+          <Button 
+            title={t('common.delete') || 'Delete'} 
+            onPress={() => {
+              Alert.alert(
+                t('common.delete') || 'Delete',
+                t('memories.deleteConfirm') || 'Are you sure you want to delete this memory?',
+                [
+                  { text: t('common.cancel') || 'Cancel', style: 'cancel' },
+                  { 
+                    text: t('common.delete') || 'Delete', 
+                    style: 'destructive',
+                    onPress: async () => {
+                      await deleteMemory(id);
+                      router.back();
+                    }
+                  }
+                ]
+              );
+            }}
+          />
+        </View>
+      </View>
+
       <View className="h-8" />
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

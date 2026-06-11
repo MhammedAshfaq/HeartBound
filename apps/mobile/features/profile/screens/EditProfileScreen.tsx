@@ -10,6 +10,7 @@ import {
   Text,
   TextInput,
   View,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -48,6 +49,7 @@ export default function EditProfileScreen() {
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
   const [activePicker, setActivePicker] = useState<'dob' | 'anniversary' | 'partnerDob' | null>(null);
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
 
   const pickFrom = useCallback(async (source: 'gallery' | 'camera') => {
     const permission = source === 'gallery'
@@ -92,23 +94,8 @@ export default function EditProfileScreen() {
   }, [t, toast, updateProfile, name, initialName, dob, partnerName, anniversaryDate, partnerDob]);
 
   const handlePickImage = useCallback(() => {
-    if (Platform.OS === 'ios') {
-      const options = [t('profile.gallery'), t('profile.camera'), t('common.cancel')];
-      ActionSheetIOS.showActionSheetWithOptions(
-        { options, cancelButtonIndex: 2 },
-        (index) => {
-          if (index === 0) pickFrom('gallery');
-          else if (index === 1) pickFrom('camera');
-        },
-      );
-    } else {
-      Alert.alert('Profile Photo', 'Choose a source', [
-        { text: t('profile.gallery'), onPress: () => pickFrom('gallery') },
-        { text: t('profile.camera'), onPress: () => pickFrom('camera') },
-        { text: t('common.cancel'), style: 'cancel' },
-      ]);
-    }
-  }, [t, pickFrom]);
+    setPhotoModalVisible(true);
+  }, []);
 
   const validateName = useCallback((value: string) => {
     const trimmed = value.trim();
@@ -238,7 +225,7 @@ export default function EditProfileScreen() {
               }}
             >
               {/* Name */}
-              <View className="px-5" style={{ paddingVertical: 10 }}>
+              <View className="px-1" style={{ paddingVertical: 10 }}>
                 <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
                   {t('auth.fullName')}
                 </Text>
@@ -265,10 +252,10 @@ export default function EditProfileScreen() {
                 ) : null}
               </View>
 
-              <View className="mx-5 border-t" style={{ borderColor: c.border }} />
+              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
               {/* Date of Birth */}
-              <View className="px-5" style={{ paddingVertical: 10 }}>
+              <View className="px-1" style={{ paddingVertical: 10 }}>
                 <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
                   {t('profile.dateOfBirth')}
                 </Text>
@@ -286,10 +273,10 @@ export default function EditProfileScreen() {
                 </Pressable>
               </View>
 
-              <View className="mx-5 border-t" style={{ borderColor: c.border }} />
+              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
               {/* Anniversary */}
-              <View className="px-5" style={{ paddingVertical: 10}}>
+              <View className="px-1" style={{ paddingVertical: 10}}>
                 <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
                   {t('auth.anniversaryDate')}
                 </Text>
@@ -307,10 +294,10 @@ export default function EditProfileScreen() {
                 </Pressable>
               </View>
 
-              <View className="mx-5 border-t" style={{ borderColor: c.border }} />
+              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
               {/* Partner Name */}
-              <View className="px-5" style={{ paddingVertical: 10 }}>
+              <View className="px-1" style={{ paddingVertical: 10 }}>
                 <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
                   {t('auth.partnerName')}
                 </Text>
@@ -332,10 +319,10 @@ export default function EditProfileScreen() {
                 />
               </View>
 
-              <View className="mx-5 border-t" style={{ borderColor: c.border }} />
+              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
               {/* Partner DOB */}
-              <View className="px-5" style={{ paddingVertical: 10 }}>
+              <View className="px-1" style={{ paddingVertical: 10 }}>
                 <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
                   {t('auth.partnerDob')}
                 </Text>
@@ -353,10 +340,10 @@ export default function EditProfileScreen() {
                 </Pressable>
               </View>
 
-              <View className="mx-5 border-t" style={{ borderColor: c.border }} />
+              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
               {/* Partner Email */}
-              <View className="px-5" style={{ paddingVertical: 10 }}>
+              <View className="px-1" style={{ paddingVertical: 10 }}>
                 <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
                   {t('profile.email')}
                 </Text>
@@ -383,6 +370,50 @@ export default function EditProfileScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal
+        visible={photoModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setPhotoModalVisible(false)}
+      >
+        <Pressable 
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}
+          onPress={() => setPhotoModalVisible(false)}
+        >
+          <View 
+            style={{ backgroundColor: c.background, padding: 24, borderTopLeftRadius: 24, borderTopRightRadius: 24 }}
+            onStartShouldSetResponder={() => true}
+          >
+            <Text style={{ color: c.text, fontSize: 18, fontWeight: 'bold', marginBottom: 16 }}>
+              Profile Photo
+            </Text>
+            
+            <Pressable 
+              onPress={() => { setPhotoModalVisible(false); pickFrom('camera'); }}
+              style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: c.border }}
+            >
+              <Ionicons name="camera-outline" size={24} color={c.text} style={{ marginRight: 12 }} />
+              <Text style={{ color: c.text, fontSize: 16 }}>{t('profile.camera')}</Text>
+            </Pressable>
+
+            <Pressable 
+              onPress={() => { setPhotoModalVisible(false); pickFrom('gallery'); }}
+              style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}
+            >
+              <Ionicons name="images-outline" size={24} color={c.text} style={{ marginRight: 12 }} />
+              <Text style={{ color: c.text, fontSize: 16 }}>{t('profile.gallery')}</Text>
+            </Pressable>
+
+            <Pressable 
+              onPress={() => setPhotoModalVisible(false)}
+              style={{ marginTop: 16, backgroundColor: c.card, paddingVertical: 14, borderRadius: 12, alignItems: 'center' }}
+            >
+              <Text style={{ color: c.text, fontSize: 16, fontWeight: '600' }}>{t('common.cancel')}</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Modal>
 
       <DatePickerModal
         visible={activePicker === 'dob'}

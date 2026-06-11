@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '@/constants/Colors';
@@ -20,42 +20,49 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
   const getIconForCategory = (category: string) => {
     switch (category) {
       case 'gift':
-        return 'gift-outline';
+        return { name: 'gift', color: '#f43f5e', bg: '#ffe4e6' }; // rose
       case 'service':
-        return 'hand-left-outline';
+        return { name: 'hand-left', color: '#8b5cf6', bg: '#ede9fe' }; // violet
       case 'words':
-        return 'chatbubble-outline';
+        return { name: 'chatbubble-ellipses', color: '#0ea5e9', bg: '#e0f2fe' }; // sky
       case 'time':
-        return 'time-outline';
+        return { name: 'time', color: '#f59e0b', bg: '#fef3c7' }; // amber
       case 'custom':
-        return 'star-outline';
+        return { name: 'star', color: '#ec4899', bg: '#fce7f3' }; // pink
       default:
-        return 'checkmark-circle-outline';
+        return { name: 'heart', color: '#f43f5e', bg: '#ffe4e6' };
     }
   };
 
+  const iconInfo = getIconForCategory(task.category);
+
+  // If completed, show a simpler, checked-off version that feels rewarding
   if (task.isCompleted) {
     return (
       <View 
-        className="flex-row items-center p-4 mb-3 rounded-2xl"
-        style={{ backgroundColor: c.card, opacity: 0.8 }}
+        className="flex-row items-center p-4 mb-3 rounded-2xl border"
+        style={{ 
+          backgroundColor: isDark ? '#1a1f1c' : '#f0fdf4', 
+          borderColor: isDark ? '#14532d' : '#bbf7d0',
+          shadowColor: '#22c55e', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1
+        }}
       >
         <View 
-          className="w-10 h-10 rounded-full items-center justify-center mr-3"
-          style={{ backgroundColor: `${c.success}20` }}
+          className="w-8 h-8 rounded-full items-center justify-center mr-2"
+          style={{ backgroundColor: isDark ? '#166534' : '#dcfce7' }}
         >
-          <Ionicons name="checkmark-circle" size={24} color={c.success} />
+          <Ionicons name="checkmark-done" size={20} color={isDark ? '#4ade80' : '#16a34a'} />
         </View>
-        <View className="flex-1">
+        <View className="flex-1 ml-1">
           <Text 
-            style={{ color: c.text }} 
-            className="text-base font-semibold"
+            style={{ color: isDark ? '#f0fdf4' : '#14532d' }} 
+            className="text-base font-bold"
           >
             {task.title}
           </Text>
           <Text 
-            style={{ color: c.muted }} 
-            className="text-xs mt-1"
+            style={{ color: isDark ? '#86efac' : '#22c55e' }} 
+            className="text-xs mt-1 font-medium"
           >
             {t('action.completedToday')}
           </Text>
@@ -64,29 +71,34 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
     );
   }
 
+  // Active suggestion card
   return (
     <View 
-      className="p-4 mb-4 rounded-2xl border"
-      style={{ backgroundColor: c.card, borderColor: c.border }}
+      className="p-5 mb-5 rounded-3xl border shadow-sm"
+      style={{ 
+        backgroundColor: isDark ? '#1c1917' : '#ffffff', 
+        borderColor: isDark ? '#292524' : '#f5f5f4',
+        shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2
+      }}
     >
-      <View className="flex-row items-start mb-3">
+      <View className="flex-row items-center mb-4">
         <View 
-          className="w-10 h-10 rounded-full items-center justify-center mr-3"
-          style={{ backgroundColor: `${c.primary}15` }}
+          className="w-10 h-10 rounded-full items-center justify-center mr-2 shadow-sm"
+          style={{ backgroundColor: isDark ? '#292524' : iconInfo.bg }}
         >
-          <Ionicons name={getIconForCategory(task.category)} size={20} color={c.primary} />
+          <Ionicons name={iconInfo.name as any} size={20} color={iconInfo.color} />
         </View>
-        <View className="flex-1">
+        <View className="flex-1 justify-center ml-1">
           <Text 
             style={{ color: c.text }} 
-            className="text-base font-semibold leading-6"
+            className="text-mg font-bold leading-6 tracking-tight"
           >
             {task.title}
           </Text>
           {task.description && (
             <Text 
               style={{ color: c.muted }} 
-              className="text-sm mt-1"
+              className="text-sm mt-1 leading-5"
             >
               {task.description}
             </Text>
@@ -97,10 +109,18 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
       {onMarkDone && (
         <Pressable
           onPress={() => onMarkDone(task.id)}
-          className="py-3 rounded-xl items-center justify-center flex-row"
-          style={{ backgroundColor: `${c.primary}15` }}
+          className="py-3.5 rounded-2xl items-center justify-center flex-row border"
+          style={({ pressed }) => [
+            { 
+              backgroundColor: isDark ? '#2a1215' : '#fff1f2',
+              borderColor: isDark ? '#4c1d24' : '#ffe4e6',
+              opacity: pressed ? 0.8 : 1,
+              transform: [{ scale: pressed ? 0.98 : 1 }]
+            }
+          ]}
         >
-          <Text style={{ color: c.primary }} className="font-semibold text-sm">
+          <Ionicons name="heart-outline" size={20} color="#f43f5e" className="mr-2" />
+          <Text style={{ color: '#f43f5e' }} className="font-bold text-base ml-2">
             {t('action.markDone')}
           </Text>
         </Pressable>

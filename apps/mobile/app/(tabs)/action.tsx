@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Colors from '@/constants/Colors';
@@ -24,82 +24,119 @@ export default function ActionScreen() {
   if (isLoading && actions.length === 0) {
     return (
       <View style={{ backgroundColor: c.background }} className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color={c.primary} />
+        <ActivityIndicator size="large" color="#f43f5e" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: c.background }} className="flex-1">
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="mt-6 mb-8">
-          <Text style={{ color: c.text }} className="text-3xl font-bold mb-2">
-            {t('action.title')}
-          </Text>
-          <Text style={{ color: c.muted }} className="text-base">
-            {t('action.subtitle')}
-          </Text>
+    <View style={{ backgroundColor: isDark ? '#0c0a09' : '#f8fafc', flex: 1 }}>
+      <StatusBar barStyle="light-content" />
+      
+      <ScrollView 
+        className="flex-1" 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        bounces={false}
+      >
+        {/* Rich Header Background */}
+        <View 
+          className="pt-16 pb-12 px-6 rounded-b-[40px] shadow-sm relative overflow-hidden"
+          style={{ backgroundColor: '#f43f5e' }}
+        >
+          {/* Decorative background circles */}
+          <View className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white opacity-10" />
+          <View className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-black opacity-10" />
+
+          <SafeAreaView>
+            <View className="flex-row items-center justify-between mb-2">
+              <View className="w-12 h-12 rounded-full bg-white/20 items-center justify-center">
+                <Ionicons name="sparkles" size={24} color="#fff" />
+              </View>
+            </View>
+            <Text className="text-4xl font-extrabold text-white tracking-tight mb-2 mt-2 shadow-sm">
+              {t('action.title')}
+            </Text>
+            <Text className="text-rose-100 text-lg font-medium">
+              {t('action.subtitle')}
+            </Text>
+          </SafeAreaView>
         </View>
 
-        {/* Completed Section (Pinned at top) */}
-        {completedActions.length > 0 && (
-          <View className="mb-6">
-            <Text style={{ color: c.text }} className="text-lg font-bold mb-4">
-              {t('action.completedToday')}
-            </Text>
-            {completedActions.map((task) => (
-              <ActionCard key={task.id} task={task} />
-            ))}
-          </View>
-        )}
+        <View className="px-5 pt-6">
+          {/* Completed Section (Pinned at top) */}
+          {completedActions.length > 0 && (
+            <View className="mb-8">
+              <View className="flex-row items-center mb-5">
+                <Ionicons name="trophy" size={20} color="#f59e0b" className="mr-2" />
+                <Text style={{ color: c.text }} className="text-xl font-bold ml-2">
+                  {t('action.completedToday')}
+                </Text>
+                <View className="ml-3 bg-amber-100 dark:bg-amber-900/40 px-2.5 py-1 rounded-full">
+                  <Text className="text-amber-600 dark:text-amber-400 font-bold text-xs">
+                    {completedActions.length}
+                  </Text>
+                </View>
+              </View>
+              {completedActions.map((task) => (
+                <ActionCard key={task.id} task={task} />
+              ))}
+            </View>
+          )}
 
-        {/* Suggestions Section */}
-        <View className="mb-8">
-          <View className="flex-row justify-between items-center mb-4">
-            <Text style={{ color: c.text }} className="text-lg font-bold">
-              {t('action.ideasForYou')}
-            </Text>
-          </View>
-
-          {pendingActions.length === 0 ? (
-            <View 
-              className="py-12 items-center justify-center rounded-2xl border border-dashed"
-              style={{ borderColor: c.border }}
-            >
-              <Text style={{ color: c.muted }} className="text-center mb-4">
-                You've completed all ideas!
+          {/* Suggestions Section */}
+          <View className="mb-8">
+            <View className="flex-row justify-between items-end mb-5">
+              <Text style={{ color: c.text }} className="text-xl font-bold">
+                {t('action.ideasForYou')}
               </Text>
+            </View>
+
+            {pendingActions.length === 0 ? (
+              <View 
+                className="py-16 px-6 items-center justify-center rounded-3xl border-2 border-dashed"
+                style={{ borderColor: isDark ? '#3f3f46' : '#cbd5e1', backgroundColor: isDark ? '#18181b' : '#f1f5f9' }}
+              >
+                <View className="w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-900/30 items-center justify-center mb-4">
+                  <Ionicons name="star" size={32} color="#f43f5e" />
+                </View>
+                <Text style={{ color: c.text }} className="text-xl font-bold text-center mb-2">
+                  All done for now!
+                </Text>
+                <Text style={{ color: c.muted }} className="text-center mb-6 leading-5">
+                  You've completed all suggested acts of kindness today. Keep the romance alive!
+                </Text>
+                <Button 
+                  title={t('action.refresh')} 
+                  onPress={refreshSuggestions} 
+                />
+              </View>
+            ) : (
+              pendingActions.map((task) => (
+                <ActionCard 
+                  key={task.id} 
+                  task={task} 
+                  onMarkDone={markAsCompleted} 
+                />
+              ))
+            )}
+          </View>
+
+          {/* Footer Actions */}
+          <View className="space-y-4 gap-4 pb-4">
+            <Button 
+              title={t('action.addCustom')} 
+              onPress={() => setModalVisible(true)} 
+              variant="outline"
+            />
+            {pendingActions.length > 0 && (
               <Button 
                 title={t('action.refresh')} 
                 onPress={refreshSuggestions} 
                 variant="outline" 
               />
-            </View>
-          ) : (
-            pendingActions.map((task) => (
-              <ActionCard 
-                key={task.id} 
-                task={task} 
-                onMarkDone={markAsCompleted} 
-              />
-            ))
-          )}
-        </View>
-
-        {/* Footer Actions */}
-        <View className="space-y-4 mb-10 gap-3 pb-8">
-          <Button 
-            title={t('action.addCustom')} 
-            onPress={() => setModalVisible(true)} 
-          />
-          {pendingActions.length > 0 && (
-            <Button 
-              title={t('action.refresh')} 
-              onPress={refreshSuggestions} 
-              variant="outline" 
-            />
-          )}
+            )}
+          </View>
         </View>
       </ScrollView>
 
@@ -109,6 +146,6 @@ export default function ActionScreen() {
         onClose={() => setModalVisible(false)}
         onSubmit={addCustomAction}
       />
-    </SafeAreaView>
+    </View>
   );
 }

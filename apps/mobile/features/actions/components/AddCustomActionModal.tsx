@@ -50,12 +50,12 @@ export const AddCustomActionModal: React.FC<AddCustomActionModalProps> = ({
       onRequestClose={handleClose}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <View className="flex-1 justify-center p-5" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <KeyboardAvoidingView 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <View 
-              className="rounded-t-3xl p-6"
+              className="rounded-xl p-4"
               style={{ backgroundColor: c.background }}
             >
               <View className="flex-row justify-between items-center mb-6">
