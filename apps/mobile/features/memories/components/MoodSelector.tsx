@@ -34,7 +34,7 @@ export function MoodSelector({ value, onChange, accentColor }: MoodSelectorProps
             key={feeling.value}
             onPress={() => onChange(feeling.value)}
             className="flex-col items-center gap-1.5 rounded-lg"
-            style={{ backgroundColor: selected ? activeColor : c.card, paddingHorizontal: 15, paddingVertical: 5}}
+            style={{ flex: 1, backgroundColor: selected ? activeColor : c.card, paddingHorizontal: 15, paddingVertical: 5, marginHorizontal: 2}}
           >
             <Ionicons
               name={feeling.icon}
