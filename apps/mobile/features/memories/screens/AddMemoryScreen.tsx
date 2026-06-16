@@ -110,10 +110,10 @@ export default function AddMemoryScreen() {
       >
         <ScrollView className="flex-1 px-6 pt-6" keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           {/* Media Picker Section */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-2">
-            {t('memories.selectMedia')} <Text style={{color: "red" }}>*</Text>
+          <Text style={{ color: c.text, marginBottom: 5 }} className="text-sm font-semibold">
+            {t('memories.selectMedia')} <Text style={{ color: "red" }}>*</Text>
           </Text>
-          <View style={{ height: mediaUri ? 220 : 140 }} className="w-full mb-1">
+          <View style={{ height: mediaUri ? 220 : 140 }} className="w-full">
             <MediaPicker
               mediaUri={mediaUri}
               mediaType={mediaType}
@@ -122,13 +122,13 @@ export default function AddMemoryScreen() {
             />
           </View>
           {mediaError ? (
-            <Text className="text-red-500 text-sm mb-3">{mediaError}</Text>
+            <Text style={{ marginBottom: 10, color: '#ef4444' }} className="text-sm">{mediaError}</Text>
           ) : (
-            <View className="mb-3" />
+            <View style={{ marginBottom: 15 }} />
           )}
 
           {/* Title Field */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-1.5">
+          <Text style={{ color: c.text, marginBottom: 5 }} className="text-sm font-semibold">
             {t('memories.memoryTitle')} <Text style={{ color: 'red' }}>*</Text>
           </Text>
           <TextInput
@@ -136,17 +136,17 @@ export default function AddMemoryScreen() {
             onChangeText={(v) => { setTitle(v); setTitleError(''); }}
             placeholder={t('memories.titlePlaceholder')}
             placeholderTextColor={c.muted}
-            className="rounded-xl px-4 py-3.5 text-base mb-1"
-            style={{ backgroundColor: c.card, color: c.text }}
+            className="rounded-xl text-base"
+            style={{ backgroundColor: c.card, color: c.text, paddingHorizontal: 10, paddingVertical: 12, marginBottom: 15 }}
           />
           {titleError ? (
-            <Text className="text-red-500 text-sm mb-3">{titleError}</Text>
+            <Text style={{ marginBottom: 15 }} className="text-red-500 text-sm">{titleError}</Text>
           ) : (
-            <View className="mb-3" />
+            <View style={{ marginBottom: 15 }} />
           )}
 
           {/* Description Field */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-1.5">
+          <Text style={{ color: c.text, marginBottom: 5 }} className="text-sm font-semibold">
             {t('memories.description')}
           </Text>
           <TextInput
@@ -156,14 +156,14 @@ export default function AddMemoryScreen() {
             placeholderTextColor={c.muted}
             multiline
             numberOfLines={4}
-            className="rounded-xl px-4 py-3.5 text-base mb-4"
-            style={{ backgroundColor: c.card, color: c.text, minHeight: 100, textAlignVertical: 'top' }}
+            className="rounded-xl text-base"
+            style={{ backgroundColor: c.card, color: c.text, minHeight: 100, textAlignVertical: 'top', paddingHorizontal: 10, paddingVertical: 10, marginBottom: 15 }}
           />
 
           {/* Date is created automatically on save */}
 
           {/* Location Field */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-1.5">
+          <Text style={{ color: c.text, marginBottom: 5 }} className="text-sm font-semibold">
             {t('memories.location')}
           </Text>
           <TextInput
@@ -171,15 +171,15 @@ export default function AddMemoryScreen() {
             onChangeText={setLocation}
             placeholder={t('memories.locationPlaceholder')}
             placeholderTextColor={c.muted}
-            className="rounded-xl px-4 py-3.5 text-base mb-6"
-            style={{ backgroundColor: c.card, color: c.text }}
+            className="rounded-xl text-base"
+            style={{ backgroundColor: c.card, color: c.text, paddingHorizontal: 10, paddingVertical: 12, marginBottom: 15 }}
           />
 
           {/* Mood Selector Section */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-3">
+          <Text style={{ color: c.text, marginBottom: 5 }} className="text-sm font-semibold">
             {t('memories.howYouFelt')}
           </Text>
-          <View className="mb-6">
+          <View>
             <MoodSelector
               value={feeling}
               onChange={setFeeling}
@@ -191,7 +191,7 @@ export default function AddMemoryScreen() {
       </KeyboardAvoidingView>
 
       {/* Save Button Container */}
-      <View className="px-6 py-4 border-t" style={{ borderColor: c.border }}>
+      <View className="px-6 py-4 border-t pb-8" style={{ borderColor: c.border }}>
         <Pressable
           onPress={handleSave}
           disabled={saving}
@@ -206,6 +206,6 @@ export default function AddMemoryScreen() {
           </Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }

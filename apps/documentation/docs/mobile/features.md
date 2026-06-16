@@ -38,6 +38,7 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 - OAuth stubs for Google, Apple, Facebook (context ready, UI planned)
 - OTP verification for 2FA
 - Post-login profile setup for essential details before entering tabs
+- Partner Sync option during setup profile or later in Settings Card
 - Logout with session cleanup
 
 ### Theme
@@ -64,6 +65,6 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 
 | Status | Count | Items |
 |--------|-------|-------|
-| ✅ Done | 13 | Login, OTP, Setup Profile, Profile (rich), Memories (gallery day-grouped + single-screen add + day detail + image modal), Notification, Session, API, Auth, Theme, i18n, React Query, Toast |
+| ✅ Done | 14 | Login, OTP, Setup Profile, Profile (rich), Memories (gallery day-grouped + single-screen add + day detail + image modal), Notification, Session, API, Auth, Theme, i18n, React Query, Toast, Partner Sync |
 | 🏗 Placeholder | 4 | Home mood check-in, Action, Games, Analytics |
-| 📋 Planned | 3 | Settings, Invite Partner, Charts |
+| 📋 Planned | 2 | Settings, Charts |

@@ -1,6 +1,6 @@
 # Login Screen
 
-**Route:** `app/(auth)/index.tsx`
+**Route:** `app/(auth)/login.tsx`
 **Status:** ✅ Done (phone + OTP + social login)
 
 ---

@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ScrollView, Alert } from 'react-native';
+import { useMemo, useState } from 'react';
+import { View, Text, Image, Pressable, Dimensions, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -11,6 +11,7 @@ import { colors, shadows } from '@/lib/theme';
 import { useMemories } from '@/features/memories/hooks/useMemories';
 import { MemoryFeeling } from '@/constants/Enums';
 import { Button } from '@/components/common/Button';
+import { ConfirmationModal } from '@/components/common/ConfirmationModal';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 48; // mx-6 on card = 24px each side
@@ -43,6 +44,8 @@ export default function MemoryDetailScreen() {
   const translateY = useSharedValue(0);
   const savedTranslateX = useSharedValue(0);
   const savedTranslateY = useSharedValue(0);
+
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const pinch = Gesture.Pinch()
     .onStart(() => {
@@ -166,7 +169,7 @@ export default function MemoryDetailScreen() {
         </View>
       </View>
 
-      <View className="flex-row gap-3 px-3 mt-6 mb-2">
+      <View className="flex-row gap-4 px-3 mt-4">
         <View className="flex-1">
           <Button 
             title={t('common.edit') || 'Edit'} 
@@ -177,29 +180,39 @@ export default function MemoryDetailScreen() {
         <View className="flex-1">
           <Button 
             title={t('common.delete') || 'Delete'} 
-            onPress={() => {
-              Alert.alert(
-                t('common.delete') || 'Delete',
-                t('memories.deleteConfirm') || 'Are you sure you want to delete this memory?',
-                [
-                  { text: t('common.cancel') || 'Cancel', style: 'cancel' },
-                  { 
-                    text: t('common.delete') || 'Delete', 
-                    style: 'destructive',
-                    onPress: async () => {
-                      await deleteMemory(id);
-                      router.back();
-                    }
-                  }
-                ]
-              );
-            }}
+            onPress={() => setDeleteModalVisible(true)}
+            style={{ backgroundColor: '#ef4444', borderColor: '#ef4444' }}
           />
         </View>
       </View>
 
       <View className="h-8" />
       </ScrollView>
+
+      <ConfirmationModal
+        visible={deleteModalVisible}
+        title={t('common.delete') || 'Delete'}
+        message={t('memories.deleteConfirm') || 'Are you sure you want to delete this memory?'}
+        icon="trash"
+        iconColor="#ef4444"
+        options={[
+          { 
+            text: t('common.cancel') || 'Cancel', 
+            style: 'cancel',
+            onPress: () => setDeleteModalVisible(false)
+          },
+          { 
+            text: t('common.delete') || 'Delete', 
+            style: 'destructive',
+            onPress: async () => {
+              setDeleteModalVisible(false);
+              await deleteMemory(id);
+              router.back();
+            }
+          }
+        ]}
+        onClose={() => setDeleteModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }

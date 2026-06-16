@@ -106,7 +106,7 @@ export default function EditMemoryScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Title Field */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-1.5">
+          <Text style={{ color: c.text, marginBottom: 3 }} className="text-sm font-semibold">
             {t('memories.memoryTitle')} <Text style={{ color: 'red' }}>*</Text>
           </Text>
           <TextInput
@@ -114,17 +114,17 @@ export default function EditMemoryScreen() {
             onChangeText={(v) => { setTitle(v); setTitleError(''); }}
             placeholder={t('memories.titlePlaceholder')}
             placeholderTextColor={c.muted}
-            className="rounded-xl px-4 py-3.5 text-base mb-1"
+            className="rounded-xl px-4 py-3.5 text-base"
             style={{ backgroundColor: c.card, color: c.text, borderWidth: 1, borderColor: titleError ? '#ef4444' : c.border }}
           />
           {titleError ? (
-            <Text className="text-red-500 text-sm mb-3">{titleError}</Text>
+            <Text style={{ color: '#ef4444' }} className="text-sm">{titleError}</Text>
           ) : (
-            <View className="mb-3" />
+            <View />
           )}
 
           {/* Description Field */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-1.5">
+          <Text style={{ color: c.text, marginTop: 12, marginBottom: 3 }} className="text-sm font-semibold">
             {t('memories.description')}
           </Text>
           <TextInput
@@ -134,7 +134,7 @@ export default function EditMemoryScreen() {
             placeholderTextColor={c.muted}
             multiline
             numberOfLines={4}
-            className="rounded-xl px-4 py-3.5 text-base mb-4"
+            className="rounded-xl px-4 py-3.5 text-base"
             style={{
               backgroundColor: c.card,
               color: c.text,
@@ -146,7 +146,7 @@ export default function EditMemoryScreen() {
           />
 
           {/* Location Field */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-1.5">
+          <Text style={{ color: c.text, marginTop: 12, marginBottom: 3 }} className="text-sm font-semibold">
             {t('memories.location')}
           </Text>
           <TextInput
@@ -154,12 +154,12 @@ export default function EditMemoryScreen() {
             onChangeText={setLocation}
             placeholder={t('memories.locationPlaceholder')}
             placeholderTextColor={c.muted}
-            className="rounded-xl px-4 py-3.5 text-base mb-6"
+            className="rounded-xl px-4 py-3.5 text-base"
             style={{ backgroundColor: c.card, color: c.text, borderWidth: 1, borderColor: c.border }}
           />
 
           {/* Mood Selector */}
-          <Text style={{ color: c.text }} className="text-sm font-semibold mb-3">
+          <Text style={{ color: c.text, marginBottom: 3, marginTop: 12 }} className="text-sm font-semibold">
             {t('memories.howYouFelt')}
           </Text>
           <View className="mb-10">
@@ -173,7 +173,7 @@ export default function EditMemoryScreen() {
       </KeyboardAvoidingView>
 
       {/* Save Button */}
-      <View className="px-6 py-4 border-t" style={{ borderColor: c.border }}>
+      <View className="px-6 py-4 border-t pb-8" style={{ borderColor: c.border }}>
         <Pressable
           onPress={handleSave}
           disabled={saving}

@@ -3,12 +3,15 @@ import { Pressable, Text, ActivityIndicator } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useThemeMode } from '@/contexts/ThemeContext';
 
+import { StyleProp, ViewStyle } from 'react-native';
+
 interface ButtonProps {
   title: string;
   onPress: () => void;
   variant?: 'primary' | 'outline';
   disabled?: boolean;
   loading?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Button: React.FC<ButtonProps> = ({ 
@@ -16,7 +19,8 @@ export const Button: React.FC<ButtonProps> = ({
   onPress, 
   variant = 'primary', 
   disabled = false,
-  loading = false 
+  loading = false,
+  style
 }) => {
   const { isDark } = useThemeMode();
   const c = Colors[isDark ? 'dark' : 'light'];
@@ -31,11 +35,14 @@ export const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       disabled={disabled || loading}
       className={`py-3.5 px-4 rounded-xl items-center justify-center flex-row border`}
-      style={{
-        backgroundColor: disabled ? c.border : bgColor,
-        borderColor: disabled ? c.border : borderColor,
-        opacity: disabled ? 0.7 : 1,
-      }}
+      style={[
+        {
+          backgroundColor: disabled ? c.border : bgColor,
+          borderColor: disabled ? c.border : borderColor,
+          opacity: disabled ? 0.7 : 1,
+        },
+        style,
+      ]}
     >
       {loading ? (
         <ActivityIndicator color={textColor} className="mr-2" />

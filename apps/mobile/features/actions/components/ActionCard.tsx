@@ -39,29 +39,30 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
   // If completed, show a simpler, checked-off version that feels rewarding
   if (task.isCompleted) {
     return (
-      <View 
+      <View
         className="flex-row items-center p-4 mb-3 rounded-2xl border"
-        style={{ 
-          backgroundColor: isDark ? '#1a1f1c' : '#f0fdf4', 
+        style={{
+          backgroundColor: isDark ? '#1a1f1c' : '#f0fdf4',
           borderColor: isDark ? '#14532d' : '#bbf7d0',
-          shadowColor: '#22c55e', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1
+          shadowColor: '#22c55e', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 1,
+          marginBottom: 12,
         }}
       >
-        <View 
+        <View
           className="w-8 h-8 rounded-full items-center justify-center mr-2"
           style={{ backgroundColor: isDark ? '#166534' : '#dcfce7' }}
         >
           <Ionicons name="checkmark-done" size={20} color={isDark ? '#4ade80' : '#16a34a'} />
         </View>
         <View className="flex-1 ml-1">
-          <Text 
-            style={{ color: isDark ? '#f0fdf4' : '#14532d' }} 
+          <Text
+            style={{ color: isDark ? '#f0fdf4' : '#14532d' }}
             className="text-base font-bold"
           >
             {task.title}
           </Text>
-          <Text 
-            style={{ color: isDark ? '#86efac' : '#22c55e' }} 
+          <Text
+            style={{ color: isDark ? '#86efac' : '#22c55e' }}
             className="text-xs mt-1 font-medium"
           >
             {t('action.completedToday')}
@@ -73,31 +74,31 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
 
   // Active suggestion card
   return (
-    <View 
+    <View
       className="p-5 mb-5 rounded-3xl border shadow-sm"
-      style={{ 
-        backgroundColor: isDark ? '#1c1917' : '#ffffff', 
+      style={{
+        backgroundColor: isDark ? '#1c1917' : '#ffffff',
         borderColor: isDark ? '#292524' : '#f5f5f4',
         shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2
       }}
     >
       <View className="flex-row items-center mb-4">
-        <View 
+        <View
           className="w-10 h-10 rounded-full items-center justify-center mr-2 shadow-sm"
           style={{ backgroundColor: isDark ? '#292524' : iconInfo.bg }}
         >
           <Ionicons name={iconInfo.name as any} size={20} color={iconInfo.color} />
         </View>
         <View className="flex-1 justify-center ml-1">
-          <Text 
-            style={{ color: c.text }} 
+          <Text
+            style={{ color: c.text }}
             className="text-mg font-bold leading-6 tracking-tight"
           >
             {task.title}
           </Text>
           {task.description && (
-            <Text 
-              style={{ color: c.muted }} 
+            <Text
+              style={{ color: c.muted }}
               className="text-sm mt-1 leading-5"
             >
               {task.description}
@@ -105,13 +106,13 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
           )}
         </View>
       </View>
-      
+
       {onMarkDone && (
         <Pressable
           onPress={() => onMarkDone(task.id)}
           className="py-3.5 rounded-2xl items-center justify-center flex-row border"
           style={({ pressed }) => [
-            { 
+            {
               backgroundColor: isDark ? '#2a1215' : '#fff1f2',
               borderColor: isDark ? '#4c1d24' : '#ffe4e6',
               opacity: pressed ? 0.8 : 1,

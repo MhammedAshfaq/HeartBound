@@ -19,7 +19,7 @@ features/profile/
 │   ├── ActivityInsights.tsx       ← Actions completed, most active category, consistency
 │   ├── AIInsightsCard.tsx         ← Purple-tinted personalized insights
 │   ├── AchievementsGrid.tsx       ← 3-column grid (3 earned, 3 locked)
-│   ├── SettingsCard.tsx           ← Account (navigates), Relationship/Notifications/Privacy (expandable inline)
+│   ├── SettingsCard.tsx           ← Account (navigates), Sync Partner/Relationship/Notifications/Privacy (expandable inline)
 │   ├── DatePickerModal.tsx        ← Modal with react-native-calendar-picker (year/month dropdown, themed)
 │   └── LogoutButton.tsx           ← Destructive button with confirmation alert
 └── types/
@@ -36,7 +36,7 @@ features/profile/
 | Activity Insights | ActivityInsights | Mock stats + `MOCK_ACTIONS` |
 | AI Insights | AIInsightsCard | Mock stats |
 | Achievements | AchievementsGrid | `ACHIEVEMENTS` (6 items, 3 earned) |
-| Settings | SettingsCard | Account → email-verification screen. Relationship (chips with Alert.confirm), Notifications (toggle), Privacy (Light/Dark) — all expandable inline within the card |
+| Settings | SettingsCard | Account → email-verification screen. Sync Partner (dropdown: TextInput + Sync + Unsync buttons with confirmation Alerts), Relationship (chips with Alert.confirm), Notifications (toggle), Privacy (Light/Dark) — all expandable inline within the card |
 | Logout | LogoutButton | `useAuth().logout()` → `router.replace('/(auth)')` |
 
 ## States
@@ -74,3 +74,4 @@ features/profile/
 | Notifications | Inline in SettingsCard (expandable) | ✅ Done |
 | Privacy/Appearance | Inline in SettingsCard (expandable) | ✅ Done |
 | Relationship | Inline in SettingsCard (expandable chip selector + Alert) | ✅ Done |
+| Sync Partner | Inline in SettingsCard (expandable TextInput + Sync / Unsync alerts) | ✅ Done |

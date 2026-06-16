@@ -14,7 +14,8 @@ export default function AuthLayout() {
         animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="index" options={{ title: 'Login' }} />
+      <Stack.Screen name="index" options={{ title: 'Welcome' }} />
+      <Stack.Screen name="login" options={{ title: 'Login' }} />
       <Stack.Screen name="otp-verification" options={{ title: 'OTP Verification' }} />
       <Stack.Screen name="setup-profile" options={{ title: 'Setup Profile' }} />
       <Stack.Screen name="relationship-questions" options={{ title: 'Relationship Questions' }} />

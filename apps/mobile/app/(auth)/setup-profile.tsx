@@ -74,6 +74,7 @@ export default function SetupProfileScreen() {
   const [partnerName, setPartnerName] = useState(user?.partnerName ?? '');
   const [anniversaryDate, setAnniversaryDate] = useState(user?.anniversaryDate ?? '');
   const [partnerDob, setPartnerDob] = useState(user?.partnerDob ?? '');
+  const [partnerCode, setPartnerCode] = useState(user?.partnerCode ?? '');
   const [avatar, setAvatar] = useState(user?.avatar ?? '');
 
   const [nameError, setNameError] = useState('');
@@ -178,6 +179,7 @@ export default function SetupProfileScreen() {
         partnerName: partnerName.trim() || undefined,
         anniversaryDate: anniversaryDate || undefined,
         partnerDob: partnerDob || undefined,
+        partnerCode: partnerCode.trim() || undefined,
         avatar: avatar || undefined,
       });
     } catch {
@@ -185,7 +187,7 @@ export default function SetupProfileScreen() {
     router.replace('/(auth)/relationship-questions');
   }, [
     name, dob, gender, relationshipStatus,
-    partnerName, anniversaryDate, partnerDob, avatar,
+    partnerName, anniversaryDate, partnerDob, partnerCode, avatar,
     router, updateProfile, validateDob, validateName,
   ]);
 
@@ -501,7 +503,7 @@ export default function SetupProfileScreen() {
                 </View>
 
                 {/* Partner DOB */}
-                <View className="mb-0">
+                <View className="mb-5">
                   <View className="mb-1.5 flex-row items-center justify-between">
                     <Text style={{ color: c.text }} className="text-sm font-bold">
                       {t('auth.partnerDob')}
@@ -520,6 +522,17 @@ export default function SetupProfileScreen() {
                     </Text>
                   </Pressable>
                 </View>
+
+                {/* Partner Code */}
+                {renderField({
+                  label: t('auth.partnerCode'),
+                  value: partnerCode,
+                  onChangeText: setPartnerCode,
+                  placeholder: t('auth.partnerCodePlaceholder'),
+                  hint: t('auth.partnerCodeHint'),
+                  optional: true,
+                  autoCapitalize: 'none',
+                })}
               </View>
             ) : null}
 

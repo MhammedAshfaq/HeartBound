@@ -197,6 +197,7 @@ const en = {
     sharedDesc: 'My partner can see this memory',
     saving: 'Saving...',
     saved: 'Memory saved!',
+    deleteConfirm: 'Are you sure you want to delete this memory?'
   },
   profile: {
     title: 'Profile',
@@ -284,6 +285,22 @@ const en = {
     light: 'Light',
     dark: 'Dark',
     system: 'System',
+    syncPartner: 'Sync Partner',
+    syncPartnerTitle: 'Sync your partner',
+    enterPartnerCode: 'Enter partner code',
+    unsync: 'Unsync',
+    sync: 'Sync',
+  },
+  onboarding: {
+    title: 'Stronger Bonds for Busy Lives',
+    subtitle: 'Designed for corporate professionals and busy couples to maintain meaningful relationships.',
+    card1Title: 'Smart Suggestions',
+    card1Desc: 'Get quick, personalized activities that fit easily into your occupied workday.',
+    card2Title: 'Cherished Memories',
+    card2Desc: 'Store and celebrate your special milestones in a secure, private space.',
+    card3Title: 'Relationship Health',
+    card3Desc: 'Understand your bond with thoughtful insights and interactive analytics.',
+    getStarted: 'Get Started',
   },
 };
 

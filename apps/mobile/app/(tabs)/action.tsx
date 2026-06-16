@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, SafeAreaView, ActivityIndicator, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useIsFocused } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import { useThemeMode } from '@/contexts/ThemeContext';
 import { useActions } from '@/features/actions/hooks/useActions';
@@ -14,7 +15,8 @@ export default function ActionScreen() {
   const { isDark } = useThemeMode();
   const theme = isDark ? 'dark' : 'light';
   const c = Colors[theme];
-  
+  const isFocused = useIsFocused();
+
   const { actions, isLoading, refreshSuggestions, markAsCompleted, addCustomAction } = useActions();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -31,16 +33,16 @@ export default function ActionScreen() {
 
   return (
     <View style={{ backgroundColor: isDark ? '#0c0a09' : '#f8fafc', flex: 1 }}>
-      <StatusBar barStyle="light-content" />
-      
-      <ScrollView 
-        className="flex-1" 
+      {isFocused && <StatusBar barStyle="light-content" />}
+
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
         bounces={false}
       >
         {/* Rich Header Background */}
-        <View 
+        <View
           className="pt-16 pb-12 px-6 rounded-b-[40px] shadow-sm relative overflow-hidden"
           style={{ backgroundColor: '#f43f5e' }}
         >
@@ -93,7 +95,7 @@ export default function ActionScreen() {
             </View>
 
             {pendingActions.length === 0 ? (
-              <View 
+              <View
                 className="py-16 px-6 items-center justify-center rounded-3xl border-2 border-dashed"
                 style={{ borderColor: isDark ? '#3f3f46' : '#cbd5e1', backgroundColor: isDark ? '#18181b' : '#f1f5f9' }}
               >
@@ -106,17 +108,17 @@ export default function ActionScreen() {
                 <Text style={{ color: c.muted }} className="text-center mb-6 leading-5">
                   You've completed all suggested acts of kindness today. Keep the romance alive!
                 </Text>
-                <Button 
-                  title={t('action.refresh')} 
-                  onPress={refreshSuggestions} 
+                <Button
+                  title={t('action.refresh')}
+                  onPress={refreshSuggestions}
                 />
               </View>
             ) : (
               pendingActions.map((task) => (
-                <ActionCard 
-                  key={task.id} 
-                  task={task} 
-                  onMarkDone={markAsCompleted} 
+                <ActionCard
+                  key={task.id}
+                  task={task}
+                  onMarkDone={markAsCompleted}
                 />
               ))
             )}
@@ -124,16 +126,16 @@ export default function ActionScreen() {
 
           {/* Footer Actions */}
           <View className="space-y-4 gap-4 pb-4">
-            <Button 
-              title={t('action.addCustom')} 
-              onPress={() => setModalVisible(true)} 
+            <Button
+              title={t('action.addCustom')}
+              onPress={() => setModalVisible(true)}
               variant="outline"
             />
             {pendingActions.length > 0 && (
-              <Button 
-                title={t('action.refresh')} 
-                onPress={refreshSuggestions} 
-                variant="outline" 
+              <Button
+                title={t('action.refresh')}
+                onPress={refreshSuggestions}
+                variant="outline"
               />
             )}
           </View>
