@@ -35,6 +35,7 @@ function MoodTile({
   isDark,
   borderColor,
   textColor,
+  backgroundColor,
 }: {
   item: MoodOption;
   selected: boolean;
@@ -42,6 +43,7 @@ function MoodTile({
   isDark: boolean;
   borderColor: string;
   textColor: string;
+  backgroundColor: string;
 }) {
   const tileShadow = shadows(isDark).sm;
 
@@ -50,7 +52,10 @@ function MoodTile({
       style={[
         styles.moodTileShell,
         selected && styles.moodTileShellSelected,
-        { borderColor: selected ? item.color : borderColor },
+        { 
+          borderColor: selected ? item.color : borderColor,
+          backgroundColor: backgroundColor 
+        },
         tileShadow,
       ]}
     >
@@ -165,6 +170,7 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
               isDark={isDark}
               borderColor={c.border}
               textColor={c.muted}
+              backgroundColor={c.card}
             />
           </View>
         ))}
@@ -374,8 +380,8 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#1D4ED8',
-    shadowOpacity: 0.22,
+    shadowColor: '#000000',
+    shadowOpacity: 0.15,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
     elevation: 4,
