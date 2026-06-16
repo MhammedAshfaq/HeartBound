@@ -160,8 +160,8 @@ export default function EmailVerificationScreen() {
                 ...s.sm,
               }}
             >
-              <View className="px-5" style={{ paddingVertical: 10 }}>
-                <Text className="text-xs font-semibold mb-2 ml-2" style={{ color: c.muted }}>
+              <View className="px-1" style={{ paddingVertical: 15 }}>
+                <Text className="text-xs font-semibold mb-2" style={{ color: c.muted }}>
                   Email Address
                 </Text>
                 <TextInput
@@ -173,8 +173,8 @@ export default function EmailVerificationScreen() {
                   autoCapitalize="none"
                   autoCorrect={false}
                   editable={!otpSent}
-                  style={{ color: c.text, backgroundColor: c.surface, borderColor: c.border }}
-                  className="rounded-lg border px-4 py-2.5 text-base"
+                  style={{ color: c.text, backgroundColor: c.surface, borderColor: c.border, paddingVertical: 10, paddingHorizontal: 10 }}
+                  className="rounded-lg border"
                 />
               </View>
             </View>
@@ -209,7 +209,7 @@ export default function EmailVerificationScreen() {
                     ...s.sm,
                   }}
                 >
-                  <View className="px-5" style={{ paddingVertical: 10 }}>
+                  <View className="px-1" style={{ paddingVertical: 10 }}>
                     <View className="flex-row items-center justify-between mb-4">
                       <Text className="text-xs font-semibold" style={{ color: c.muted }}>
                         Enter OTP

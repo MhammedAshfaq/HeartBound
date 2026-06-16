@@ -159,7 +159,7 @@ export default function EditMemoryScreen() {
           />
 
           {/* Mood Selector */}
-          <Text style={{ color: c.text, marginBottom: 3, marginTop: 12 }} className="text-sm font-semibold">
+          <Text style={{ color: c.text, marginBottom: 5, marginTop: 12 }} className="text-sm font-semibold">
             {t('memories.howYouFelt')}
           </Text>
           <View className="mb-10">

@@ -67,8 +67,8 @@ export function SettingsCard() {
       icon: 'heart',
       iconColor: '#ec4899',
       options: [
-        { 
-          text: 'Cancel', 
+        {
+          text: 'Cancel',
           style: 'cancel',
           onPress: () => setModalConfig(null)
         },
@@ -101,8 +101,8 @@ export function SettingsCard() {
       icon: 'link',
       iconColor: activeColor,
       options: [
-        { 
-          text: 'Cancel', 
+        {
+          text: 'Cancel',
           style: 'cancel',
           onPress: () => setModalConfig(null)
         },
@@ -135,8 +135,8 @@ export function SettingsCard() {
       icon: 'unlink',
       iconColor: '#ef4444',
       options: [
-        { 
-          text: 'Cancel', 
+        {
+          text: 'Cancel',
           style: 'cancel',
           onPress: () => setModalConfig(null)
         },
@@ -350,7 +350,7 @@ export function SettingsCard() {
 
             {/* Privacy / Theme Dropdown */}
             {expandedRow === row.label && row.expandable && row.label === 'Privacy' && (
-              <View className="px-4 pb-3 mb-3">
+              <View style={{ marginBottom: 10 }} className="px-4 pb-3">
                 <View
                   className="flex-row rounded-xl px-4"
                   style={{ paddingVertical: 8, backgroundColor: c.surface, borderWidth: 1, borderColor: c.border }}

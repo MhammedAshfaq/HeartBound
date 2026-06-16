@@ -75,21 +75,21 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
   // Active suggestion card
   return (
     <View
-      className="p-5 mb-5 rounded-3xl border shadow-sm"
+      className="p-4 mb-4 rounded-3xl border shadow-sm"
       style={{
         backgroundColor: isDark ? '#1c1917' : '#ffffff',
         borderColor: isDark ? '#292524' : '#f5f5f4',
         shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2
       }}
     >
-      <View className="flex-row items-center mb-4">
+      <View className="flex-row items-center">
         <View
           className="w-10 h-10 rounded-full items-center justify-center mr-2 shadow-sm"
           style={{ backgroundColor: isDark ? '#292524' : iconInfo.bg }}
         >
           <Ionicons name={iconInfo.name as any} size={20} color={iconInfo.color} />
         </View>
-        <View className="flex-1 justify-center ml-1">
+        <View className="flex-1 justify-center ml-1 pr-2">
           <Text
             style={{ color: c.text }}
             className="text-mg font-bold leading-6 tracking-tight"
@@ -105,27 +105,24 @@ export const ActionCard: React.FC<ActionCardProps> = ({ task, onMarkDone }) => {
             </Text>
           )}
         </View>
-      </View>
 
-      {onMarkDone && (
-        <Pressable
-          onPress={() => onMarkDone(task.id)}
-          className="py-3.5 rounded-2xl items-center justify-center flex-row border"
-          style={({ pressed }) => [
-            {
-              backgroundColor: isDark ? '#2a1215' : '#fff1f2',
-              borderColor: isDark ? '#4c1d24' : '#ffe4e6',
-              opacity: pressed ? 0.8 : 1,
-              transform: [{ scale: pressed ? 0.98 : 1 }]
-            }
-          ]}
-        >
-          <Ionicons name="heart-outline" size={20} color="#f43f5e" className="mr-2" />
-          <Text style={{ color: '#f43f5e' }} className="font-bold text-base ml-2">
-            {t('action.markDone')}
-          </Text>
-        </Pressable>
-      )}
+        {onMarkDone && (
+          <Pressable
+            onPress={() => onMarkDone(task.id)}
+            className="w-12 h-12 rounded-full items-center justify-center border shadow-sm"
+            style={({ pressed }) => [
+              {
+                backgroundColor: isDark ? '#2a1215' : '#fff1f2',
+                borderColor: isDark ? '#4c1d24' : '#ffe4e6',
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.9 : 1 }]
+              }
+            ]}
+          >
+            <Ionicons name="heart-outline" size={24} color="#f43f5e" />
+          </Pressable>
+        )}
+      </View>
     </View>
   );
 };

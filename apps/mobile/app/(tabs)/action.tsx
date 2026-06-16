@@ -38,7 +38,7 @@ export default function ActionScreen() {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 10 }}
         bounces={false}
       >
         {/* Rich Header Background */}
