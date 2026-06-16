@@ -219,7 +219,7 @@ export default function EmailVerificationScreen() {
                       </Text>
                     </View>
 
-                    <View className="flex-row justify-center gap-2 mb-4">
+                    <View className="flex-row justify-center gap-3 mb-4">
                       {otp.map((digit, index) => (
                         <TextInput
                           key={index}
