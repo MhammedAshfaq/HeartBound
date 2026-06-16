@@ -3,35 +3,16 @@ import { View, Text, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
+import { ConfirmationModal } from '@/components/common/ConfirmationModal';
 
 export function LogoutButton() {
   const { logout } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await logout();
-              router.replace('/(auth)');
-            } catch (error) {
-              console.error(error);
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]
-    );
+    setShowModal(true);
   };
 
   return (
@@ -55,6 +36,37 @@ export function LogoutButton() {
           {loading ? 'Logging out...' : 'Logout'}
         </Text>
       </Pressable>
+
+      <ConfirmationModal
+        visible={showModal}
+        title="Logout"
+        message="Are you sure you want to log out?"
+        icon="log-out"
+        iconColor="#d32f2f"
+        options={[
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => setShowModal(false),
+          },
+          {
+            text: 'Logout',
+            style: 'destructive',
+            onPress: async () => {
+              setShowModal(false);
+              setLoading(true);
+              try {
+                await logout();
+                router.replace('/(auth)');
+              } catch (error) {
+                console.error(error);
+                setLoading(false);
+              }
+            },
+          },
+        ]}
+        onClose={() => setShowModal(false)}
+      />
     </View>
   );
 }
