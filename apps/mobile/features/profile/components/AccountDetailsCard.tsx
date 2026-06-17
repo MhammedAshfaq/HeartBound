@@ -70,7 +70,7 @@ export function AccountDetailsCard({ profile }: AccountDetailsCardProps) {
 
   return (
     <View className="mb-5">
-      <Text className="text-base font-bold mb-3 px-1 ml-2" style={{ color: c.text }}>
+      <Text className="text-base font-bold px-1 ml-2" style={{ color: c.text, marginBottom:5 }}>
         {t('profile.about')}
       </Text>
 

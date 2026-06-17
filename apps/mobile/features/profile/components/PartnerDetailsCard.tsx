@@ -51,7 +51,7 @@ export function PartnerDetailsCard({ partner }: PartnerDetailsCardProps) {
   return (
     <View className="mb-5">
       {/* ─── Section Title ─── */}
-      <View className="flex-row items-center gap-2.5 mb-4 px-1">
+      <View className="flex-row items-center gap-2.5 px-1" style={{marginBottom:5}}>
         <View
           className="h-9 w-9 items-center justify-center rounded-xl"
           style={{ backgroundColor: '#e11d4815' }}
