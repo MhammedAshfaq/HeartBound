@@ -57,7 +57,7 @@ export function LogoutButton() {
               setLoading(true);
               try {
                 await logout();
-                router.replace('/(auth)');
+                router.replace('/(auth)/login');
               } catch (error) {
                 console.error(error);
                 setLoading(false);
