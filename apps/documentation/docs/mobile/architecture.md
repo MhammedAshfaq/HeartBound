@@ -9,20 +9,29 @@ apps/mobile/
 │   ├── +not-found.tsx            # 404 screen
 │   ├── (auth)/                   # Auth route group
 │   │   ├── _layout.tsx
-│   │   ├── login.tsx
-│   │   ├── otp-verification.tsx
-│   │   └── setup-profile.tsx
+│   │   ├── index.tsx             # Onboarding / Intro Screen
+│   │   ├── login.tsx             # Login (phone / social)
+│   │   ├── otp-verification.tsx  # OTP 6-digit verification
+│   │   ├── relationship-questions.tsx # Modern MCQ Animated Card Wizard
+│   │   └── setup-profile.tsx     # Post-login profile setup
 │   ├── (tabs)/                   # Main tab navigation
 │   │   ├── _layout.tsx
-│   │   ├── index.tsx             # Home
-│   │   ├── action.tsx
-│   │   ├── memories.tsx
-│   │   ├── games.tsx
-│   │   ├── notification.tsx
-│   │   └── profile.tsx
+│   │   ├── index.tsx             # Home Dashboard screen
+│   │   ├── action.tsx            # Suggested acts of kindness screen
+│   │   ├── memories.tsx          # Memories gallery grid row list
+│   │   ├── games.tsx             # Games (unimplemented)
+│   │   ├── notification.tsx      # Notifications list
+│   │   └── profile.tsx           # Profile settings list
 │   └── (modals)/                 # Modal screens
 │       ├── _layout.tsx
-│       └── add-memory.tsx
+│       ├── add-memory.tsx        # Add memory wizard flow modal
+│       ├── ai-insights.tsx       # AI insights report screen
+│       ├── day-memories.tsx      # Day list of memories screen
+│       ├── edit-memory.tsx       # Edit memory metadata form
+│       ├── edit-profile.tsx      # Edit details form (dob, partner, anniversary)
+│       ├── email-verification.tsx# Email update validation modal
+│       ├── memory-detail.tsx     # Pinch zoom photo & meta detail card
+│       └── relationship-status.tsx# Relationship selector modal
 │
 ├── components/                   # Reusable UI components
 │   ├── ui/                       # gluestack-ui components
@@ -31,13 +40,23 @@ apps/mobile/
 │   └── home/                     # Feature-specific components
 │
 ├── features/                     # Feature modules (clean architecture)
-│   └── memories/                 # Memories feature
-│       ├── components/           # Feature-specific components
-│       ├── screens/              # Screen components (imported by route files)
-│       ├── hooks/                # Feature-specific hooks
-│       ├── context/              # Feature-specific context
-│       ├── utils/                # Feature utilities
-│       └── types/                # Feature type definitions
+│   ├── actions/                  # Actions & kindness suggestions
+│   │   ├── components/           # ActionCard, AddCustomActionModal, etc.
+│   │   ├── hooks/                # useActions hook
+│   │   ├── types/                # Action types
+│   │   └── utils/                # Action helpers
+│   ├── memories/                 # Memories gallery feature
+│   │   ├── components/           # MemoryCard, MoodSelector, MediaPicker, etc.
+│   │   ├── screens/              # MemoriesList, AddMemory, DayMemories, EditMemory, MemoryDetail
+│   │   ├── hooks/                # useMemories hook
+│   │   ├── context/              # MemoriesContext layer
+│   │   ├── utils/                # memoryUtils, memoryService layers
+│   │   └── types/                # memory types & fallback seeds
+│   └── profile/                  # Profile & settings feature
+│       ├── components/           # ProfileHeader, SettingsCard, DatePickerModal, etc.
+│       ├── data/                 # Profile dummy types
+│       ├── screens/              # ProfileScreen, EditProfileScreen, AIInsightsScreen, etc.
+│       └── types/                # Profile types definitions
 │
 ├── constants/                    # App-wide constants
 │   ├── Colors.ts                 # Theme colors

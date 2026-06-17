@@ -10,15 +10,16 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 
 | Screen | Document | Status |
 |--------|----------|--------|
-| Login (phone + OTP + social) | [screens/login.md](/mobile/screens/login) | ✅ |
-| OTP Verification (6-digit) | [screens/otp-verification.md](/mobile/screens/otp-verification) | ✅ |
-| Setup Profile (name, DOB, gender, nickname, email, relationship status, partner details, profile picture) | [screens/setup-profile.md](/mobile/screens/setup-profile) | ✅ |
-| Home Dashboard | [screens/home.md](/mobile/screens/home) | 🏗 |
-| Memories (gallery day-grouped, 4-column grid, +N more, detail modal with pinch zoom) | [screens/memories.md](/mobile/screens/memories) | ✅ |
-| Notification | [screens/notification.md](/mobile/screens/notification) | ✅ |
-| Profile (rich: header, snapshot, moments, insights, achievements, settings, appearance, notifications) | [screens/profile.md](/mobile/screens/profile) | ✅ |
-| Games | [screens/games.md](/mobile/screens/games) | 🏗 |
-| Action | [screens/action.md](/mobile/screens/action) | ✅ (Docs) |
+| Login (phone + social login) | [screens/login.md](/mobile/screens/login) | ✅ Done |
+| OTP Verification (6-digit) | [screens/otp-verification.md](/mobile/screens/otp-verification) | ✅ Done |
+| Setup Profile (name, DOB, anniversary date, partner name/email, avatar) | [screens/setup-profile.md](/mobile/screens/setup-profile) | ✅ Done |
+| Relationship Questions (5-step animated card wizard) | [screens/relationship-questions.md](/mobile/screens/relationship-questions) | ✅ Done |
+| Home Dashboard (greeting slider, stat cards, quick actions, mood check-in + note composer, upcoming list) | [screens/home.md](/mobile/screens/home) | ✅ Done |
+| Memories (gallery day-grouped, 4-column grid, Day details, Edit Memory, details modal with pinch zoom) | [screens/memories.md](/mobile/screens/memories) | ✅ Done |
+| Notification (notifications list with mark-all-read and unread indicators) | [screens/notification.md](/mobile/screens/notification) | ✅ Done |
+| Profile (header, snapshot, moments, insights, achievements, settings cards: sync partner, relationship, notifications, appearance/privacy, edit profile, email verification) | [screens/profile.md](/mobile/screens/profile) | ✅ Done |
+| Games (game activities placeholder) | [screens/games.md](/mobile/screens/games) | 🏗 Placeholder |
+| Action (ideas suggestions list, completed gestures list, add custom actions modal, refresh controls) | [screens/action.md](/mobile/screens/action) | ✅ Done |
 
 ---
 
@@ -65,6 +66,6 @@ Each screen has its own document with exact fields, buttons, data flows, and sta
 
 | Status | Count | Items |
 |--------|-------|-------|
-| ✅ Done | 14 | Login, OTP, Setup Profile, Profile (rich), Memories (gallery day-grouped + single-screen add + day detail + image modal), Notification, Session, API, Auth, Theme, i18n, React Query, Toast, Partner Sync |
-| 🏗 Placeholder | 4 | Home mood check-in, Action, Games, Analytics |
-| 📋 Planned | 2 | Settings, Charts |
+| ✅ Done | 17 | Login, OTP, Setup Profile, Relationship Questions, Home Dashboard, Memories (gallery + day details + detail modal + edit memory), Notification, Action (suggestions + custom actions), Profile (header, snapshot, achievements, settings: sync, relationship, privacy), Session, API, Auth, Theme, i18n, React Query, Toast, Partner Sync |
+| 🏗 Placeholder | 2 | Games, Analytics |
+| 📋 Planned | 2 | Settings (advanced sub-screens), Charts |

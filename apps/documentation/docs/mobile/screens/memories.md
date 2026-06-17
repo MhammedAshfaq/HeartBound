@@ -159,6 +159,23 @@ A single, scrollable form screen wrapped in a modal. It allows creating a new me
 
 The "Save Memory" button is fixed at the bottom. It validates the title, date, and media presence before committing changes to local storage.
 
+## Edit Memory Modal
+
+**Route:** `/(modals)/edit-memory?id=`
+
+A form screen presented in a modal stack for modifying an existing memory's metadata:
+
+| Form Element | Type | Behavior |
+|--------------|------|----------|
+| Title field | TextInput (required) | Pre-filled with current title. Displays error message if blanked out. |
+| Description field | TextInput (multiline) | Pre-filled with description; allows editing text. |
+| Location field | TextInput (single line) | Pre-filled with location value. |
+| Feeling selector | `MoodSelector` | Horizontal mood chips selection row. |
+| Save Button | Pressable | Fixed at bottom. Invokes `updateMemory(id, payload)` and routes back on success with a toast notification. |
+
+- Handles standard form validation (Title cannot be empty).
+- Adapts color palettes dynamically based on dark mode.
+
 ## Translations
 
 All string keys under `memories.*` in both `en.ts` and `ar.ts`.
