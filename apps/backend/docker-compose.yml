@@ -110,6 +110,20 @@ services:
     networks:
       - monitoring
 
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    platform: linux/amd64
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:${REDIS_PASSWORD}
+    ports:
+      - '8085:8081'
+    restart: unless-stopped
+    networks:
+      - monitoring
+    depends_on:
+      - redis
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jaeger

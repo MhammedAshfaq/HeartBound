@@ -1,0 +1,77 @@
+CREATE TABLE IF NOT EXISTS "Countries" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"isoCode" varchar(50) NOT NULL,
+	"dialCode" varchar(50) NOT NULL,
+	"flagUrl" varchar(255) NOT NULL,
+	"currency" varchar(50),
+	"isActive" boolean DEFAULT true NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "Countries_isoCode_unique" UNIQUE("isoCode")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "Users" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"email" varchar(255),
+	"name" varchar(255),
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "Users_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Countries_name_idx" ON "Countries" ("name");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Countries_isoCode_idx" ON "Countries" ("isoCode");
+--> statement-breakpoint
+INSERT INTO "Countries" ("name", "isoCode", "dialCode", "flagUrl", "currency") VALUES
+('India', 'IN', '+91', '🇮🇳', 'INR'),
+('United States', 'US', '+1', '🇺🇸', 'USD'),
+('United Kingdom', 'GB', '+44', '🇬🇧', 'GBP'),
+('Canada', 'CA', '+1', '🇨🇦', 'CAD'),
+('Australia', 'AU', '+61', '🇦🇺', 'AUD'),
+('UAE', 'AE', '+971', '🇦🇪', 'AED'),
+('Saudi Arabia', 'SA', '+966', '🇸🇦', 'SAR'),
+('Singapore', 'SG', '+65', '🇸🇬', 'SGD'),
+('Malaysia', 'MY', '+60', '🇲🇾', 'MYR'),
+('Pakistan', 'PK', '+92', '🇵🇰', 'PKR'),
+('Bangladesh', 'BD', '+880', '🇧🇩', 'BDT'),
+('Sri Lanka', 'LK', '+94', '🇱🇰', 'LKR'),
+('Nepal', 'NP', '+977', '🇳🇵', 'NPR'),
+('Philippines', 'PH', '+63', '🇵🇭', 'PHP'),
+('Nigeria', 'NG', '+234', '🇳🇬', 'NGN'),
+('South Africa', 'ZA', '+27', '🇿🇦', 'ZAR'),
+('Kenya', 'KE', '+254', '🇰🇪', 'KES'),
+('Germany', 'DE', '+49', '🇩🇪', 'EUR'),
+('France', 'FR', '+33', '🇫🇷', 'EUR'),
+('Italy', 'IT', '+39', '🇮🇹', 'EUR'),
+('Spain', 'ES', '+34', '🇪🇸', 'EUR'),
+('Netherlands', 'NL', '+31', '🇳🇱', 'EUR'),
+('Sweden', 'SE', '+46', '🇸🇪', 'SEK'),
+('Norway', 'NO', '+47', '🇳🇴', 'NOK'),
+('Denmark', 'DK', '+45', '🇩🇰', 'DKK'),
+('Japan', 'JP', '+81', '🇯🇵', 'JPY'),
+('South Korea', 'KR', '+82', '🇰🇷', 'KRW'),
+('China', 'CN', '+86', '🇨🇳', 'CNY'),
+('Brazil', 'BR', '+55', '🇧🇷', 'BRL'),
+('Mexico', 'MX', '+52', '🇲🇽', 'MXN'),
+('Russia', 'RU', '+7', '🇷🇺', 'RUB'),
+('Turkey', 'TR', '+90', '🇹🇷', 'TRY'),
+('Egypt', 'EG', '+20', '🇪🇬', 'EGP'),
+('Qatar', 'QA', '+974', '🇶🇦', 'QAR'),
+('Kuwait', 'KW', '+965', '🇰🇼', 'KWD'),
+('Oman', 'OM', '+968', '🇴🇲', 'OMR'),
+('Bahrain', 'BH', '+973', '🇧🇭', 'BHD'),
+('Jordan', 'JO', '+962', '🇯🇴', 'JOD'),
+('Switzerland', 'CH', '+41', '🇨🇭', 'CHF'),
+('New Zealand', 'NZ', '+64', '🇳🇿', 'NZD'),
+('Ireland', 'IE', '+353', '🇮🇪', 'EUR'),
+('Belgium', 'BE', '+32', '🇧🇪', 'EUR'),
+('Austria', 'AT', '+43', '🇦🇹', 'EUR'),
+('Indonesia', 'ID', '+62', '🇮🇩', 'IDR'),
+('Thailand', 'TH', '+66', '🇹🇭', 'THB'),
+('Vietnam', 'VN', '+84', '🇻🇳', 'VND'),
+('Argentina', 'AR', '+54', '🇦🇷', 'ARS'),
+('Colombia', 'CO', '+57', '🇨🇴', 'COP'),
+('Poland', 'PL', '+48', '🇵🇱', 'PLN'),
+('Portugal', 'PT', '+351', '🇵🇹', 'EUR')
+ON CONFLICT ("isoCode") DO NOTHING;

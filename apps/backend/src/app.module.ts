@@ -10,6 +10,10 @@ import { OtelModule } from '@otel/otel.module';
 import { HealthModule } from '@health/health.module';
 import { AuthModule } from '@auth/auth.module';
 import { AdminModule } from '@admin/admin.module';
+import { CountriesModule } from './api/countries/countries.module';
+import { ErrorHandlerService } from '@common/services/error-handler.service';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { DevToolsController } from './api/dev-tools/dev-tools.controller';
 
 const rateLimit = ThrottlerModule.forRoot([
   { name: 'short', ttl: 1 * 60, limit: 30 },
@@ -29,12 +33,19 @@ const rateLimit = ThrottlerModule.forRoot([
     HealthModule,
     AuthModule,
     AdminModule,
+    CountriesModule,
+    PrometheusModule.register({
+      path: '/metrics',
+    }),
   ],
+  controllers: [DevToolsController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    ErrorHandlerService,
   ],
 })
 export class AppModule {}
+

@@ -1,10 +1,8 @@
-import { useMemo, useState } from 'react';
-import { View, Text, Image, Pressable, Dimensions, ScrollView } from 'react-native';
+import { useMemo, useState, useEffect } from 'react';
+import { View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
 import { colors, shadows } from '@/lib/theme';
@@ -13,8 +11,6 @@ import { MemoryFeeling } from '@/constants/Enums';
 import { Button } from '@/components/common/Button';
 import { ConfirmationModal } from '@/components/common/ConfirmationModal';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const CARD_WIDTH = SCREEN_WIDTH - 48; // mx-6 on card = 24px each side
 
 const MOOD_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
   [MemoryFeeling.Happy]: 'happy-outline',
@@ -38,52 +34,29 @@ export default function MemoryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { memories, deleteMemory } = useMemories();
 
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const savedTranslateX = useSharedValue(0);
-  const savedTranslateY = useSharedValue(0);
-
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-
-  const pinch = Gesture.Pinch()
-    .onStart(() => {
-      savedScale.value = scale.value;
-    })
-    .onUpdate((e) => {
-      scale.value = Math.min(Math.max(savedScale.value * e.scale, 1), 4);
-    })
-    .onEnd(() => {
-      if (scale.value < 1) {
-        scale.value = withTiming(1, { duration: 200 });
-        translateX.value = withTiming(0, { duration: 200 });
-        translateY.value = withTiming(0, { duration: 200 });
-      }
-    });
-
-  const pan = Gesture.Pan()
-    .minPointers(2)
-    .onStart(() => {
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
-    })
-    .onUpdate((e) => {
-      translateX.value = savedTranslateX.value + e.translationX;
-      translateY.value = savedTranslateY.value + e.translationY;
-    });
-
-  const composed = Gesture.Simultaneous(pinch, pan);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-  }));
+  const [aspectRatio, setAspectRatio] = useState<number>(4 / 3);
 
   const memory = useMemo(() => memories.find((m) => m.id === id), [memories, id]);
+
+  useEffect(() => {
+    if (memory?.mediaUri) {
+      Image.getSize(
+        memory.mediaUri,
+        (width, height) => {
+          if (width && height) {
+            // Clamp aspect ratio between 0.75 (3:4 portrait) and 1.77 (16:9 landscape) to keep layout neat
+            const ratio = width / height;
+            setAspectRatio(Math.min(Math.max(ratio, 0.75), 1.77));
+          }
+        },
+        () => {
+          // Fallback to 1.0 (square) on error
+          setAspectRatio(1);
+        }
+      );
+    }
+  }, [memory?.mediaUri]);
 
   if (!memory) {
     return (
@@ -105,17 +78,21 @@ export default function MemoryDetailScreen() {
         </View>
 
       {/* ─── Image Card ─── */}
-      <View className="rounded-xl overflow-hidden mt-2" style={{ backgroundColor: c.card, ...s.sm, marginHorizontal: 10}}>
-        <View style={{ height: SCREEN_HEIGHT * 0.35, backgroundColor: c.card }}>
-          <GestureDetector gesture={composed}>
-            <Animated.View style={[animatedStyle, { flex: 1, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]}>
-              <Image
-                source={{ uri: memory.mediaUri }}
-                style={{ width: CARD_WIDTH, height: SCREEN_HEIGHT * 0.35 }}
-                resizeMode="contain"
-              />
-            </Animated.View>
-          </GestureDetector>
+      <View className="rounded-2xl overflow-hidden mt-2 shadow-sm" style={{ backgroundColor: c.card, marginHorizontal: 10 }}>
+        <View style={{ width: '100%', aspectRatio, backgroundColor: c.card }}>
+          {/* Ambient Blurred Background Image to fill borders elegantly */}
+          <Image
+            source={{ uri: memory.mediaUri }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.35 }}
+            blurRadius={20}
+            resizeMode="cover"
+          />
+          {/* Centered Main Image */}
+          <Image
+            source={{ uri: memory.mediaUri }}
+            style={{ width: '100%', height: '100%' }}
+            resizeMode="contain"
+          />
         </View>
       </View>
 

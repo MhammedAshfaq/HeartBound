@@ -5,6 +5,8 @@ import { ErrorHandlerService } from '@common/services/error-handler.service';
 import { EnvConfig } from '@config/env.config';
 import { TraceIdInterceptor } from '@interceptors/trace-id.interceptor';
 import { TracingInterceptor } from '@interceptors/tracing.interceptor';
+import { TransformInterceptor } from '@interceptors/transform.interceptor';
+import { HttpLoggingInterceptor } from '@interceptors/logging.interceptor';
 import { LoggerService } from '@logger/logger.service';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,7 +14,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import * as path from 'path';
 import { AppModule } from './app.module';
@@ -59,12 +61,17 @@ async function bootstrap() {
       .addBearerAuth()
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('api-docs', app, document);
   }
 
   const errorHandler = app.get(ErrorHandlerService);
   app.useGlobalFilters(new HttpExceptionFilter(errorHandler));
-  app.useGlobalInterceptors(new TraceIdInterceptor(), new TracingInterceptor());
+  app.useGlobalInterceptors(
+    new TraceIdInterceptor(),
+    new TracingInterceptor(),
+    new TransformInterceptor(),
+    new HttpLoggingInterceptor(),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

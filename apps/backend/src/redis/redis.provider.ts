@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 export const REDIS_CLIENT = 'REDIS_CLIENT';
 
+// Triggered watch reload for port update
 export const redisProvider: Provider = {
   provide: REDIS_CLIENT,
   useFactory: (configService: ConfigService) => {

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/hooks/useAuth';
+import { useApi } from '@/hooks/useApi';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/useToast';
@@ -32,14 +33,48 @@ export default function LoginScreen() {
   const c = colors(isDark);
   const toast = useToast();
   const fieldHeight = 56;
+  const { client } = useApi();
 
   const [selectedCountry, setSelectedCountry] = useState<Country>(
     countries.find((c) => c.code === 'IN') || countries[0],
   );
+  const [countriesList, setCountriesList] = useState<Country[]>(countries);
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [phoneError, setPhoneError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    const fetchCountries = async () => {
+      try {
+        const response = await client.get<any[]>('/v1/countries');
+        if (response.data && active) {
+          const mapped = response.data.map((item) => ({
+            code: item.isoCode,
+            name: item.name,
+            dialCode: item.dialCode,
+            flag: item.flagUrl,
+          }));
+          setCountriesList(mapped);
+
+          const currentCode = selectedCountry.code;
+          const found = mapped.find((c) => c.code === currentCode);
+          if (found) {
+            setSelectedCountry(found);
+          } else if (mapped.length > 0) {
+            setSelectedCountry(mapped.find((c) => c.code === 'IN') || mapped[0]);
+          }
+        }
+      } catch (err) {
+        console.log('Failed to load countries from backend:', err);
+      }
+    };
+    fetchCountries();
+    return () => {
+      active = false;
+    };
+  }, [client]);
 
   const validatePhone = useCallback((value: string) => {
     if (!value) {
@@ -208,7 +243,7 @@ export default function LoginScreen() {
                 </TouchableOpacity>
               </View>
               <FlatList
-                data={countries}
+                data={countriesList}
                 keyExtractor={(item) => item.code}
                 renderItem={({ item }) => (
                   <TouchableOpacity

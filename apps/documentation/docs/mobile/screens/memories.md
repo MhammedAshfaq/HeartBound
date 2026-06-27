@@ -31,7 +31,7 @@ features/memories/
     ├── MemoriesListScreen.tsx      ← Groups by date, renders gallery rows
     ├── AddMemoryScreen.tsx         ← Single-screen form modal
     ├── DayMemoriesScreen.tsx       ← Pushed screen: all images for one day
-    └── MemoryDetailScreen.tsx      ← Modal: full image + metadata overlay + pinch zoom
+    └── MemoryDetailScreen.tsx      ← Modal: full image + metadata overlay
 ```
 
 ## Navigation Flow
@@ -46,7 +46,7 @@ Memories Tab (MemoriesListScreen)
   │     └── [thumb] [thumb] [thumb] [thumb/+N]
   │
   ├── Tap any thumbnail
-  │     └── Modal: MemoryDetailScreen (full image + metadata overlay + pinch zoom)
+  │     └── Modal: MemoryDetailScreen (full image + metadata overlay)
   │
   └── Tap "+N More"
         └── Pushed: DayMemoriesScreen (4-column grid of all images for that date)
@@ -137,14 +137,13 @@ Scrollable modal with two separate cards:
 
 | Element | Description |
 |---------|-------------|
-| Image Card | `rounded-xl`, `shadow.sm`, `mx-4`, height 35% of screen, pinch-to-zoom + two-finger pan |
+| Image Card | `rounded-2xl`, `shadow-md`, `mx-2.5`, dynamic aspect-ratio container (clamped 3:4 to 16:9) with an ambient blurred background and centered containment for perfect portrait/landscape support |
 | Close | X button top-left, clean no background |
 | Metadata Card | Separate card below image, `rounded-xl`, `shadow.sm`, `mx-4` |
 | Title + Date | Title left (flex-1), date chip right in same row |
 | Description | Below title with muted color |
 | Location chip | `rounded-full`, primary tint `14` bg |
 | Feeling chip | `rounded-full`, primary tint `14` bg, icon from `MOOD_ICONS` |
-| Image zoom | Pinch gesture (1×–4×) + two-finger pan with spring animations |
 
 ## Add Memory Modal
 
