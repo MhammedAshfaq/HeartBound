@@ -18,7 +18,6 @@ export class CountriesService {
         'countries:list',
         () => this.countriesDbService.getAll()
       );
-
       if (!countries || countries.length === 0) {
         throw new NotFoundException(ERROR_MESSAGES.COUNTRIES.NOT_FOUND);
       }

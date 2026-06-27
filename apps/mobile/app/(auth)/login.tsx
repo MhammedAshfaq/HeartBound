@@ -17,13 +17,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/hooks/useAuth';
-import { useApi } from '@/hooks/useApi';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/useToast';
 import { colors, spacing, borderRadius } from '@/lib/theme';
 import { Images } from '@/constants/Images';
-import { countries, type Country } from '@/constants/Countries';
+import type { Country } from '@/types/common.types';
+import { useCountries } from '@/hooks/useCountries';
+import { getErrorMessage } from '@/lib/utils/getErrorMessage';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -33,48 +34,34 @@ export default function LoginScreen() {
   const c = colors(isDark);
   const toast = useToast();
   const fieldHeight = 56;
-  const { client } = useApi();
+  const { data: countriesList = [], isLoading, isError, error, refetch } = useCountries();
 
-  const [selectedCountry, setSelectedCountry] = useState<Country>(
-    countries.find((c) => c.code === 'IN') || countries[0],
-  );
-  const [countriesList, setCountriesList] = useState<Country[]>(countries);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [phoneError, setPhoneError] = useState('');
 
+  // Keep selected country in sync when the dynamic country list loads
   useEffect(() => {
-    let active = true;
-    const fetchCountries = async () => {
-      try {
-        const response = await client.get<any[]>('/v1/countries');
-        if (response.data && active) {
-          const mapped = response.data.map((item) => ({
-            code: item.isoCode,
-            name: item.name,
-            dialCode: item.dialCode,
-            flag: item.flagUrl,
-          }));
-          setCountriesList(mapped);
-
-          const currentCode = selectedCountry.code;
-          const found = mapped.find((c) => c.code === currentCode);
-          if (found) {
-            setSelectedCountry(found);
-          } else if (mapped.length > 0) {
-            setSelectedCountry(mapped.find((c) => c.code === 'IN') || mapped[0]);
-          }
-        }
-      } catch (err) {
-        console.log('Failed to load countries from backend:', err);
+    if (countriesList.length > 0 && selectedCountry) {
+      const currentCode = selectedCountry.code;
+      const found = countriesList.find((c) => c.code === currentCode);
+      if (found) {
+        setSelectedCountry(found);
       }
-    };
-    fetchCountries();
-    return () => {
-      active = false;
-    };
-  }, [client]);
+    }
+  }, [countriesList]);
+
+  // Show toast notification if API fails
+  useEffect(() => {
+    if (isError && error) {
+      toast.error({
+        title: t('auth.connectionError', { defaultValue: 'Connection Error' }),
+        message: getErrorMessage(error),
+      });
+    }
+  }, [isError, error, t, toast]);
 
   const validatePhone = useCallback((value: string) => {
     if (!value) {
@@ -97,7 +84,7 @@ export default function LoginScreen() {
 
   const handleSendOTP = useCallback(async () => {
     if (!validatePhone(phone)) return;
-    const fullPhone = `${selectedCountry.dialCode}${phone}`;
+    const fullPhone = `${selectedCountry?.dialCode}${phone}`;
     setLoading(true);
     try {
       // await sendOTP(fullPhone);
@@ -155,10 +142,19 @@ export default function LoginScreen() {
                   },
                 ]}
                 onPress={() => setPickerVisible(true)}
+                disabled={isLoading}
               >
-                <Text style={styles.countryFlag}>{selectedCountry.flag}</Text>
-                <Text style={[styles.countryCode, { color: c.text }]}>{selectedCountry.dialCode}</Text>
-                <Ionicons name="chevron-down" size={16} color={c.muted} />
+                {isLoading ? (
+                  <ActivityIndicator size="small" color={c.primary} />
+                ) : (
+                  <>
+                    <Text style={styles.countryFlag}>{selectedCountry?.flag || '🏳️'}</Text>
+                    {selectedCountry?.dialCode ? (
+                      <Text style={[styles.countryCode, { color: c.text }]}>{selectedCountry.dialCode}</Text>
+                    ) : null}
+                    <Ionicons name="chevron-down" size={16} color={c.muted} />
+                  </>
+                )}
               </TouchableOpacity>
 
               <View style={styles.phoneInputContainer}>
@@ -245,11 +241,34 @@ export default function LoginScreen() {
               <FlatList
                 data={countriesList}
                 keyExtractor={(item) => item.code}
+                ListEmptyComponent={() => (
+                  <View style={styles.emptyContainer}>
+                    {isError ? (
+                      <>
+                        <Text style={[styles.emptyText, { color: c.error }]}>
+                          {getErrorMessage(error)}
+                        </Text>
+                        <TouchableOpacity
+                          style={[styles.retryButton, { backgroundColor: c.primary }]}
+                          onPress={() => refetch()}
+                        >
+                          <Text style={styles.retryText}>{t('common.retry', { defaultValue: 'Retry' })}</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : isLoading ? (
+                      <ActivityIndicator size="large" color={c.primary} style={{ marginTop: 20 }} />
+                    ) : (
+                      <Text style={[styles.emptyText, { color: c.muted }]}>
+                        {t('auth.noCountriesFound', { defaultValue: 'No countries available' })}
+                      </Text>
+                    )}
+                  </View>
+                )}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={[
                       styles.countryItem,
-                      item.code === selectedCountry.code && { backgroundColor: c.primary + '15' },
+                      item.code === selectedCountry?.code && { backgroundColor: c.primary + '15' },
                     ]}
                     onPress={() => {
                       setSelectedCountry(item);
@@ -259,7 +278,7 @@ export default function LoginScreen() {
                     <Text style={styles.countryItemFlag}>{item.flag}</Text>
                     <Text style={[styles.countryItemName, { color: c.text }]}>{item.name}</Text>
                     <Text style={[styles.countryItemDial, { color: c.muted }]}>{item.dialCode}</Text>
-                    {item.code === selectedCountry.code && (
+                    {item.code === selectedCountry?.code && (
                       <Ionicons name="checkmark" size={20} color={c.primary} />
                     )}
                   </TouchableOpacity>
@@ -332,6 +351,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     paddingHorizontal: 12,
     justifyContent: 'center',
+    minWidth: 85,
   },
   countryFlag: {
     fontSize: 22,
@@ -442,5 +462,29 @@ const styles = StyleSheet.create({
   countryItemDial: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  emptyContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+  },
+  emptyText: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  retryButton: {
+    borderRadius: borderRadius.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.xs,
+  },
+  retryText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

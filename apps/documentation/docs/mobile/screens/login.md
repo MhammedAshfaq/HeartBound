@@ -16,14 +16,14 @@
 
 | # | Field | Input Type | Behaviour |
 |---|-------|------------|-----------|
-| 1 | Country picker | Touchable row (flag + dial code + chevron) | Opens bottom sheet modal with FlatList of 32 countries |
+| 1 | Country picker | Touchable row (flag + dial code + chevron) | Opens bottom sheet modal with FlatList of active countries fetched dynamically from `/v1/countries` |
 | 2 | Phone number | Text input with phone-pad keyboard | Validated as 8–15 digits |
 
 - The country picker and phone input share the same control height for a cleaner aligned row
 
 ### Country Picker Modal
 - **Trigger:** Tap the country picker button (shows flag + dial code)
-- **Content:** FlatList of 32 countries with flag, name, dial code
+- **Content:** FlatList of active countries fetched dynamically from backend (flag, name, dial code)
 - **Selected state:** Highlighted row + checkmark icon
 - **Close:** Tap overlay or close button
 
@@ -42,6 +42,29 @@
 - **Social row:** 3 circular icon buttons (Google red, Apple black, Facebook blue)
 
 ### Data Flow
+
+**Step 0 — Load Active Countries:**
+```json
+GET /v1/countries
+```
+Response:
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "uuid",
+      "name": "India",
+      "isoCode": "IN",
+      "dialCode": "+91",
+      "flagUrl": "🇮🇳",
+      "currency": "INR",
+      "isActive": true
+    }
+  ],
+  "timestamp": "2026-06-27T07:45:04.194Z"
+}
+```
 
 **Step 1 — Send OTP:**
 ```json
