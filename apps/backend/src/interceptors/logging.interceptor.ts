@@ -6,15 +6,50 @@ import { tap } from 'rxjs/operators';
 export class HttpLoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
 
+  private sanitize(obj: any): any {
+    if (!obj || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.sanitize(item));
+    }
+
+    const sanitized = { ...obj };
+    const sensitiveKeys = [
+      'code',
+      'token',
+      'password',
+      'accessToken',
+      'refreshToken',
+      'clientSecret',
+      'client_secret',
+    ];
+
+    for (const key of Object.keys(sanitized)) {
+      if (sensitiveKeys.includes(key)) {
+        sanitized[key] = '***';
+      } else if (typeof sanitized[key] === 'object') {
+        sanitized[key] = this.sanitize(sanitized[key]);
+      }
+    }
+
+    return sanitized;
+  }
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest();
     const { method, url, body, query, params } = request;
     const now = Date.now();
 
-    const formattedBody = Object.keys(body || {}).length ? JSON.stringify(body) : null;
-    const formattedQuery = Object.keys(query || {}).length ? JSON.stringify(query) : null;
-    const formattedParams = Object.keys(params || {}).length ? JSON.stringify(params) : null;
+    const sanitizedBody = this.sanitize(body);
+    const sanitizedQuery = this.sanitize(query);
+    const sanitizedParams = this.sanitize(params);
+
+    const formattedBody = Object.keys(sanitizedBody || {}).length ? JSON.stringify(sanitizedBody) : null;
+    const formattedQuery = Object.keys(sanitizedQuery || {}).length ? JSON.stringify(sanitizedQuery) : null;
+    const formattedParams = Object.keys(sanitizedParams || {}).length ? JSON.stringify(sanitizedParams) : null;
 
     this.logger.log(
       `[REQUEST] ▶▶▶ ${method} ${url}` +

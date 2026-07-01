@@ -8,6 +8,41 @@
       "when": 1782495700748,
       "tag": "0000_aberrant_archangel",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782568067738,
+      "tag": "0001_slow_nomad",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782629522301,
+      "tag": "0002_vengeful_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1782638486523,
+      "tag": "0003_empty_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1782643649842,
+      "tag": "0004_worthless_masque",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1782671730883,
+      "tag": "0005_lame_the_order",
+      "breakpoints": true
     }
   ]
 }

@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/hooks/useAuth';
 import { colors, shadows } from '@/lib/theme';
 
 interface Question {
@@ -65,6 +66,7 @@ export default function RelationshipQuestionsScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const { updateProfile } = useAuth();
 
   // Animation values for smooth card transition
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -136,10 +138,16 @@ export default function RelationshipQuestionsScreen() {
     if (!allAnswered) return;
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-    } catch {
+      // Mark profile as completed in backend — triggers home redirect via auth guard
+      await updateProfile({ profileCompleter: true } as any);
+      router.replace('/(tabs)');
+    } catch (err) {
+      console.warn('[MCQ] Failed to mark profile complete:', err);
+      // Still navigate even if backend call fails to not block the user
+      router.replace('/(tabs)');
+    } finally {
+      setLoading(false);
     }
-    router.replace('/(tabs)');
   };
 
   const progress = (currentIndex + 1) / questions.length;

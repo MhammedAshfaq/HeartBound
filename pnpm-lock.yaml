@@ -87,6 +87,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@huggingface/inference':
+        specifier: ^4.13.21
+        version: 4.13.21
       '@nestjs/bullmq':
         specifier: 11.0.3
         version: 11.0.3(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6)(bullmq@5.58.6)
@@ -147,6 +150,9 @@ importers:
       '@willsoto/nestjs-prometheus':
         specifier: 6.0.2
         version: 6.0.2(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(prom-client@15.1.3)
+      axios:
+        specifier: ^1.17.0
+        version: 1.17.0
       body-parser:
         specifier: 2.2.0
         version: 2.2.0
@@ -183,6 +189,9 @@ importers:
       nest-winston:
         specifier: 1.10.2
         version: 1.10.2(@nestjs/common@11.1.6(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(winston@3.17.0)
+      openai:
+        specifier: ^6.45.0
+        version: 6.45.0(ws@8.21.0)(zod@3.25.76)
       passport:
         specifier: 0.7.0
         version: 0.7.0
@@ -207,6 +216,9 @@ importers:
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
+      twilio:
+        specifier: ^6.0.2
+        version: 6.0.2
       winston:
         specifier: 3.17.0
         version: 3.17.0
@@ -216,7 +228,7 @@ importers:
     devDependencies:
       '@nestjs/cli':
         specifier: 11.0.10
-        version: 11.0.10(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))
+        version: 11.0.10(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(esbuild@0.19.12)(webpack-cli@6.0.1)
       '@nestjs/schematics':
         specifier: 11.0.7
         version: 11.0.7(chokidar@4.0.3)(typescript@5.9.2)
@@ -288,7 +300,7 @@ importers:
         version: 29.4.3(@babel/core@7.29.7)(@jest/transform@30.1.2)(@jest/types@30.4.1)(babel-jest@30.1.2(@babel/core@7.29.7))(esbuild@0.19.12)(jest-util@30.4.1)(jest@30.1.3(@types/node@24.5.2)(esbuild-register@3.6.0(esbuild@0.19.12))(ts-node@10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(typescript@5.9.2)))(typescript@5.9.2)
       ts-loader:
         specifier: 9.5.4
-        version: 9.5.4(typescript@5.9.2)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2)))
+        version: 9.5.4(typescript@5.9.2)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1))
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(typescript@5.9.2)
@@ -379,6 +391,9 @@ importers:
       '@react-native-community/netinfo':
         specifier: 11.4.1
         version: 11.4.1(react-native@0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0))
+      '@react-native-google-signin/google-signin':
+        specifier: ^16.1.2
+        version: 16.1.2(expo@54.0.35)(react-native@0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       '@react-navigation/native':
         specifier: ^7.2.4
         version: 7.2.5(react-native@0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -2327,6 +2342,17 @@ packages:
   '@hapi/topo@6.0.2':
     resolution: {integrity: sha512-KR3rD5inZbGMrHmgPxsJ9dbi6zEK+C3ZwUwTa+eMwWLz7oijWUTWD2pMSNNYJAU6Qq+65NkxXjqHr/7LM2Xkqg==}
 
+  '@huggingface/inference@4.13.21':
+    resolution: {integrity: sha512-B2gsY92aN8mxgQ1zqibQPFyq05KOlE4sTmRj1wYEEghOo/D4n6lVkH6v/7HcMzwUvfrKzYid0Cl1Nw0tEY5xTQ==}
+    engines: {node: '>=18'}
+
+  '@huggingface/jinja@0.5.9':
+    resolution: {integrity: sha512-uWTG+l3VJRsl7EXxYizuL3P+cCPoc3cRqbWWRcQN0FhejRfbdq0RNhCmbY/YDtnTcz9icdLYuLDjsnz4d8JMuw==}
+    engines: {node: '>=18'}
+
+  '@huggingface/tasks@0.21.18':
+    resolution: {integrity: sha512-vF5zwjAp0lszB6IKuhRC+yTtwcdWZ+629CBuBbjK7/UVDgOOkS5+mpVfc87wEPK4WpDZDDJe6dc0HLhVTpkyyg==}
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -4022,6 +4048,16 @@ packages:
     resolution: {integrity: sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==}
     peerDependencies:
       react-native: '>=0.59'
+
+  '@react-native-google-signin/google-signin@16.1.2':
+    resolution: {integrity: sha512-1hf4pRmpnS5t0dHtqU72Q1FmWzsCZR2Sm3uVQbbfMKeNPl5TKjpAsP6F8QTZ9L+Q6Cnn9tL9BXpDCb1nyutdCQ==}
+    peerDependencies:
+      expo: '>=52.0.40'
+      react: 19.1.0
+      react-native: '*'
+    peerDependenciesMeta:
+      expo:
+        optional: true
 
   '@react-native/assets-registry@0.81.5':
     resolution: {integrity: sha512-705B6x/5Kxm1RKRvSv0ADYWm5JOnoiQ1ufW7h8uu2E6G9Of/eE6hP/Ivw3U5jI16ERqZxiKQwk34VJbB0niX9w==}
@@ -6209,6 +6245,9 @@ packages:
 
   date-fns@4.4.0:
     resolution: {integrity: sha512-+1UMbeh68lH1SegH83CGWwpb6OHHbpSgr3+s5Eww5M4CAgswBpoWS0AjTOfEJ33HiYKz1hdj/KTFprzXHmq/6w==}
+
+  dayjs@1.11.21:
+    resolution: {integrity: sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA==}
 
   debounce@1.2.1:
     resolution: {integrity: sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==}
@@ -9381,6 +9420,26 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
+  openai@6.45.0:
+    resolution: {integrity: sha512-5DQVNErssk0afNpTTHUm/qZPU4iKR9OYdNid8Ib4puq4gHNNvGWZht2zY4h9a8JMF949Ik6m8gQutllVPbjdnw==}
+    peerDependencies:
+      '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
+      '@smithy/hash-node': '>=4.3.0 <5'
+      '@smithy/signature-v4': '>=5.4.0 <6'
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      '@aws-sdk/credential-provider-node':
+        optional: true
+      '@smithy/hash-node':
+        optional: true
+      '@smithy/signature-v4':
+        optional: true
+      ws:
+        optional: true
+      zod:
+        optional: true
+
   opener@1.5.2:
     resolution: {integrity: sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==}
     hasBin: true
@@ -10894,6 +10953,10 @@ packages:
     resolution: {integrity: sha512-eflK8wEtyOE6+hsaRVPxvUKYCpRgzLqDTb8krvAsRIwOGlHoSgYLgBXoubGgLd2fT41/OUYdb48v4k4WWHQurA==}
     engines: {node: '>= 10.13.0'}
 
+  scmp@2.1.0:
+    resolution: {integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==}
+    deprecated: Just use Node.js's crypto.timingSafeEqual()
+
   search-insights@2.17.3:
     resolution: {integrity: sha512-RQPdCYTa8A68uM2jwxoY842xDhvx3E5LFL1LxvxCNMev4o5mLuokczhzjAgGwUZBAmOKZknArSxLKmXtIi2AxQ==}
 
@@ -11600,6 +11663,10 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
+  twilio@6.0.2:
+    resolution: {integrity: sha512-RN3TZxUtxLz2HBZVt62+LdZxQbrMVgYKtuzLgwmO7nqKvR+gQS5mCackD9hf4Y7MmoK/bX7tCm7kaJC8kC8zFA==}
+    engines: {node: '>=20.0.0'}
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -12143,6 +12210,10 @@ packages:
   xmlbuilder@11.0.1:
     resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}
     engines: {node: '>=4.0'}
+
+  xmlbuilder@13.0.2:
+    resolution: {integrity: sha512-Eux0i2QdDYKbdbA6AM6xE4m6ZTZr4G4xF9kahI2ukSEMCzwce2eX9WlTI5J3s+NU7hpasFsr8hWIONae7LluAQ==}
+    engines: {node: '>=6.0'}
 
   xmlbuilder@15.1.1:
     resolution: {integrity: sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg==}
@@ -15198,6 +15269,15 @@ snapshots:
     dependencies:
       '@hapi/hoek': 11.0.7
 
+  '@huggingface/inference@4.13.21':
+    dependencies:
+      '@huggingface/jinja': 0.5.9
+      '@huggingface/tasks': 0.21.18
+
+  '@huggingface/jinja@0.5.9': {}
+
+  '@huggingface/tasks@0.21.18': {}
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -15859,7 +15939,7 @@ snapshots:
       keyv: 5.6.0
       rxjs: 7.8.2
 
-  '@nestjs/cli@11.0.10(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))':
+  '@nestjs/cli@11.0.10(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(esbuild@0.19.12)(webpack-cli@6.0.1)':
     dependencies:
       '@angular-devkit/core': 19.2.15(chokidar@4.0.3)
       '@angular-devkit/schematics': 19.2.15(chokidar@4.0.3)
@@ -15870,7 +15950,7 @@ snapshots:
       chokidar: 4.0.3
       cli-table3: 0.6.5
       commander: 4.1.1
-      fork-ts-checker-webpack-plugin: 9.1.0(typescript@5.8.3)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2)))
+      fork-ts-checker-webpack-plugin: 9.1.0(typescript@5.8.3)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1))
       glob: 11.0.3
       node-emoji: 1.11.0
       ora: 5.4.1
@@ -15878,7 +15958,7 @@ snapshots:
       tsconfig-paths: 4.2.0
       tsconfig-paths-webpack-plugin: 4.2.0
       typescript: 5.8.3
-      webpack: 5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))
+      webpack: 5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)
       webpack-node-externals: 3.0.0
     optionalDependencies:
       '@swc/core': 1.13.5(@swc/helpers@0.5.17)
@@ -17111,6 +17191,13 @@ snapshots:
   '@react-native-community/netinfo@11.4.1(react-native@0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0))':
     dependencies:
       react-native: 0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0)
+
+  '@react-native-google-signin/google-signin@16.1.2(expo@54.0.35)(react-native@0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0)
+    optionalDependencies:
+      expo: 54.0.35(@babel/core@7.29.7)(@expo/metro-runtime@6.1.2)(expo-router@6.0.24)(react-native@0.81.5(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.2)
 
   '@react-native/assets-registry@0.81.5': {}
 
@@ -19659,6 +19746,8 @@ snapshots:
 
   date-fns@4.4.0: {}
 
+  dayjs@1.11.21: {}
+
   debounce@1.2.1: {}
 
   debug@2.6.9:
@@ -20769,7 +20858,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@9.1.0(typescript@5.8.3)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))):
+  fork-ts-checker-webpack-plugin@9.1.0(typescript@5.8.3)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)):
     dependencies:
       '@babel/code-frame': 7.29.7
       chalk: 4.1.2
@@ -20784,7 +20873,7 @@ snapshots:
       semver: 7.8.2
       tapable: 2.3.3
       typescript: 5.8.3
-      webpack: 5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))
+      webpack: 5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)
 
   form-data-encoder@2.1.4: {}
 
@@ -23925,6 +24014,11 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
+  openai@6.45.0(ws@8.21.0)(zod@3.25.76):
+    optionalDependencies:
+      ws: 8.21.0
+      zod: 3.25.76
+
   opener@1.5.2: {}
 
   optionator@0.9.4:
@@ -25631,6 +25725,8 @@ snapshots:
       ajv-formats: 2.1.1(ajv@8.20.0)
       ajv-keywords: 5.1.0(ajv@8.20.0)
 
+  scmp@2.1.0: {}
+
   search-insights@2.17.3: {}
 
   section-matter@1.0.0:
@@ -26231,24 +26327,24 @@ snapshots:
       html-minifier-terser: 7.2.0
       postcss: 8.5.15
 
-  terser-webpack-plugin@5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))):
+  terser-webpack-plugin@5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.48.0
-      webpack: 5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))
+      webpack: 5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)
     optionalDependencies:
       '@swc/core': 1.13.5(@swc/helpers@0.5.17)
       esbuild: 0.19.12
 
-  terser-webpack-plugin@5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))):
+  terser-webpack-plugin@5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.48.0
-      webpack: 5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))
+      webpack: 5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)
     optionalDependencies:
       '@swc/core': 1.13.5(@swc/helpers@0.5.17)
       esbuild: 0.19.12
@@ -26374,7 +26470,7 @@ snapshots:
       esbuild: 0.19.12
       jest-util: 30.4.1
 
-  ts-loader@9.5.4(typescript@5.9.2)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))):
+  ts-loader@9.5.4(typescript@5.9.2)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.23.0
@@ -26382,7 +26478,7 @@ snapshots:
       semver: 7.8.2
       source-map: 0.7.6
       typescript: 5.9.2
-      webpack: 5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2))
+      webpack: 5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1)
 
   ts-node-dev@2.0.0(@swc/core@1.13.5(@swc/helpers@0.5.17))(@types/node@24.5.2)(typescript@5.9.2):
     dependencies:
@@ -26447,6 +26543,19 @@ snapshots:
   tslib@1.14.1: {}
 
   tslib@2.8.1: {}
+
+  twilio@6.0.2:
+    dependencies:
+      axios: 1.17.0
+      dayjs: 1.11.21
+      https-proxy-agent: 5.0.1
+      jsonwebtoken: 9.0.3
+      qs: 6.15.2
+      scmp: 2.1.0
+      xmlbuilder: 13.0.2
+    transitivePeerDependencies:
+      - debug
+      - supports-color
 
   type-check@0.4.0:
     dependencies:
@@ -26856,7 +26965,7 @@ snapshots:
 
   webpack-sources@3.5.0: {}
 
-  webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2)):
+  webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.9
@@ -26880,7 +26989,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3
-      terser-webpack-plugin: 5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2)))
+      terser-webpack-plugin: 5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.100.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1))
       watchpack: 2.5.1
       webpack-sources: 3.5.0
     optionalDependencies:
@@ -26940,7 +27049,7 @@ snapshots:
       - postcss
       - uglify-js
 
-  webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2)):
+  webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1):
     dependencies:
       '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
@@ -26962,7 +27071,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3
-      terser-webpack-plugin: 5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1(webpack@5.107.2)))
+      terser-webpack-plugin: 5.6.1(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack@5.107.2(@swc/core@1.13.5(@swc/helpers@0.5.17))(esbuild@0.19.12)(webpack-cli@6.0.1))
       watchpack: 2.5.1
       webpack-sources: 3.5.0
     optionalDependencies:
@@ -27219,6 +27328,8 @@ snapshots:
       xmlbuilder: 11.0.1
 
   xmlbuilder@11.0.1: {}
+
+  xmlbuilder@13.0.2: {}
 
   xmlbuilder@15.1.1: {}
 

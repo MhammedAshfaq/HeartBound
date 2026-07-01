@@ -37,10 +37,10 @@ Required variables:
 pnpm start
 
 # Run on iOS simulator
-pnpm ios
+npx expo run:ios
 
 # Run on Android emulator
-pnpm android
+npx expo run:android
 
 # Run on web
 pnpm web

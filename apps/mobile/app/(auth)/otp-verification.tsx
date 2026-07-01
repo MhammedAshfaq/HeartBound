@@ -15,16 +15,20 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/useToast';
 import { colors, spacing, borderRadius } from '@/lib/theme';
+import { getErrorMessage } from '@/lib/utils/getErrorMessage';
 
 const OTP_LENGTH = 6;
-const MASTER_OTP = '987654';
-const OTP_RESEND_TIMEOUT = 60;
+const OTP_RESEND_TIMEOUT = 120;
 
 export default function OTPVerificationScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { phone } = useLocalSearchParams<{ phone: string }>();
-  const { sendOTP } = useAuth();
+  const { phone, country, countryCode } = useLocalSearchParams<{
+    phone: string;
+    country?: string;
+    countryCode?: string;
+  }>();
+  const { sendOTP, verifyOTP } = useAuth();
   const { isDark } = useTheme();
   const c = colors(isDark);
   const toast = useToast();
@@ -47,6 +51,11 @@ export default function OTPVerificationScreen() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Dismiss all toasts on mount
+  useEffect(() => {
+    toast.dismiss();
+  }, [toast]);
 
   const submitRef = useRef<((code: string) => void) | undefined>(undefined);
 
@@ -75,19 +84,21 @@ export default function OTPVerificationScreen() {
     if (code.length !== OTP_LENGTH) return;
     setLoading(true);
     try {
-      if (code === MASTER_OTP) {
-        router.replace('/(auth)/setup-profile');
-      } else {
-        throw new Error('Invalid OTP');
-      }
-    } catch {
-      toast.error({ title: 'Verification failed', message: 'Invalid code, please try again' });
+      // Trigger the real verify API with the ISO country code
+      await verifyOTP(phone, code, countryCode || 'IN');
+      toast.dismiss();
+      
+      // Verification succeeded, navigate to onboarding setup
+      router.replace('/(auth)/setup-profile');
+    } catch (err: any) {
+      const message = getErrorMessage(err);
+      toast.error({ title: 'Verification failed', message });
       setOtp(Array(OTP_LENGTH).fill(''));
       inputs.current[0]?.focus();
     } finally {
       setLoading(false);
     }
-  }, [router, toast]);
+  }, [phone, country, countryCode, verifyOTP, router, toast]);
 
   useEffect(() => {
     submitRef.current = handleSubmit;
@@ -98,10 +109,11 @@ export default function OTPVerificationScreen() {
     setTimer(OTP_RESEND_TIMEOUT);
     setCanResend(false);
     try {
-      // await sendOTP(phone); // MVP: No backend
-      toast.success({ title: 'OTP resent' });
-    } catch {
-      toast.error({ title: 'Failed to resend OTP' });
+      await sendOTP(phone, countryCode);
+      toast.success({ title: 'OTP resent successfully' });
+    } catch (err: any) {
+      const message = getErrorMessage(err);
+      toast.error({ title: 'Failed to resend OTP', message });
     }
     inputs.current[0]?.focus();
   }, [phone, sendOTP, toast]);
@@ -118,7 +130,6 @@ export default function OTPVerificationScreen() {
             {t('auth.enterOTP')}{'\n'}
             <Text style={[styles.phoneText, { color: c.primary }]}>{phone}</Text>
           </Text>
-          <Text style={[styles.seedHint, { color: c.muted }]}>{t('auth.seedHint')}</Text>
         </View>
 
         <View style={styles.otpContainer}>

@@ -183,7 +183,7 @@ export default function EditProfileScreen() {
           <View className="items-center pt-10 pb-8">
             <Pressable onPress={handlePickImage} className="relative">
               <Image
-                source={{ uri: avatar || user?.avatar }}
+                source={{ uri: (avatar || user?.avatar) ?? undefined }}
                 style={{
                   width: 88,
                   height: 88,

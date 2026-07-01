@@ -6,6 +6,10 @@ import { join } from 'path';
 import * as schema from './schema';
 import { CountriesRepository } from './countries/countries.repository';
 import { CountriesDbService } from './countries/countries.service';
+import { UsersRepository } from './users/users.repository';
+import { UsersDbService } from './users/users.service';
+import { McqAnswersRepository } from './mcq-answers/mcq-answers.repository';
+import { McqAnswersDbService } from './mcq-answers/mcq-answers.service';
 import { DRIZZLE_PROVIDER } from './db.constants';
 
 @Module({
@@ -27,8 +31,12 @@ import { DRIZZLE_PROVIDER } from './db.constants';
     },
     CountriesRepository,
     CountriesDbService,
+    UsersRepository,
+    UsersDbService,
+    McqAnswersRepository,
+    McqAnswersDbService,
   ],
-  exports: [DRIZZLE_PROVIDER, CountriesRepository, CountriesDbService],
+  exports: [DRIZZLE_PROVIDER, CountriesRepository, CountriesDbService, UsersRepository, UsersDbService, McqAnswersRepository, McqAnswersDbService],
 })
 export class DBModule implements OnModuleDestroy, OnModuleInit {
   constructor(

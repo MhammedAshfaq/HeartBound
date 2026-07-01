@@ -84,7 +84,6 @@ const ar = {
     resendOTP: 'إعادة إرسال الرمز',
     resendIn: 'إعادة الإرسال بعد',
     seconds: 'ثانية',
-    seedHint: 'استخدم الرمز: 987654',
     verifying: 'جار التحقق...',
     sendingOTP: 'جار إرسال الرمز...',
   },

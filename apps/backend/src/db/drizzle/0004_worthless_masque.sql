@@ -1,0 +1,1 @@
+ALTER TABLE "Users" ADD COLUMN "profileCompleter" boolean DEFAULT false NOT NULL;

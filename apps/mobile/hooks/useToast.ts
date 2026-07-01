@@ -5,9 +5,12 @@ interface ToastOptions {
 }
 
 let burntToast: ((options: Record<string, unknown>) => void) | null = null;
+let dismissAllToasts: (() => void) | null = null;
 
 try {
-  burntToast = require('burnt').toast;
+  const burnt = require('burnt');
+  burntToast = burnt.toast;
+  dismissAllToasts = burnt.dismissAll;
 } catch {
 }
 
@@ -23,21 +26,30 @@ export function useToast() {
       callToast({
         title: options.title,
         message: options.message,
-        duration: options.duration ?? 3000,
+        duration: options.duration ?? 3,
       }),
     error: (options: ToastOptions) =>
       callToast({
         title: options.title,
         message: options.message,
-        duration: options.duration ?? 4000,
+        duration: options.duration ?? 5,
         preset: 'error',
       }),
     success: (options: ToastOptions) =>
       callToast({
         title: options.title,
         message: options.message,
-        duration: options.duration ?? 3000,
+        duration: options.duration ?? 3,
         preset: 'done',
       }),
+    dismiss: () => {
+      if (dismissAllToasts) {
+        try {
+          dismissAllToasts();
+        } catch (e) {
+          console.warn('Failed to dismiss active toasts:', e);
+        }
+      }
+    },
   };
 }

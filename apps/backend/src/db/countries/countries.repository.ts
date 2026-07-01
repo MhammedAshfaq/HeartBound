@@ -18,4 +18,12 @@ export class CountriesRepository {
       .where(eq(schema.countries.isActive, true))
       .orderBy(asc(schema.countries.name));
   }
+
+  async findByIsoCode(isoCode: string) {
+    return this.db
+      .select()
+      .from(schema.countries)
+      .where(eq(schema.countries.isoCode, isoCode))
+      .then((rows) => rows[0] || null);
+  }
 }

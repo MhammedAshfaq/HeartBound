@@ -84,7 +84,6 @@ const en = {
     resendOTP: 'Resend OTP',
     resendIn: 'Resend in',
     seconds: 's',
-    seedHint: 'Use code: 987654',
     verifying: 'Verifying...',
     sendingOTP: 'Sending OTP...',
   },

@@ -90,6 +90,34 @@ Allows editing the user's own profile parameters, uploading a profile avatar, an
   - Partner Details: Configures Partner Name, Partner Date of Birth, and Partner Email.
 - **Save Actions:** Commits changes through `updateProfile` and returns back, showing a success toast. Disables the save button if no fields differ from initial state.
 
+#### API Integration
+
+| Operation | Method | Endpoint | Auth |
+|-----------|--------|----------|------|
+| Update user profile | `PATCH` | `/v1/users/:userId` | Bearer token (authClient) |
+
+**Payload fields:**
+
+```json
+{
+  "email": "",
+  "name": "",
+  "dateOfBirth": "",
+  "gender": "",
+  "relationshipStatus": "",
+  "partnerId": null,
+  "partnerName": null,
+  "anniversaryDate": null,
+  "partnerDob": null,
+  "partnerEmail": null,
+  "partnerCode": null
+}
+```
+
+- `userId` is taken from `session.user.id` stored in `SessionContext` after OTP verification.
+- The Bearer token is automatically injected by `authClient` from `ApiContext`.
+- On success, the updated user object from the API response is merged back into `SessionContext` and persisted to `SecureStore`.
+
 ---
 
 ### 2. Email Verification Screen

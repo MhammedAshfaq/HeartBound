@@ -39,4 +39,8 @@ export class EnvConfig {
   @IsNotEmpty() @IsString() GRAFANA_URL!: string;
   @IsNotEmpty() @IsString() APP_LOGS_URL!: string;
   @IsNotEmpty() @IsString() SERVICES_HEALTH_URL!: string;
+
+  @IsOptional() @IsString() TWILIO_ACCOUNT_SID?: string;
+  @IsOptional() @IsString() TWILIO_AUTH_TOKEN?: string;
+  @IsOptional() @IsString() TWILIO_FROM_NUMBER?: string;
 }

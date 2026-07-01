@@ -8,4 +8,8 @@ export class CountriesDbService {
   async getAll() {
     return this.countriesRepository.findAll();
   }
+
+  async getByIsoCode(isoCode: string) {
+    return this.countriesRepository.findByIsoCode(isoCode);
+  }
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,33 @@ import { Images } from '@/constants/Images';
 import type { Country } from '@/types/common.types';
 import { useCountries } from '@/hooks/useCountries';
 import { getErrorMessage } from '@/lib/utils/getErrorMessage';
+
+let DynamicGoogleButton: any = null;
+try {
+  const { NativeModules } = require('react-native');
+  const isAvailable = !!NativeModules.RNGoogleSignin || !!(global as any).__turboModuleProxy?.('RNGoogleSignin');
+  if (isAvailable) {
+    DynamicGoogleButton = require('@react-native-google-signin/google-signin').GoogleSigninButton;
+  }
+} catch (e) {
+  // Silent catch
+}
+
+interface GoogleButtonWrapperProps {
+  onPress: () => void;
+  fallbackStyle: any;
+}
+
+function GoogleButtonWrapper({ onPress, fallbackStyle }: GoogleButtonWrapperProps) {
+  return (
+    <TouchableOpacity
+      style={fallbackStyle}
+      onPress={onPress}
+    >
+      <Ionicons name="logo-google" size={24} color="#DB4437" />
+    </TouchableOpacity>
+  );
+}
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -63,6 +90,11 @@ export default function LoginScreen() {
     }
   }, [isError, error, t, toast]);
 
+  // Dismiss all toasts on mount
+  useEffect(() => {
+    toast.dismiss();
+  }, [toast]);
+
   const validatePhone = useCallback((value: string) => {
     if (!value) {
       setPhoneError('Phone number is required');
@@ -81,28 +113,38 @@ export default function LoginScreen() {
     setPhone(sanitizedPhone);
     if (phoneError) validatePhone(sanitizedPhone);
   }, [phoneError, validatePhone]);
-
   const handleSendOTP = useCallback(async () => {
+    toast.dismiss();
     if (!validatePhone(phone)) return;
     const fullPhone = `${selectedCountry?.dialCode}${phone}`;
     setLoading(true);
     try {
-      // await sendOTP(fullPhone);
-      router.push({ pathname: '/(auth)/otp-verification', params: { phone: fullPhone } });
-    } catch {
-      toast.error({ title: 'Failed to send OTP', message: 'Please try again' });
+      await sendOTP(fullPhone, selectedCountry?.code);
+      router.push({
+        pathname: '/(auth)/otp-verification',
+        params: {
+          phone: fullPhone,
+          country: selectedCountry?.name || '',
+          countryCode: selectedCountry?.code || '',
+        },
+      });
+    } catch (err: any) {
+      const message = getErrorMessage(err);
+      toast.error({ title: 'Failed to send OTP', message });
     } finally {
       setLoading(false);
     }
   }, [phone, selectedCountry, validatePhone, sendOTP, router, toast]);
-
   const handleSocialLogin = useCallback(async (provider: 'google' | 'apple' | 'facebook') => {
+    toast.dismiss();
     setLoading(true);
+    console.log(provider, '------- provider ------');
     try {
-      await loginWithOAuth(provider, `${provider}-mock-token`);
+      await loginWithOAuth(provider);
       router.replace('/(auth)/setup-profile');
-    } catch {
-      toast.error({ title: `${provider} login failed`, message: 'Please try again' });
+    } catch (err: any) {
+      const message = getErrorMessage(err);
+      toast.error({ title: `${provider} login failed`, message });
     } finally {
       setLoading(false);
     }
@@ -204,12 +246,10 @@ export default function LoginScreen() {
           </View>
 
           <View style={styles.socialRow}>
-            <TouchableOpacity
-              style={[styles.socialButton, { borderColor: c.border, backgroundColor: c.card }]}
+            <GoogleButtonWrapper
               onPress={() => handleSocialLogin('google')}
-            >
-              <Ionicons name="logo-google" size={24} color="#DB4437" />
-            </TouchableOpacity>
+              fallbackStyle={[styles.socialButton, { borderColor: c.border, backgroundColor: c.card }]}
+            />
             <TouchableOpacity
               style={[styles.socialButton, { borderColor: c.border, backgroundColor: c.card }]}
               onPress={() => handleSocialLogin('apple')}

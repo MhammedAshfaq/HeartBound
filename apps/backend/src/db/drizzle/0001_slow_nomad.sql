@@ -1,0 +1,19 @@
+ALTER TABLE "Users" ADD COLUMN "phone" varchar(50);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "googleId" varchar(255);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "appleId" varchar(255);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "facebookId" varchar(255);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "avatar" varchar(500);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "dateOfBirth" varchar(50);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "gender" varchar(50);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "nickname" varchar(100);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "relationshipStatus" varchar(50);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "partnerId" varchar(255);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "partnerName" varchar(255);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "anniversaryDate" varchar(50);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "partnerDob" varchar(50);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "partnerEmail" varchar(255);--> statement-breakpoint
+ALTER TABLE "Users" ADD COLUMN "partnerCode" varchar(100);--> statement-breakpoint
+ALTER TABLE "Users" ADD CONSTRAINT "Users_phone_unique" UNIQUE("phone");--> statement-breakpoint
+ALTER TABLE "Users" ADD CONSTRAINT "Users_googleId_unique" UNIQUE("googleId");--> statement-breakpoint
+ALTER TABLE "Users" ADD CONSTRAINT "Users_appleId_unique" UNIQUE("appleId");--> statement-breakpoint
+ALTER TABLE "Users" ADD CONSTRAINT "Users_facebookId_unique" UNIQUE("facebookId");

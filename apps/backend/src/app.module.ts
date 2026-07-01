@@ -11,9 +11,12 @@ import { HealthModule } from '@health/health.module';
 import { AuthModule } from '@auth/auth.module';
 import { AdminModule } from '@admin/admin.module';
 import { CountriesModule } from './api/countries/countries.module';
+import { UsersModule } from './api/users/users.module';
+import { McqAnswersModule } from './api/mcq-answers/mcq-answers.module';
 import { ErrorHandlerService } from '@common/services/error-handler.service';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { DevToolsController } from './api/dev-tools/dev-tools.controller';
+import { HuggingFaceModule } from 'api/huggingface/huggingface.module';
 
 const rateLimit = ThrottlerModule.forRoot([
   { name: 'short', ttl: 1 * 60, limit: 30 },
@@ -34,6 +37,9 @@ const rateLimit = ThrottlerModule.forRoot([
     AuthModule,
     AdminModule,
     CountriesModule,
+    UsersModule,
+    McqAnswersModule,
+    HuggingFaceModule,
     PrometheusModule.register({
       path: '/metrics',
     }),
