@@ -31,6 +31,8 @@ export interface Session {
     partnerEmail?: string | null;
     partnerCode?: string | null;
     profileCompleter?: boolean;
+    theme?: string | null;
+    isNotificationsEnabled?: boolean | null;
     insights?: InsightItem[];
   } | null;
 }
