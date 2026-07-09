@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Req,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -38,7 +39,7 @@ export class UsersController {
   async getProfile(@Req() req: any) {
     const userId: string = req.user.id;
     const user = await this.usersService.getProfile(userId);
-    return { success: true, user };
+    return user;
   }
 
   /**
@@ -64,6 +65,26 @@ export class UsersController {
     @Body() dto: UpdateProfileDto,
   ) {
     const user = await this.usersService.updateProfile(id, dto);
-    return { success: true, user };
+    return user;
+  }
+
+  /**
+   * GET /v1/users/me/logs
+   * Returns a paginated list of user activity logs
+   */
+  @Get('me/logs')
+  @ApiOperation({ summary: 'Get paginated user activity logs' })
+  @ApiResponse({ status: 200, description: 'User logs returned successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getLogs(
+    @Req() req: any,
+    @Query('limit') limit?: string,
+    @Query('offset') offset?: string,
+  ) {
+    const userId: string = req.user.id;
+    const limitNum = parseInt(limit ?? '10', 10) || 10;
+    const offsetNum = parseInt(offset ?? '0', 10) || 0;
+    const logs = await this.usersService.getUserLogs(userId, limitNum, offsetNum);
+    return { data: logs, meta: { limit: limitNum, offset: offsetNum } };
   }
 }

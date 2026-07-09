@@ -8,20 +8,20 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { colors, shadows } from '@/lib/theme';
 import { ConfirmationModal, ConfirmationModalOption } from '@/components/common/ConfirmationModal';
+import { RelationshipStatus } from '@/constants/Enums';
 
-type RelationshipValue = 'single' | 'inRelationship' | 'married' | 'engaged';
-
-const RELATIONSHIP_OPTIONS: { value: RelationshipValue; labelKey: string }[] = [
-  { value: 'single', labelKey: 'auth.statusSingle' },
-  { value: 'inRelationship', labelKey: 'auth.statusInRelationship' },
-  { value: 'married', labelKey: 'auth.statusMarried' },
-  { value: 'engaged', labelKey: 'auth.statusEngaged' },
+const RELATIONSHIP_OPTIONS: { value: RelationshipStatus; labelKey: string }[] = [
+  { value: RelationshipStatus.Single, labelKey: 'auth.statusSingle' },
+  { value: RelationshipStatus.Dating, labelKey: 'auth.statusDating' },
+  { value: RelationshipStatus.Married, labelKey: 'auth.statusMarried' },
+  { value: RelationshipStatus.Engaged, labelKey: 'auth.statusEngaged' },
 ];
 
-type SettingsRowKey = 'Account' | 'Sync Partner' | 'Relationship' | 'Notifications' | 'Privacy';
+type SettingsRowKey = 'Account' | 'Sync Partner' | 'Relationship' | 'Notifications' | 'Privacy' | 'Activity Log';
 
 const SETTINGS_ROWS: { icon: keyof typeof Ionicons.glyphMap; label: SettingsRowKey; route?: string; expandable?: boolean }[] = [
   { icon: 'person-outline', label: 'Account', route: '/(modals)/email-verification' },
+  { icon: 'time-outline', label: 'Activity Log', route: '/(modals)/activity-logs' },
   { icon: 'link-outline', label: 'Sync Partner', expandable: true },
   { icon: 'heart-outline', label: 'Relationship', expandable: true },
   { icon: 'notifications-outline', label: 'Notifications', expandable: true },
@@ -37,8 +37,33 @@ export function SettingsCard() {
   const toast = useToast();
   const { user, updateProfile } = useAuth();
   const [expandedRow, setExpandedRow] = useState<SettingsRowKey | null>(null);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(user?.isNotificationsEnabled ?? false);
   const [partnerCodeInput, setPartnerCodeInput] = useState(user?.partnerCode ?? '');
+
+  const isSingle = user?.relationshipStatus === 'single';
+  const settingsRows = isSingle
+    ? SETTINGS_ROWS.filter(row => row.label !== 'Sync Partner')
+    : SETTINGS_ROWS;
+
+  const handleThemeChange = async (mode: 'light' | 'dark' | 'system') => {
+    setMode(mode);
+    try {
+      await updateProfile({ theme: mode });
+    } catch {
+      toast.error({ title: 'Failed to save theme setting' });
+    }
+  };
+
+  const handleNotificationsToggle = async () => {
+    const newValue = !notificationsEnabled;
+    setNotificationsEnabled(newValue);
+    try {
+      await updateProfile({ isNotificationsEnabled: newValue });
+    } catch {
+      setNotificationsEnabled(!newValue); // revert on error
+      toast.error({ title: 'Failed to update notification setting' });
+    }
+  };
   const [modalConfig, setModalConfig] = useState<{
     visible: boolean;
     title: string;
@@ -50,14 +75,14 @@ export function SettingsCard() {
   const activeColor = isDark ? '#60a5fa' : '#3b82f6';
 
   const isSynced = Boolean(user?.partnerCode);
-  const currentStatus = (user?.relationshipStatus as RelationshipValue) ?? '';
+  const currentStatus = (user?.relationshipStatus as RelationshipStatus) ?? '';
 
-  const getLabel = (value: RelationshipValue) => {
+  const getLabel = (value: RelationshipStatus) => {
     const option = RELATIONSHIP_OPTIONS.find((o) => o.value === value);
     return option ? t(option.labelKey as any) : value;
   };
 
-  const handleRelationshipPress = useCallback((value: RelationshipValue) => {
+  const handleRelationshipPress = useCallback((value: RelationshipStatus) => {
     if (value === currentStatus) return;
     const label = RELATIONSHIP_OPTIONS.find((o) => o.value === value);
     setModalConfig({
@@ -178,7 +203,7 @@ export function SettingsCard() {
           ...s.sm,
         }}
       >
-        {SETTINGS_ROWS.map((row, index) => (
+        {settingsRows.map((row, index) => (
           <View key={row.label}>
             {/* Separator between rows */}
             {index > 0 && (
@@ -290,7 +315,7 @@ export function SettingsCard() {
                     Enable Notifications
                   </Text>
                   <Pressable
-                    onPress={() => setNotificationsEnabled((prev) => !prev)}
+                    onPress={handleNotificationsToggle}
                     style={{
                       width: 48,
                       height: 28,
@@ -356,7 +381,7 @@ export function SettingsCard() {
                   style={{ paddingVertical: 8, backgroundColor: c.surface, borderWidth: 1, borderColor: c.border }}
                 >
                   <Pressable
-                    onPress={() => setMode('light')}
+                    onPress={() => handleThemeChange('light')}
                     className="flex-row flex-1 items-center gap-2 rounded-xl px-3 py-3.5"
                     style={{ backgroundColor: !isDark ? activeColor + '12' : 'transparent' }}
                   >
@@ -370,7 +395,7 @@ export function SettingsCard() {
                     <Text style={{ color: !isDark ? activeColor : c.text }} className="text-sm font-semibold">Light</Text>
                   </Pressable>
                   <Pressable
-                    onPress={() => setMode('dark')}
+                    onPress={() => handleThemeChange('dark')}
                     className="flex-row flex-1 items-center gap-2 rounded-xl px-3 py-3.5"
                     style={{ backgroundColor: isDark ? activeColor + '12' : 'transparent' }}
                   >

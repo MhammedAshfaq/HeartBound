@@ -1,0 +1,1 @@
+ALTER TABLE "Users" ALTER COLUMN "isNotificationsEnabled" SET DEFAULT false;

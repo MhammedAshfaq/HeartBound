@@ -12,4 +12,8 @@ export const API_ENDPOINTS = {
   PROFILE: {
     STATS: '/v1/profile/stats',
   },
+  FEELINGS: {
+    BASE: '/v1/feelings',
+    TODAY: '/v1/feelings/today',
+  },
 } as const;

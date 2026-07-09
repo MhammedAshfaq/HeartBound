@@ -9,12 +9,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export enum RelationshipStatus {
-  SINGLE = 'single',
-  DATING = 'dating',
-  ENGAGED = 'engaged',
-  MARRIED = 'married'
-}
+import { RelationshipStatus } from '../../../db/enums';
 
 export class UpdateProfileDto {
   @ApiPropertyOptional({ description: 'Full display name of the user', example: 'John Doe', maxLength: 255 })
@@ -48,17 +43,12 @@ export class UpdateProfileDto {
   @ApiPropertyOptional({
     description: 'Current relationship status',
     enum: RelationshipStatus,
-    example: RelationshipStatus.DATING,
+    example: RelationshipStatus.Dating,
   })
   @IsOptional()
   @IsEnum(RelationshipStatus)
   relationshipStatus?: RelationshipStatus;
 
-  @ApiPropertyOptional({ description: 'UUID or identifier of the linked partner user', example: 'cdec17e0-f9f4-48c1-859e-060b97de3eb5', maxLength: 255 })
-  @IsOptional()
-  @IsString()
-  @MaxLength(255)
-  partnerId?: string;
 
   @ApiPropertyOptional({ description: "Partner's display name", example: 'Jane Doe', maxLength: 255 })
   @IsOptional()
@@ -76,16 +66,29 @@ export class UpdateProfileDto {
   @IsISO8601()
   partnerDob?: string;
 
-  @ApiPropertyOptional({ description: "Partner's email address", example: 'jane@example.com' })
-  @IsOptional()
-  @IsEmail()
-  partnerEmail?: string;
 
   @ApiPropertyOptional({ description: 'Short invite/referral code to link with a partner', example: 'JDOE2024', maxLength: 100 })
   @IsOptional()
   @IsString()
   @MaxLength(100)
+  appCode?: string;
+
+  @ApiPropertyOptional({ description: 'Short invite/referral code of partner to sync with', example: 'PARTNER123', maxLength: 100 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
   partnerCode?: string;
+
+  @ApiPropertyOptional({ description: 'Theme preference', example: 'system', maxLength: 50 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  theme?: string;
+
+  @ApiPropertyOptional({ description: 'Notification preference', example: true })
+  @IsOptional()
+  @IsBoolean()
+  isNotificationsEnabled?: boolean;
 
   @ApiPropertyOptional({ description: 'Set to true once the user has completed the onboarding profile + MCQ flow', example: true })
   @IsOptional()

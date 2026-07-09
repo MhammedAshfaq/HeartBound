@@ -7,20 +7,19 @@ export interface UpdateUserPayload {
   dateOfBirth?: string | null;
   gender?: string | null;
   relationshipStatus?: string | null;
-  partnerId?: string | null;
   partnerName?: string | null;
   anniversaryDate?: string | null;
   partnerDob?: string | null;
-  partnerEmail?: string | null;
+  appCode?: string | null;
   partnerCode?: string | null;
   avatar?: string | null;
+  theme?: string | null;
+  isNotificationsEnabled?: boolean | null;
   profileCompleter?: boolean;
 }
 
 export interface UpdateUserResponse {
-  data: {
-    user: Record<string, unknown>;
-  };
+  data: Record<string, unknown>;
 }
 
 export const userApi = {
@@ -35,4 +34,13 @@ export const userApi = {
     );
     return response.data;
   },
+
+  getUserLogs: async (
+    authClient: AxiosInstance,
+    limit: number = 10,
+    offset: number = 0
+  ) => {
+    const response = await authClient.get(`/v1/users/me/logs?limit=${limit}&offset=${offset}`);
+    return response.data;
+  }
 };

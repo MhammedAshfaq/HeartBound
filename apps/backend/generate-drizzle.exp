@@ -1,0 +1,6 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn pnpm db:generate
+expect "Is appCode column in Users table created or renamed from another column?"
+send "\r"
+expect eof

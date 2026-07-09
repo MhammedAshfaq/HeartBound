@@ -10,6 +10,8 @@ import { UsersRepository } from './users/users.repository';
 import { UsersDbService } from './users/users.service';
 import { McqAnswersRepository } from './mcq-answers/mcq-answers.repository';
 import { McqAnswersDbService } from './mcq-answers/mcq-answers.service';
+import { FeelingsRepository } from './feelings/feelings.repository';
+import { FeelingsDbService } from './feelings/feelings.service';
 import { DRIZZLE_PROVIDER } from './db.constants';
 
 @Module({
@@ -35,8 +37,10 @@ import { DRIZZLE_PROVIDER } from './db.constants';
     UsersDbService,
     McqAnswersRepository,
     McqAnswersDbService,
+    FeelingsRepository,
+    FeelingsDbService,
   ],
-  exports: [DRIZZLE_PROVIDER, CountriesRepository, CountriesDbService, UsersRepository, UsersDbService, McqAnswersRepository, McqAnswersDbService],
+  exports: [DRIZZLE_PROVIDER, CountriesRepository, CountriesDbService, UsersRepository, UsersDbService, McqAnswersRepository, McqAnswersDbService, FeelingsRepository, FeelingsDbService],
 })
 export class DBModule implements OnModuleDestroy, OnModuleInit {
   constructor(

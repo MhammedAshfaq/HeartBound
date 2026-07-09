@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DRIZZLE_PROVIDER } from '../db.constants';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, or, desc } from 'drizzle-orm';
 
 @Injectable()
 export class UsersRepository {
@@ -62,6 +62,15 @@ export class UsersRepository {
     return results[0] || null;
   }
 
+  async findByAppCode(appCode: string) {
+    const results = await this.db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.appCode, appCode))
+      .limit(1);
+    return results[0] || null;
+  }
+
   async create(user: typeof schema.users.$inferInsert) {
     const results = await this.db
       .insert(schema.users)
@@ -77,5 +86,76 @@ export class UsersRepository {
       .where(eq(schema.users.id, id))
       .returning();
     return results[0];
+  }
+
+  async createLog(logData: typeof schema.userLogs.$inferInsert) {
+    const results = await this.db
+      .insert(schema.userLogs)
+      .values(logData)
+      .returning();
+    return results[0];
+  }
+
+  async findLogsByUserId(userId: string, limit: number, offset: number) {
+    return this.db
+      .select()
+      .from(schema.userLogs)
+      .where(eq(schema.userLogs.userId, userId))
+      .orderBy(desc(schema.userLogs.createdAt))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async findActivePartnership(userId: string) {
+    const results = await this.db
+      .select()
+      .from(schema.partners)
+      .where(
+        and(
+          or(
+            eq(schema.partners.userId, userId),
+            eq(schema.partners.partnerId, userId)
+          ),
+          eq(schema.partners.status, 'active')
+        )
+      )
+      .limit(1);
+    return results[0] || null;
+  }
+
+  async linkPartner(userId: string, partnerId: string) {
+    // Delete any existing partnerships for both users
+    await this.db
+      .delete(schema.partners)
+      .where(
+        or(
+          eq(schema.partners.userId, userId),
+          eq(schema.partners.partnerId, userId),
+          eq(schema.partners.userId, partnerId),
+          eq(schema.partners.partnerId, partnerId)
+        )
+      );
+
+    // Insert new active partnership
+    const results = await this.db
+      .insert(schema.partners)
+      .values({
+        userId,
+        partnerId,
+        status: 'active'
+      })
+      .returning();
+    return results[0];
+  }
+
+  async unsyncPartner(userId: string) {
+    return this.db
+      .delete(schema.partners)
+      .where(
+        or(
+          eq(schema.partners.userId, userId),
+          eq(schema.partners.partnerId, userId)
+        )
+      );
   }
 }

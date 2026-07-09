@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { SEED_INSIGHTS } from '@/features/profile/data/insights';
+import { queryClient } from '@/components/QueryClientWithToken';
 
 export interface InsightItem {
   icon: string;
@@ -104,6 +105,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
+    try {
+      queryClient.clear();
+    } catch (e) {
+      console.warn('[AUTH] Failed to clear query client cache:', e);
+    }
     await setSession(null);
   }, [setSession]);
 

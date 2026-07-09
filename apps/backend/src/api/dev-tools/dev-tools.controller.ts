@@ -1,11 +1,11 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller({ path: 'dev-tools', version: '1' })
 export class DevToolsController {
   @Get()
-  @Render('dev-tools')
-  index() {
-    return {
+  index(@Res() res: Response) {
+    return res.render('dev-tools', {
       title: 'SaleMate Developer Tools',
       user: 'Developer',
       tools: [
@@ -16,6 +16,6 @@ export class DevToolsController {
         { name: 'Prometheus Server', icon: 'prometheus.svg', url: 'http://localhost:9090' },
         { name: 'Drizzle Studio', icon: 'drizzle.svg', url: 'https://local.drizzle.studio' },
       ],
-    };
+    });
   }
 }

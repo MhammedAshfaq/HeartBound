@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useEffect } from 'react';
 import { NativeModules } from 'react-native';
 import { useSession, type Session } from './SessionContext';
+import { useThemeMode } from './ThemeContext';
 import { useApi } from '@/hooks/useApi';
 import { SEED_INSIGHTS } from '@/features/profile/data/insights';
 import { userApi, type UpdateUserPayload } from '@/api/services/user.api';
@@ -41,6 +42,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { session, setSession, signOut, isLoading } = useSession();
   const { client, authClient } = useApi();
+  const { setMode } = useThemeMode();
+
+  useEffect(() => {
+    if (session?.user?.theme) {
+      setMode(session.user.theme as any);
+    }
+  }, [session?.user?.theme, setMode]);
 
   const sendOTP = useCallback(async (phone: string, isoCode?: string) => {
     await client.post('/v1/auth/otp/send', { phone, isoCode });
@@ -121,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const result = await userApi.updateUser(authClient, session.user.id, profile);
-    const updatedUser = result.data?.user ?? {};
+    const updatedUser = result.data ?? {};
 
     await setSession({
       ...session,

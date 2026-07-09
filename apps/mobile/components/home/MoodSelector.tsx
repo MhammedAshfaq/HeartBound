@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { colors, spacing, borderRadius, shadows } from '@/lib/theme';
 import { MOOD_EMOJIS } from '@/constants/Mood';
+import { useTodayFeeling, useSubmitFeeling } from '@/hooks/useFeelings';
 
 type MoodType = 'happy' | 'sad' | 'angry' | 'neutral' | 'excited' | 'stressed';
 
@@ -107,6 +108,9 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
   const containerFade = useRef(new Animated.Value(0)).current;
   const savedOpacity = useRef(new Animated.Value(0)).current;
 
+  const { data: todayFeeling, isLoading } = useTodayFeeling();
+  const submitFeeling = useSubmitFeeling();
+
   useEffect(() => {
     Animated.timing(containerFade, { toValue: 1, duration: 500, delay: 350, useNativeDriver: true }).start();
   }, [containerFade]);
@@ -134,15 +138,38 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
     if (!selectedMoodConfig) return;
 
     Keyboard.dismiss();
-    setNote('');
-    savedOpacity.setValue(0);
 
-    Animated.sequence([
-      Animated.timing(savedOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.delay(1800),
-      Animated.timing(savedOpacity, { toValue: 0, duration: 250, useNativeDriver: true }),
-    ]).start();
-  }, [savedOpacity, selectedMoodConfig]);
+    submitFeeling.mutate(
+      { emoji: selectedMoodConfig.emoji, note },
+      {
+        onSuccess: () => {
+          setNote('');
+          savedOpacity.setValue(0);
+          Animated.sequence([
+            Animated.timing(savedOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+            Animated.delay(1800),
+            Animated.timing(savedOpacity, { toValue: 0, duration: 250, useNativeDriver: true }),
+          ]).start();
+        },
+      }
+    );
+  }, [savedOpacity, selectedMoodConfig, submitFeeling, note]);
+
+  // If we have a submitted feeling from today, we determine the matched mood config.
+  // We match against either the emoji itself or the label (case-insensitive) just in case.
+  const submittedMoodConfig = todayFeeling
+    ? moods.find(
+        (m) =>
+          m.emoji === todayFeeling.emoji ||
+          m.label.toLowerCase() === todayFeeling.emoji.toLowerCase() ||
+          m.mood.toLowerCase() === todayFeeling.emoji.toLowerCase(),
+      )
+    : null;
+
+  const isSubmitted = !!todayFeeling;
+  // If submitted, use the submitted mood, else use the actively selected one
+  const displayMoodConfig = isSubmitted ? submittedMoodConfig : selectedMoodConfig;
+  const displayNote = isSubmitted ? (todayFeeling.note || '') : note;
 
   return (
     <Animated.View
@@ -156,7 +183,9 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
         <View style={[styles.headerAccent, { backgroundColor: c.primary + '18' }]} />
         <View style={styles.headerCopy}>
           <Text style={[styles.sectionTitle, { color: c.text }]}>{t('home.moodQuestion')}</Text>
-          <Text style={[styles.sectionSubtitle, { color: c.muted }]}>{t('home.moodSubtitle')}</Text>
+          <Text style={[styles.sectionSubtitle, { color: c.muted }]}>
+            {isSubmitted ? 'You\'ve shared your feeling today!' : t('home.moodSubtitle')}
+          </Text>
         </View>
       </View>
 
@@ -165,8 +194,10 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
           <View key={item.mood} style={styles.gridItem}>
             <MoodTile
               item={item}
-              selected={selectedMood === item.mood}
-              onPress={() => handleMoodPress(item.mood)}
+              selected={displayMoodConfig?.mood === item.mood}
+              onPress={() => {
+                if (!isSubmitted) handleMoodPress(item.mood);
+              }}
               isDark={isDark}
               borderColor={c.border}
               textColor={c.muted}
@@ -188,22 +219,22 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
         <View style={styles.composerHeader}>
           <Text style={[styles.composerLabel, { color: c.text }]}>{t('home.noteLabel')}</Text>
           <Text style={[styles.composerHint, { color: c.muted }]}>
-            {selectedMoodConfig ? `${t('home.selectedMood')} · ${selectedMoodConfig.label}` : t('home.moodHelper')}
+            {displayMoodConfig ? `${t('home.selectedMood')} · ${displayMoodConfig.label}` : t('home.moodHelper')}
           </Text>
         </View>
 
-        {selectedMoodConfig ? (
+        {displayMoodConfig ? (
           <View
             style={[
               styles.selectedMoodPill,
               {
-                backgroundColor: selectedMoodConfig.color + '18',
-                borderColor: selectedMoodConfig.color + '30',
+                backgroundColor: displayMoodConfig.color + '18',
+                borderColor: displayMoodConfig.color + '30',
               },
             ]}
           >
-            <Text style={[styles.selectedMoodText, { color: selectedMoodConfig.color }]}>
-              {selectedMoodConfig.label}
+            <Text style={[styles.selectedMoodText, { color: displayMoodConfig.color }]}>
+              {displayMoodConfig.label}
             </Text>
           </View>
         ) : null}
@@ -214,38 +245,44 @@ export default function MoodSelector({ selectedMood, onMoodSelect }: MoodSelecto
             {
               color: c.text,
               borderColor: c.border,
-              backgroundColor: c.card,
+              backgroundColor: isSubmitted ? c.surface : c.card,
+              opacity: isSubmitted ? 0.7 : 1,
             },
           ]}
           placeholder={t('home.notePlaceholder')}
           placeholderTextColor={c.muted}
-          value={note}
+          value={displayNote}
           onChangeText={setNote}
           multiline
           textAlignVertical="top"
+          editable={!isSubmitted}
         />
 
-        <Pressable
-          accessibilityRole="button"
-          disabled={!selectedMoodConfig}
-          onPress={handleSaveCheckIn}
-          style={({ pressed }) => [
-            styles.saveButtonPressable,
-            pressed && selectedMoodConfig && styles.saveButtonPressed,
-          ]}
-        >
-          <View
-            style={[
-              styles.saveButtonSurface,
-              {
-                backgroundColor: selectedMoodConfig ? c.primary : c.border,
-                borderColor: selectedMoodConfig ? c.primary : c.border,
-              },
+        {!isSubmitted && (
+          <Pressable
+            accessibilityRole="button"
+            disabled={!displayMoodConfig || submitFeeling.isPending}
+            onPress={handleSaveCheckIn}
+            style={({ pressed }) => [
+              styles.saveButtonPressable,
+              pressed && displayMoodConfig && styles.saveButtonPressed,
             ]}
           >
-            <Text style={styles.saveButtonText}>{t('home.submit')}</Text>
-          </View>
-        </Pressable>
+            <View
+              style={[
+                styles.saveButtonSurface,
+                {
+                  backgroundColor: displayMoodConfig && !submitFeeling.isPending ? c.primary : c.border,
+                  borderColor: displayMoodConfig && !submitFeeling.isPending ? c.primary : c.border,
+                },
+              ]}
+            >
+              <Text style={styles.saveButtonText}>
+                {submitFeeling.isPending ? 'Submitting...' : t('home.submit')}
+              </Text>
+            </View>
+          </Pressable>
+        )}
       </View>
     </Animated.View>
   );

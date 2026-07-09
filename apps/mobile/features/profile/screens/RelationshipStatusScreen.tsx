@@ -8,14 +8,18 @@ import { useTheme } from '@/hooks/useTheme';
 import { useToast } from '@/hooks/useToast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { colors, shadows } from '@/lib/theme';
+import { RelationshipStatus } from '@/constants/Enums';
 
-type RelationshipValue = 'single' | 'inRelationship' | 'married' | 'engaged';
+type Option = {
+  value: RelationshipStatus;
+  labelKey: string;
+};
 
-const RELATIONSHIP_OPTIONS: { value: RelationshipValue; labelKey: string }[] = [
-  { value: 'single', labelKey: 'auth.statusSingle' },
-  { value: 'inRelationship', labelKey: 'auth.statusInRelationship' },
-  { value: 'married', labelKey: 'auth.statusMarried' },
-  { value: 'engaged', labelKey: 'auth.statusEngaged' },
+const RELATIONSHIP_OPTIONS: Option[] = [
+  { value: RelationshipStatus.Single, labelKey: 'auth.statusSingle' },
+  { value: RelationshipStatus.Dating, labelKey: 'auth.statusDating' },
+  { value: RelationshipStatus.Married, labelKey: 'auth.statusMarried' },
+  { value: RelationshipStatus.Engaged, labelKey: 'auth.statusEngaged' },
 ];
 
 export default function RelationshipStatusScreen() {
@@ -26,14 +30,11 @@ export default function RelationshipStatusScreen() {
   const toast = useToast();
   const { user, updateProfile } = useAuth();
 
-  const [selected, setSelected] = useState<RelationshipValue | ''>(
-    (user?.relationshipStatus as RelationshipValue) ?? '',
-  );
+  const currentStatus = (user?.relationshipStatus as RelationshipStatus) ?? '';
+  const [selected, setSelected] = useState<RelationshipStatus | ''>(currentStatus);
   const [saving, setSaving] = useState(false);
 
-  const currentStatus = (user?.relationshipStatus as RelationshipValue) ?? '';
-
-  const getLabel = (value: RelationshipValue) => {
+  const getLabel = (value: RelationshipStatus) => {
     const option = RELATIONSHIP_OPTIONS.find((o) => o.value === value);
     return option ? t(option.labelKey as any) : value;
   };
@@ -57,7 +58,7 @@ export default function RelationshipStatusScreen() {
     }
   }, [selected, currentStatus, user, updateProfile, router, toast]);
 
-  const handlePress = useCallback((value: RelationshipValue) => {
+  const handlePress = useCallback((value: RelationshipStatus) => {
     if (value === currentStatus) return;
     setSelected(value);
   }, [currentStatus]);

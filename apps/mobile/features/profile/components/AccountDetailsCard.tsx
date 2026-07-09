@@ -58,14 +58,14 @@ export function AccountDetailsCard({ profile }: AccountDetailsCardProps) {
       value: profile.relationshipStatus?.trim() || notSet,
       badge: true,
     },
-    {
+    ...(profile.relationshipStatus?.toLowerCase() !== 'single' ? [{
       icon: 'heart-circle' as const,
       iconColor: '#db2777',
       label: t('profile.anniversary'),
       value: profile.partner?.anniversary?.trim()
         ? formatDisplayDate(profile.partner.anniversary, notSet)
         : notSet,
-    },
+    }] : []),
   ];
 
   return (

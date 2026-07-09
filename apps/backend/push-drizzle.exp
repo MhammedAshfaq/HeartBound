@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn pnpm db:push
+expect "Is appCode column in Users table created or renamed from another column?"
+send "\r"
+expect "You are about to drop partnerId column in Users table with 0 items"
+send "y\r"
+expect "You are about to drop partnerEmail column in Users table with 0 items"
+send "y\r"
+expect "You are about to drop partnerCode column in Users table with 0 items"
+send "y\r"
+expect eof

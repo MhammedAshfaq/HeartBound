@@ -11,6 +11,7 @@ export default function ModalLayout() {
       <Stack.Screen name="memory-detail" />
       <Stack.Screen name="day-memories" />
       <Stack.Screen name="relationship-status" />
+      <Stack.Screen name="activity-logs" />
     </Stack>
   );
 }

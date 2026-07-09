@@ -45,7 +45,6 @@ export default function EditProfileScreen() {
   const [partnerName, setPartnerName] = useState(user?.partnerName ?? '');
   const [anniversaryDate, setAnniversaryDate] = useState(user?.anniversaryDate ?? '');
   const [partnerDob, setPartnerDob] = useState(user?.partnerDob ?? '');
-  const [partnerEmail, setPartnerEmail] = useState(user?.partnerEmail ?? '');
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
   const [activePicker, setActivePicker] = useState<'dob' | 'anniversary' | 'partnerDob' | null>(null);
@@ -79,8 +78,8 @@ export default function EditProfileScreen() {
       setAvatar(uri);
       try {
         await updateProfile({
-          name: name.trim() || initialName,
-          dateOfBirth: dob,
+          name: name.trim() || initialName || undefined,
+          dateOfBirth: dob || undefined,
           avatar: uri,
           partnerName: partnerName.trim() || undefined,
           anniversaryDate: anniversaryDate || undefined,
@@ -112,13 +111,12 @@ export default function EditProfileScreen() {
     setLoading(true);
     try {
       await updateProfile({
-        name: name.trim(),
-        dateOfBirth: dob,
+        name: name.trim() || undefined,
+        dateOfBirth: dob || undefined,
         avatar: avatar || undefined,
         partnerName: partnerName.trim() || undefined,
         anniversaryDate: anniversaryDate || undefined,
         partnerDob: partnerDob || undefined,
-        partnerEmail: partnerEmail.trim() || undefined,
       });
       toast.success({ title: 'Profile saved' });
       router.back();
@@ -145,8 +143,9 @@ export default function EditProfileScreen() {
     || avatar !== (user?.avatar ?? '')
     || partnerName !== (user?.partnerName ?? '')
     || anniversaryDate !== (user?.anniversaryDate ?? '')
-    || partnerDob !== (user?.partnerDob ?? '')
-    || partnerEmail !== (user?.partnerEmail ?? '');
+    || partnerDob !== (user?.partnerDob ?? '');
+
+  const showPartnerFields = user?.relationshipStatus !== 'single';
 
   return (
     <SafeAreaView style={{ backgroundColor: c.background }} className="flex-1">
@@ -273,98 +272,76 @@ export default function EditProfileScreen() {
                 </Pressable>
               </View>
 
-              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
+              {showPartnerFields && (
+                <>
+                  <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
-              {/* Anniversary */}
-              <View className="px-1" style={{ paddingVertical: 10}}>
-                <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
-                  {t('auth.anniversaryDate')}
-                </Text>
-                <Pressable
-                  onPress={() => setActivePicker('anniversary')}
-                  style={{
-                    backgroundColor: c.surface,
-                    borderColor: c.border,
-                  }}
-                  className="rounded-lg border px-4 py-2.5"
-                >
-                  <Text style={{ color: anniversaryDate ? c.text : c.muted, fontSize: 16 }}>
-                    {formattedAnniversary || 'Select date'}
-                  </Text>
-                </Pressable>
-              </View>
+                  {/* Anniversary */}
+                  <View className="px-1" style={{ paddingVertical: 10}}>
+                    <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
+                      {t('auth.anniversaryDate')}
+                    </Text>
+                    <Pressable
+                      onPress={() => setActivePicker('anniversary')}
+                      style={{
+                        backgroundColor: c.surface,
+                        borderColor: c.border,
+                      }}
+                      className="rounded-lg border px-4 py-2.5"
+                    >
+                      <Text style={{ color: anniversaryDate ? c.text : c.muted, fontSize: 16 }}>
+                        {formattedAnniversary || 'Select date'}
+                      </Text>
+                    </Pressable>
+                  </View>
 
-              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
+                  <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
-              {/* Partner Name */}
-              <View className="px-1" style={{ paddingVertical: 10 }}>
-                <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
-                  {t('auth.partnerName')}
-                </Text>
-                <TextInput
-                  value={partnerName}
-                  onChangeText={setPartnerName}
-                  placeholder="Enter partner name"
-                  placeholderTextColor={c.muted}
-                  style={{
-                    color: c.text,
-                    backgroundColor: c.surface,
-                    borderColor: c.border,
-                    textAlignVertical: 'center',
-                    fontSize: 16,
-                  }}
-                  className="rounded-lg border px-4 py-2.5 text-base"
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                />
-              </View>
+                  {/* Partner Name */}
+                  <View className="px-1" style={{ paddingVertical: 10 }}>
+                    <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
+                      {t('auth.partnerName')}
+                    </Text>
+                    <TextInput
+                      value={partnerName}
+                      onChangeText={setPartnerName}
+                      placeholder="Enter partner name"
+                      placeholderTextColor={c.muted}
+                      style={{
+                        color: c.text,
+                        backgroundColor: c.surface,
+                        borderColor: c.border,
+                        textAlignVertical: 'center',
+                        fontSize: 16,
+                      }}
+                      className="rounded-lg border px-4 py-2.5 text-base"
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                    />
+                  </View>
 
-              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
+                  <View className="mx-1 border-t" style={{ borderColor: c.border }} />
 
-              {/* Partner DOB */}
-              <View className="px-1" style={{ paddingVertical: 10 }}>
-                <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
-                  {t('auth.partnerDob')}
-                </Text>
-                <Pressable
-                  onPress={() => setActivePicker('partnerDob')}
-                  style={{
-                    backgroundColor: c.surface,
-                    borderColor: c.border,
-                  }}
-                  className="rounded-lg border px-4 py-2.5"
-                >
-                  <Text style={{ color: partnerDob ? c.text : c.muted, fontSize: 16 }}>
-                    {formattedPartnerDob || 'Select date'}
-                  </Text>
-                </Pressable>
-              </View>
-
-              <View className="mx-1 border-t" style={{ borderColor: c.border }} />
-
-              {/* Partner Email */}
-              <View className="px-1" style={{ paddingVertical: 10 }}>
-                <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
-                  {t('profile.email')}
-                </Text>
-                <TextInput
-                  value={partnerEmail}
-                  onChangeText={setPartnerEmail}
-                  placeholder="Enter partner email"
-                  placeholderTextColor={c.muted}
-                  style={{
-                    color: c.text,
-                    backgroundColor: c.surface,
-                    borderColor: c.border,
-                    textAlignVertical: 'center',
-                    fontSize: 16,
-                  }}
-                  className="rounded-lg border px-4 py-2.5 text-base"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
+                  {/* Partner DOB */}
+                  <View className="px-1" style={{ paddingVertical: 10 }}>
+                    <Text className="text-[13px] mb-2 ml-2 font-semibold" style={{ color: c.muted }}>
+                      {t('auth.partnerDob')}
+                    </Text>
+                    <Pressable
+                      onPress={() => setActivePicker('partnerDob')}
+                      style={{
+                        backgroundColor: c.surface,
+                        borderColor: c.border,
+                      }}
+                      className="rounded-lg border px-4 py-2.5"
+                    >
+                      <Text style={{ color: partnerDob ? c.text : c.muted, fontSize: 16 }}>
+                        {formattedPartnerDob || 'Select date'}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
 
             </View>
           </View>

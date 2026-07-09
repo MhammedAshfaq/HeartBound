@@ -43,7 +43,7 @@ const ar = {
     emailPlaceholder: 'أدخل بريدك الإلكتروني',
     relationshipStatus: 'الحالة الاجتماعية',
     statusSingle: 'أعزب',
-    statusInRelationship: 'في علاقة',
+    statusDating: 'في علاقة',
     statusMarried: 'متزوج',
     statusEngaged: 'مخطوب',
     profilePicture: 'الصورة الشخصية',

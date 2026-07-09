@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/useToast';
 import { colors, shadows } from '@/lib/theme';
 
 const OTP_LENGTH = 6;
-const MASTER_OTP = '987654';
+const MASTER_OTP = '009832';
 const OTP_RESEND_TIMEOUT = 60;
 
 export default function EmailVerificationScreen() {
@@ -106,7 +106,7 @@ export default function EmailVerificationScreen() {
       if (otpValue !== MASTER_OTP) {
         throw new Error('Invalid OTP');
       }
-      await updateProfile({ name: user?.name ?? '', dateOfBirth: user?.dateOfBirth ?? '', email });
+      await updateProfile({ email });
       toast.success({ title: 'Email updated successfully' });
       router.back();
     } catch {

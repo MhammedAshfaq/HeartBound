@@ -6,7 +6,7 @@ export enum ThemeMode {
 
 export enum RelationshipStatus {
   Single = 'single',
-  InRelationship = 'in_relationship',
+  Dating = 'dating',
   Married = 'married',
   Engaged = 'engaged',
 }

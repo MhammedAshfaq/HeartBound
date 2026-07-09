@@ -104,28 +104,12 @@ export class AuthService {
 
     // 4. Generate Session tokens
     const tokens = this.generateTokens(user.id, user.email || '', user.phone || undefined);
+    const formattedUser = await this.formatUserResponse(user);
 
     return {
       success: true,
       ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        phone: user.phone,
-        country: user.country,
-        avatar: user.avatar,
-        dateOfBirth: user.dateOfBirth,
-        gender: user.gender,
-        relationshipStatus: user.relationshipStatus,
-        partnerId: user.partnerId,
-        partnerName: user.partnerName,
-        anniversaryDate: user.anniversaryDate,
-        partnerDob: user.partnerDob,
-        partnerEmail: user.partnerEmail,
-        partnerCode: user.partnerCode,
-        profileCompleter: user.profileCompleter,
-      },
+      user: formattedUser,
     };
   }
 
@@ -210,27 +194,12 @@ export class AuthService {
 
     // 4. Generate Session tokens
     const tokens = this.generateTokens(user.id, user.email || '', user.phone || undefined);
+    const formattedUser = await this.formatUserResponse(user);
 
     return {
       success: true,
       ...tokens,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        phone: user.phone,
-        avatar: user.avatar,
-        dateOfBirth: user.dateOfBirth,
-        gender: user.gender,
-        relationshipStatus: user.relationshipStatus,
-        partnerId: user.partnerId,
-        partnerName: user.partnerName,
-        anniversaryDate: user.anniversaryDate,
-        partnerDob: user.partnerDob,
-        partnerEmail: user.partnerEmail,
-        partnerCode: user.partnerCode,
-        profileCompleter: user.profileCompleter,
-      },
+      user: formattedUser,
     };
   }
 
@@ -243,12 +212,10 @@ export class AuthService {
       'dateOfBirth',
       'gender',
       'relationshipStatus',
-      'partnerId',
       'partnerName',
       'anniversaryDate',
       'partnerDob',
-      'partnerEmail',
-      'partnerCode',
+      'appCode',
       'profileCompleter',
     ];
 
@@ -270,5 +237,60 @@ export class AuthService {
 
   private generateTokens(userId: string, email: string, phone?: string) {
     return this.jwtTokenService.generateTokens(userId, email, phone);
+  }
+
+  private async formatUserResponse(user: any) {
+    const partnership = await this.usersDbService.findActivePartnership(user.id);
+    let partnerDetails: {
+      partnerId: string | null;
+      partnerName: string | null;
+      partnerDob: string | null;
+      partnerEmail: string | null;
+      partnerCode: string | null;
+    } = {
+      partnerId: null,
+      partnerName: user.partnerName,
+      partnerDob: user.partnerDob,
+      partnerEmail: null,
+      partnerCode: null,
+    };
+
+    if (partnership) {
+      const partnerId = partnership.userId === user.id ? partnership.partnerId : partnership.userId;
+      const partnerUser = await this.usersDbService.findById(partnerId);
+      if (partnerUser) {
+        partnerDetails = {
+          partnerId: partnerUser.id,
+          partnerName: partnerUser.name,
+          partnerDob: partnerUser.dateOfBirth,
+          partnerEmail: partnerUser.email,
+          partnerCode: partnerUser.appCode,
+        };
+      }
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+      country: user.country,
+      avatar: user.avatar,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      relationshipStatus: user.relationshipStatus,
+      partnerName: partnerDetails.partnerName,
+      anniversaryDate: user.anniversaryDate,
+      partnerDob: partnerDetails.partnerDob,
+      partnerEmail: partnerDetails.partnerEmail,
+      partnerCode: partnerDetails.partnerCode,
+      partnerId: partnerDetails.partnerId,
+      appCode: user.appCode,
+      theme: user.theme,
+      isNotificationsEnabled: user.isNotificationsEnabled,
+      profileCompleter: user.profileCompleter,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 }

@@ -43,7 +43,7 @@ const en = {
     emailPlaceholder: 'Enter your email',
     relationshipStatus: 'Relationship Status',
     statusSingle: 'Single',
-    statusInRelationship: 'In a Relationship',
+    statusDating: 'Dating',
     statusMarried: 'Married',
     statusEngaged: 'Engaged',
     profilePicture: 'Profile Picture',

@@ -24,8 +24,9 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { colors } from '@/lib/theme';
 import { DatePickerModal } from '@/features/profile/components/DatePickerModal';
 
+import { RelationshipStatus } from '@/constants/Enums';
+
 type GenderValue = 'male' | 'female' | 'nonBinary' | 'preferNotToSay';
-type RelationshipValue = 'single' | 'inRelationship' | 'married' | 'engaged';
 
 interface ChipOption<T> {
   value: T;
@@ -70,11 +71,11 @@ export default function SetupProfileScreen() {
   const [dob, setDob] = useState(user?.dateOfBirth ?? '');
   const [emailId, setEmailId] = useState(user?.email ?? '');
   const [gender, setGender] = useState<GenderValue | ''>((user?.gender as GenderValue) ?? '');
-  const [relationshipStatus, setRelationshipStatus] = useState<RelationshipValue | ''>((user?.relationshipStatus as RelationshipValue) ?? '');
+  const [relationshipStatus, setRelationshipStatus] = useState<RelationshipStatus | ''>((user?.relationshipStatus as RelationshipStatus) ?? '');
   const [partnerName, setPartnerName] = useState(user?.partnerName ?? '');
   const [anniversaryDate, setAnniversaryDate] = useState(user?.anniversaryDate ?? '');
   const [partnerDob, setPartnerDob] = useState(user?.partnerDob ?? '');
-  const [partnerCode, setPartnerCode] = useState(user?.partnerCode ?? '');
+
   const [avatar, setAvatar] = useState(user?.avatar ?? '');
 
   const [nameError, setNameError] = useState('');
@@ -91,7 +92,7 @@ export default function SetupProfileScreen() {
     if (genderError) setGenderError('');
   }, [genderError]);
 
-  const clearRelationshipError = useCallback((value: RelationshipValue | '') => {
+  const clearRelationshipError = useCallback((value: RelationshipStatus | '') => {
     setRelationshipStatus(value);
     if (relationshipError) setRelationshipError('');
   }, [relationshipError]);
@@ -103,11 +104,11 @@ export default function SetupProfileScreen() {
     { value: 'preferNotToSay', label: t('auth.genderPreferNotToSay') },
   ];
 
-  const relationshipOptions: ChipOption<RelationshipValue>[] = [
-    { value: 'single', label: t('auth.statusSingle') },
-    { value: 'inRelationship', label: t('auth.statusInRelationship') },
-    { value: 'married', label: t('auth.statusMarried') },
-    { value: 'engaged', label: t('auth.statusEngaged') },
+  const relationshipOptions: ChipOption<RelationshipStatus>[] = [
+    { value: RelationshipStatus.Single, label: t('auth.statusSingle') },
+    { value: RelationshipStatus.Dating, label: t('auth.statusDating') },
+    { value: RelationshipStatus.Married, label: t('auth.statusMarried') },
+    { value: RelationshipStatus.Engaged, label: t('auth.statusEngaged') },
   ];
 
   const validateName = useCallback((value: string) => {
@@ -173,13 +174,13 @@ export default function SetupProfileScreen() {
     try {
       await updateProfile({
         name: name.trim(),
+        email: emailId.trim() || undefined,
         dateOfBirth: dob,
         gender,
         relationshipStatus,
         partnerName: partnerName.trim() || undefined,
         anniversaryDate: anniversaryDate || undefined,
         partnerDob: partnerDob || undefined,
-        partnerCode: partnerCode.trim() || undefined,
         avatar: avatar || undefined,
       });
     } catch {
@@ -187,7 +188,7 @@ export default function SetupProfileScreen() {
     router.replace('/(auth)/relationship-questions');
   }, [
     name, dob, gender, relationshipStatus,
-    partnerName, anniversaryDate, partnerDob, partnerCode, avatar,
+    partnerName, anniversaryDate, partnerDob, avatar,
     router, updateProfile, validateDob, validateName,
   ]);
 
@@ -454,7 +455,7 @@ export default function SetupProfileScreen() {
                 <Text style={{ color: c.text }} className="mb-1.5 text-sm font-bold">
                   {t('auth.relationshipStatus')}<Text style={{ color: c.error }}> *</Text>
                 </Text>
-                {renderChips<RelationshipValue>(relationshipOptions, relationshipStatus, clearRelationshipError)}
+                {renderChips<RelationshipStatus>(relationshipOptions, relationshipStatus, clearRelationshipError)}
                 {relationshipError ? (
                   <Text style={{ color: c.error }} className="mt-1 text-xs font-semibold">{relationshipError}</Text>
                 ) : null}
@@ -522,18 +523,9 @@ export default function SetupProfileScreen() {
                     </Text>
                   </Pressable>
                 </View>
-
-                {/* Partner Code */}
-                {renderField({
-                  label: t('auth.partnerCode'),
-                  value: partnerCode,
-                  onChangeText: setPartnerCode,
-                  placeholder: t('auth.partnerCodePlaceholder'),
-                  hint: t('auth.partnerCodeHint'),
-                  optional: true,
-                  autoCapitalize: 'none',
-                })}
               </View>
+
+
             ) : null}
 
             {/* Save Button */}
